@@ -25,11 +25,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'username' => Str::lower(Str::random(12)),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password_hash' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'account_type' => 'USER',
+            'account_status' => 'ACTIVE',
         ];
     }
 
@@ -40,6 +42,26 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is an admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_type' => 'ADMIN',
+        ]);
+    }
+
+    /**
+     * Indicate that the user account is suspended.
+     */
+    public function suspended(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_status' => 'SUSPENDED',
         ]);
     }
 }
