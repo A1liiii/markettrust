@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Utama / Index
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Forum Komunitas (Publik)
+Route::get('/forum', [ForumPostController::class, 'index'])->name('forum.index');
 
 // Tamu (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -39,4 +43,14 @@ Route::middleware('guest')->group(function () {
 // Pengguna Terautentikasi (Sudah Login)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Pengelolaan Forum Post
+    Route::get('/forum/create', [ForumPostController::class, 'create'])->name('forum.create');
+    Route::post('/forum', [ForumPostController::class, 'store'])->name('forum.store');
+    Route::get('/forum/{post}/edit', [ForumPostController::class, 'edit'])->name('forum.edit');
+    Route::put('/forum/{post}', [ForumPostController::class, 'update'])->name('forum.update');
+    Route::post('/forum/{post}/close', [ForumPostController::class, 'close'])->name('forum.close');
 });
+
+// Detail Forum Post (Bisa diakses publik, diletakkan setelah /forum/create)
+Route::get('/forum/{post}', [ForumPostController::class, 'show'])->name('forum.show');
