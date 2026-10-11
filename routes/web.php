@@ -48,7 +48,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Preview Kalkulasi Fee (dapat dipanggil oleh modul kesepakatan / frontend)
+    // Preview Kalkulasi Fee
     Route::post('/fee/preview', [FeePreviewController::class, 'preview'])->name('fee.preview');
 });
 
@@ -56,4 +56,21 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/fee-configs', [FeeConfigController::class, 'index'])->name('fee-configs.index');
     Route::post('/fee-configs', [FeeConfigController::class, 'store'])->name('fee-configs.store');
+
+    // Master Katalog
+    Route::middleware('can:manage-catalog')->prefix('catalog')->name('catalog.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CatalogController::class, 'index'])->name('index');
+
+        Route::post('/categories', [\App\Http\Controllers\Admin\CatalogController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateCategory'])->name('categories.update');
+        Route::patch('/categories/{category}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleCategoryStatus'])->name('categories.toggle');
+
+        Route::post('/products', [\App\Http\Controllers\Admin\CatalogController::class, 'storeProduct'])->name('products.store');
+        Route::put('/products/{product}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateProduct'])->name('products.update');
+        Route::patch('/products/{product}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleProductStatus'])->name('products.toggle');
+
+        Route::post('/variants', [\App\Http\Controllers\Admin\CatalogController::class, 'storeVariant'])->name('variants.store');
+        Route::put('/variants/{variant}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateVariant'])->name('variants.update');
+        Route::patch('/variants/{variant}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
+    });
 });
