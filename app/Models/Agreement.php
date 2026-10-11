@@ -52,6 +52,8 @@ class Agreement extends Model
             'seller_net' => 'decimal:2',
             'delivery_within_minutes' => 'integer',
             'revision_no' => 'integer',
+            'fee_type' => \App\Enums\FeeType::class,
+            'status' => \App\Enums\AgreementStatus::class,
             'buyer_accepted_at' => 'datetime',
             'seller_accepted_at' => 'datetime',
             'rejected_at' => 'datetime',

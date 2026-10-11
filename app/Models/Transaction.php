@@ -35,6 +35,8 @@ class Transaction extends Model
     protected function casts(): array
     {
         return [
+            'source_type' => \App\Enums\TransactionSourceType::class,
+            'status' => \App\Enums\TransactionStatus::class,
             'payment_due_at' => 'datetime',
             'delivery_due_at' => 'datetime',
             'confirmation_due_at' => 'datetime',
