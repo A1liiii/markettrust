@@ -72,10 +72,14 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::post('/variants', [\App\Http\Controllers\Admin\CatalogController::class, 'storeVariant'])->name('variants.store');
         Route::put('/variants/{variant}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateVariant'])->name('variants.update');
         Route::patch('/variants/{variant}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
-    });
+ });
+});
 
-    // Modul Seller: Pengelolaan Listing
-    Route::prefix('seller/listings')->name('seller.listings.')->group(function () {
+// Modul Seller: Pengelolaan Listing
+Route::middleware(['auth', 'active_account'])
+    ->prefix('seller/listings')
+    ->name('seller.listings.')
+    ->group(function () {
         Route::get('/', [\App\Http\Controllers\Seller\ListingController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Seller\ListingController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Seller\ListingController::class, 'store'])->name('store');
@@ -83,4 +87,3 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::put('/{listing}', [\App\Http\Controllers\Seller\ListingController::class, 'update'])->name('update');
         Route::patch('/{listing}/toggle-status', [\App\Http\Controllers\Seller\ListingController::class, 'toggleStatus'])->name('toggle-status');
     });
-});
