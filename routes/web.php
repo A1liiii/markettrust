@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\FeeConfigController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\FeePreviewController;
+use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Utama / Index
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Forum Komunitas (Publik)
+Route::get('/forum', [ForumPostController::class, 'index'])->name('forum.index');
 
 // Tamu (Belum Login)
 Route::middleware('guest')->group(function () {
@@ -42,6 +46,7 @@ Route::middleware('guest')->group(function () {
 // Pengguna Terautentikasi (Sudah Login & Aktif)
 Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 
     // Manajemen Profil
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
@@ -87,3 +92,15 @@ Route::middleware(['auth', 'active_account'])
         Route::put('/{listing}', [\App\Http\Controllers\Seller\ListingController::class, 'update'])->name('update');
         Route::patch('/{listing}/toggle-status', [\App\Http\Controllers\Seller\ListingController::class, 'toggleStatus'])->name('toggle-status');
     });
+
+    // Pengelolaan Forum Post oleh pengguna aktif
+    Route::middleware(['auth', 'active_account'])->group(function () {
+        Route::get('/forum/create', [ForumPostController::class, 'create'])->name('forum.create');
+        Route::post('/forum', [ForumPostController::class, 'store'])->name('forum.store');
+        Route::get('/forum/{post}/edit', [ForumPostController::class, 'edit'])->name('forum.edit');
+        Route::put('/forum/{post}', [ForumPostController::class, 'update'])->name('forum.update');
+        Route::post('/forum/{post}/close', [ForumPostController::class, 'close'])->name('forum.close');
+    });
+
+    // Detail posting dapat dibaca publik
+    Route::get('/forum/{post}', [ForumPostController::class, 'show'])->name('forum.show');

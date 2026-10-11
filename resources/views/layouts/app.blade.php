@@ -39,7 +39,7 @@
                 <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
                     <a href="{{ route('home') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'text-indigo-600 font-semibold' : '' }}">Beranda</a>
                     <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition">Marketplace</a>
-                    <a href="{{ route('home') }}#forum" class="hover:text-indigo-600 transition">Forum</a>
+                    <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : '' }}">Forum</a>
                     <a href="{{ route('home') }}#escrow" class="hover:text-indigo-600 transition">Sistem Escrow</a>
                     @auth
                         @if (auth()->user()->isAdmin())
@@ -113,7 +113,7 @@
                 @endif
             @endauth
             <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
-            <a href="{{ route('home') }}#forum" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Forum</a>
+            <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
             <a href="{{ route('home') }}#escrow" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Sistem Escrow</a>
             @auth
                 <a href="{{ route('seller.listings.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('seller.listings.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}">
