@@ -41,13 +41,18 @@
                     <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition">Marketplace</a>
                     <a href="{{ route('home') }}#forum" class="hover:text-indigo-600 transition">Forum</a>
                     <a href="{{ route('home') }}#escrow" class="hover:text-indigo-600 transition">Sistem Escrow</a>
+                    @auth
+                        @if (auth()->user()->isAdmin())
+                            <a href="{{ route('admin.fee-configs.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('admin.fee-configs.*') ? 'text-indigo-600 font-semibold' : '' }}">Konfigurasi Fee</a>
+                        @endif
+                    @endauth
                 </nav>
 
                 <!-- Auth Buttons & Mobile Toggle -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     @auth
                         <div class="flex items-center gap-2">
-                            <div class="flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80">
+                            <a href="{{ route('profile.show') }}" class="flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya">
                                 @if (auth()->user()->avatar_url)
                                     <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover">
                                 @else
@@ -59,7 +64,7 @@
                                 <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-full {{ auth()->user()->account_status === 'ACTIVE' ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-500/20' : 'bg-rose-500/15 text-rose-700 border border-rose-500/20' }}">
                                     {{ auth()->user()->account_status }}
                                 </span>
-                            </div>
+                            </a>
 
                             <form action="{{ route('logout') }}" method="POST" class="inline">
                                 @csrf
@@ -90,6 +95,12 @@
         <!-- Mobile Menu Drawer -->
         <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-1 border-t border-white/50 bg-white/70 backdrop-blur-xl">
             <a href="{{ route('home') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Beranda</a>
+            @auth
+                <a href="{{ route('profile.show') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('profile.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Profil Saya (@<span>{{ auth()->user()->username }}</span>)</a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.fee-configs.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('admin.fee-configs.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Konfigurasi Fee (Admin)</a>
+                @endif
+            @endauth
             <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
             <a href="{{ route('home') }}#forum" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Forum</a>
             <a href="{{ route('home') }}#escrow" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Sistem Escrow</a>

@@ -69,6 +69,136 @@ class User extends Authenticatable
         ];
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->account_type === 'ADMIN';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->account_status === 'ACTIVE';
+    }
+
+    public function hasPassword(): bool
+    {
+        return ! empty($this->password_hash);
+    }
+
+    /**
+     * Accessor untuk avatar_url agar selalu mengembalikan URL yang valid (Google URL atau asset lokal).
+     */
+    public function getAvatarUrlAttribute(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        return asset(ltrim($value, '/'));
+    }
+
+    /**
+     * Hitung total poin reputasi dari riwayat event.
+     */
+    public function getReputationPointsAttribute(): int
+    {
+        return (int) $this->reputationEvents()->sum('points_delta');
+    }
+
+    /**
+     * Dapatkan status reputasi legitimasi akun.
+     * Hanya bernilai LEGIT atau PROBLEMATIC jika terdapat penetapan status sah di reputation_events.
+     * Mengembalikan 'UNREVIEWED' jika belum pernah ditinjau atau belum ada peristiwa evaluasi.
+     */
+    public function getReputationStatusAttribute(): string
+    {
+        $lastEvent = $this->reputationEvents()
+            ->whereNotNull('new_status')
+            ->latest('reputation_event_id')
+            ->first();
+
+        if ($lastEvent && in_array($lastEvent->new_status, ['LEGIT', 'PROBLEMATIC'], true)) {
+            return $lastEvent->new_status;
+        }
+
+        return 'UNREVIEWED';
+    }
+
+    /**
+     * Total transaksi selesai (baik sebagai buyer maupun seller).
+     */
+    public function getCompletedTransactionsCountAttribute(): int
+    {
+        return Transaction::query()
+            ->whereHas('agreement', function ($query) {
+                $query->where('buyer_id', $this->user_id)
+                    ->orWhere('seller_id', $this->user_id);
+            })
+            ->where('status', 'COMPLETED')
+            ->count();
+    }
+
+    /**
+     * Transaksi selesai sebagai Seller.
+     */
+    public function getSellerTransactionsCountAttribute(): int
+    {
+        return Transaction::query()
+            ->whereHas('agreement', fn ($query) => $query->where('seller_id', $this->user_id))
+            ->where('status', 'COMPLETED')
+            ->count();
+    }
+
+    /**
+     * Transaksi selesai sebagai Buyer.
+     */
+    public function getBuyerTransactionsCountAttribute(): int
+    {
+        return Transaction::query()
+            ->whereHas('agreement', fn ($query) => $query->where('buyer_id', $this->user_id))
+            ->where('status', 'COMPLETED')
+            ->count();
+    }
+
+    /**
+     * Total transaksi aktif yang sedang berjalan.
+     */
+    public function getActiveTransactionsCountAttribute(): int
+    {
+        return Transaction::query()
+            ->whereHas('agreement', function ($query) {
+                $query->where('buyer_id', $this->user_id)
+                    ->orWhere('seller_id', $this->user_id);
+            })
+            ->whereIn('status', [
+                'WAITING_PAYMENT',
+                'PAID',
+                'DELIVERED',
+                'CONFIRMED',
+                'DISPUTED',
+            ])
+            ->count();
+    }
+
+    /**
+     * Total listing marketplace yang aktif dijual.
+     */
+    public function getActiveListingsCountAttribute(): int
+    {
+        return $this->listings()->where('status', 'ACTIVE')->count();
+    }
+
+    /**
+     * Total postingan forum komunitas yang aktif.
+     */
+    public function getForumPostsCountAttribute(): int
+    {
+        return $this->forumPosts()->where('status', 'ACTIVE')->count();
+    }
+
     public function listings(): HasMany
     {
         return $this->hasMany(Listing::class, 'seller_id', 'user_id');
