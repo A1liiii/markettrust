@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\NotificationServiceInterface;
 use App\Models\Notification;
 
-class NotificationService
+class NotificationService implements NotificationServiceInterface
 {
     /**
      * Dispatch notification with deduplication.

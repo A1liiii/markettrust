@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\ConversationServiceInterface;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 
-class ConversationService
+class ConversationService implements ConversationServiceInterface
 {
     /**
      * Check if user is a participant of conversation.
@@ -23,7 +25,7 @@ class ConversationService
     public function sendMessage(Conversation $conversation, User $sender, string $content): Message
     {
         if (! $this->isParticipant($conversation, $sender)) {
-            throw new \Illuminate\Auth\Access\AuthorizationException('Pengirim bukan merupakan peserta percakapan.');
+            throw new AuthorizationException('Pengirim bukan merupakan peserta percakapan.');
         }
 
         return Message::create([

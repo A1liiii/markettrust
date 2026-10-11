@@ -2,19 +2,24 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\TransactionServiceInterface;
 use App\Enums\TransactionStatus;
 use App\Models\Transaction;
 use App\Models\TransactionStatusHistory;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class TransactionService
+class TransactionService implements TransactionServiceInterface
 {
     /**
      * Perform atomic status transition and record transaction_status_histories.
      */
-    public function transitionStatus(Transaction $transaction, TransactionStatus|string $toStatus, ?User $actor = null, ?string $note = null): bool
-    {
+    public function transitionStatus(
+        Transaction $transaction,
+        TransactionStatus|string $toStatus,
+        ?User $actor = null,
+        ?string $note = null
+    ): bool {
         $toStatusStr = $toStatus instanceof TransactionStatus ? $toStatus->value : $toStatus;
         $fromStatusStr = $transaction->status instanceof TransactionStatus ? $transaction->status->value : $transaction->status;
 
