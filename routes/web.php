@@ -39,4 +39,25 @@ Route::middleware('guest')->group(function () {
 // Pengguna Terautentikasi (Sudah Login)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Modul Admin: Master Katalog (Kategori, Produk, Varian)
+    Route::middleware('can:manage-catalog')->prefix('admin/catalog')->name('admin.catalog.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CatalogController::class, 'index'])->name('index');
+
+        // Kategori Produk
+        Route::post('/categories', [\App\Http\Controllers\Admin\CatalogController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateCategory'])->name('categories.update');
+        Route::patch('/categories/{category}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleCategoryStatus'])->name('categories.toggle');
+
+        // Master Produk
+        Route::post('/products', [\App\Http\Controllers\Admin\CatalogController::class, 'storeProduct'])->name('products.store');
+        Route::put('/products/{product}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateProduct'])->name('products.update');
+        Route::patch('/products/{product}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleProductStatus'])->name('products.toggle');
+
+        // Master Varian
+        Route::post('/variants', [\App\Http\Controllers\Admin\CatalogController::class, 'storeVariant'])->name('variants.store');
+        Route::put('/variants/{variant}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateVariant'])->name('variants.update');
+        Route::patch('/variants/{variant}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
+    });
 });
+

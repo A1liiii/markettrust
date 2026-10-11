@@ -138,4 +138,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class, 'actor_id', 'user_id');
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->account_type === 'ADMIN';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->account_status === 'ACTIVE';
+    }
 }
