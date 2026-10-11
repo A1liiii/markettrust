@@ -41,6 +41,14 @@
                     <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition">Marketplace</a>
                     <a href="{{ route('home') }}#forum" class="hover:text-indigo-600 transition">Forum</a>
                     <a href="{{ route('home') }}#escrow" class="hover:text-indigo-600 transition">Sistem Escrow</a>
+                    @auth
+                        <a href="{{ route('conversations.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1.5 {{ request()->routeIs('conversations.*') ? 'text-indigo-600 font-semibold' : '' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <span>Pesan</span>
+                        </a>
+                    @endauth
                 </nav>
 
                 <!-- Auth Buttons & Mobile Toggle -->
@@ -93,6 +101,9 @@
             <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
             <a href="{{ route('home') }}#forum" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Forum</a>
             <a href="{{ route('home') }}#escrow" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Sistem Escrow</a>
+            @auth
+                <a href="{{ route('conversations.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('conversations.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Pesan (DM)</a>
+            @endauth
         </div>
     </header>
 
