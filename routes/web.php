@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\FeeConfigController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\FeePreviewController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,7 +39,21 @@ Route::middleware('guest')->group(function () {
     Route::post('/auth/google/link', [GoogleAuthController::class, 'linkAccount'])->name('auth.google.link.store');
 });
 
-// Pengguna Terautentikasi (Sudah Login)
-Route::middleware('auth')->group(function () {
+// Pengguna Terautentikasi (Sudah Login & Aktif)
+Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Manajemen Profil
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Preview Kalkulasi Fee (dapat dipanggil oleh modul kesepakatan / frontend)
+    Route::post('/fee/preview', [FeePreviewController::class, 'preview'])->name('fee.preview');
+});
+
+// Area Khusus Administrator
+Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/fee-configs', [FeeConfigController::class, 'index'])->name('fee-configs.index');
+    Route::post('/fee-configs', [FeeConfigController::class, 'store'])->name('fee-configs.store');
 });
