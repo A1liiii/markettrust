@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AgreementStatus;
+use App\Enums\FeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +22,6 @@ class Agreement extends Model
         'buyer_id',
         'seller_id',
         'variant_id',
-        'fee_config_id',
         'item_title',
         'item_description',
         'quantity',
@@ -52,6 +53,8 @@ class Agreement extends Model
             'seller_net' => 'decimal:2',
             'delivery_within_minutes' => 'integer',
             'revision_no' => 'integer',
+            'fee_type' => FeeType::class,
+            'status' => AgreementStatus::class,
             'buyer_accepted_at' => 'datetime',
             'seller_accepted_at' => 'datetime',
             'rejected_at' => 'datetime',
@@ -77,11 +80,6 @@ class Agreement extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
-    }
-
-    public function feeConfig(): BelongsTo
-    {
-        return $this->belongsTo(FeeConfig::class, 'fee_config_id', 'fee_config_id');
     }
 
     public function rejectedByUser(): BelongsTo

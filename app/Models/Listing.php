@@ -54,4 +54,45 @@ class Listing extends Model
     {
         return $this->hasMany(Transaction::class, 'listing_id', 'listing_id');
     }
+
+    /**
+     * Scope query untuk listing milik seller tertentu.
+     */
+    public function scopeForSeller($query, int $sellerId)
+    {
+        return $query->where('seller_id', $sellerId);
+    }
+
+    /**
+     * Scope query untuk listing berstatus aktif.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'ACTIVE');
+    }
+
+    /**
+     * Format estimasi durasi penyerahan ke teks ramah pengguna (contoh: "30 Menit", "2 Jam").
+     */
+    public function getEstimatedDeliveryFormattedAttribute(): string
+    {
+        $unitLabel = match ($this->estimated_delivery_unit) {
+            'MINUTE' => 'Menit',
+            'HOUR' => 'Jam',
+            'DAY' => 'Hari',
+            default => $this->estimated_delivery_unit,
+        };
+
+        return "{$this->estimated_delivery_value} {$unitLabel}";
+    }
+
+    /**
+     * Periksa apakah listing dimiliki oleh pengguna tertentu.
+     */
+    public function isOwnedBy(User|int $user): bool
+    {
+        $userId = $user instanceof User ? $user->user_id : $user;
+
+        return $this->seller_id === $userId;
+    }
 }
