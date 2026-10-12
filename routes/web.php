@@ -8,6 +8,7 @@ use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConversationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,13 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
     // Preview Kalkulasi Fee
     Route::post('/fee/preview', [FeePreviewController::class, 'preview'])->name('fee.preview');
+
+    // Direct Messaging (DM)
+    Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::match(['get', 'post'], '/conversations/listing/{listing}', [ConversationController::class, 'startFromListing'])->name('conversations.from-listing');
+    Route::match(['get', 'post'], '/conversations/post/{post}', [ConversationController::class, 'startFromPost'])->name('conversations.from-post');
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->name('conversations.messages.send');
 });
 
 // Area Khusus Administrator

@@ -62,4 +62,31 @@ class Conversation extends Model
     {
         return $this->hasMany(Message::class, 'conversation_id', 'conversation_id');
     }
+
+    /**
+     * Get the opposing user for a given participant.
+     */
+    public function getOtherParticipant(User $user): ?User
+    {
+        if ($this->participant_one_id === $user->user_id) {
+            return $this->participantTwo;
+        }
+
+        if ($this->participant_two_id === $user->user_id) {
+            return $this->participantOne;
+        }
+
+        return null;
+    }
+
+    /**
+     * Count unread messages for a given user in this conversation.
+     */
+    public function unreadCountFor(User $user): int
+    {
+        return $this->messages()
+            ->where('sender_id', '!=', $user->user_id)
+            ->whereNull('read_at')
+            ->count();
+    }
 }
