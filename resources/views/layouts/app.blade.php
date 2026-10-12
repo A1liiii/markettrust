@@ -42,11 +42,6 @@
                     <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : '' }}">Forum</a>
                     <a href="{{ route('home') }}#escrow" class="hover:text-indigo-600 transition">Sistem Escrow</a>
                     @auth
-                    @auth
-                        @if (auth()->user()->isAdmin())
-                            <a href="{{ route('admin.fee-configs.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('admin.fee-configs.*') ? 'text-indigo-600 font-semibold' : '' }}">Konfigurasi Fee</a>
-                        @endif
-
                         <a href="{{ route('seller.listings.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1 {{ request()->routeIs('seller.listings.*') ? 'text-indigo-600 font-semibold' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                             Listing Saya
@@ -117,14 +112,10 @@
             <a href="{{ route('home') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Beranda</a>
             @auth
                 <a href="{{ route('profile.show') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('profile.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Profil Saya (@<span>{{ auth()->user()->username }}</span>)</a>
-                @if (auth()->user()->isAdmin())
-                    <a href="{{ route('admin.fee-configs.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('admin.fee-configs.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Konfigurasi Fee (Admin)</a>
-                @endif
             @endauth
             <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
             <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
             <a href="{{ route('home') }}#escrow" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Sistem Escrow</a>
-            @auth
             @auth
                 <a href="{{ route('seller.listings.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('seller.listings.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}">
                     Listing Saya (Seller)

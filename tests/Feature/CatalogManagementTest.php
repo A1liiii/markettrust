@@ -47,7 +47,10 @@ class CatalogManagementTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/admin/catalog');
 
-        $response->assertForbidden();
+        $response->assertRedirect(route('login'));
+
+        $response->assertSessionHasErrors('login');
+        $this->assertGuest();
     }
 
     /**

@@ -15,10 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            FeeConfigSeeder::class,
-        ]);
-
         User::factory()->create([
             'username' => 'testuser',
             'email' => 'test@example.com',

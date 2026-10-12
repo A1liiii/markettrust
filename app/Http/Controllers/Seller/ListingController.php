@@ -7,7 +7,6 @@ use App\Http\Requests\Seller\StoreListingRequest;
 use App\Http\Requests\Seller\UpdateListingRequest;
 use App\Models\Listing;
 use App\Models\ProductCategory;
-use App\Models\ProductVariant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;

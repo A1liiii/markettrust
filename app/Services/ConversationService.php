@@ -9,7 +9,6 @@ use App\Models\Listing;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;

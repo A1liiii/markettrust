@@ -247,7 +247,9 @@ class SellerListingTest extends TestCase
 
         // Coba akses form create
         $responseCreate = $this->actingAs($suspendedUser)->get('/seller/listings/create');
-        $responseCreate->assertForbidden();
+        $responseCreate->assertRedirect(route('login'));
+        $responseCreate->assertSessionHasErrors('login');
+        $this->assertGuest();
 
         // Coba kirim POST store
         $responseStore = $this->actingAs($suspendedUser)->post('/seller/listings', [
@@ -260,6 +262,12 @@ class SellerListingTest extends TestCase
             'estimated_delivery_unit' => 'HOUR',
             'status' => 'ACTIVE',
         ]);
-        $responseStore->assertForbidden();
+        $responseStore->assertRedirect(route('login'));
+        $responseStore->assertSessionHasErrors('login');
+        $this->assertGuest();
+
+        $this->assertDatabaseMissing('listings', [
+            'title' => 'Listing Akun Suspended',
+        ]);
     }
 }

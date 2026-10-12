@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\Forum\ForumCommentController;
-use App\Http\Controllers\Forum\ForumLikeController;
-use App\Http\Controllers\Admin\FeeConfigController;
+use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\FeePreviewController;
+use App\Http\Controllers\Forum\ForumCommentController;
+use App\Http\Controllers\Forum\ForumLikeController;
 use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Seller\ListingController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ConversationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +51,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
     // Manajemen Profil
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -69,25 +69,22 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
 // Area Khusus Administrator
 Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/fee-configs', [FeeConfigController::class, 'index'])->name('fee-configs.index');
-    Route::post('/fee-configs', [FeeConfigController::class, 'store'])->name('fee-configs.store');
-
     // Master Katalog
     Route::middleware('can:manage-catalog')->prefix('catalog')->name('catalog.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\CatalogController::class, 'index'])->name('index');
+        Route::get('/', [CatalogController::class, 'index'])->name('index');
 
-        Route::post('/categories', [\App\Http\Controllers\Admin\CatalogController::class, 'storeCategory'])->name('categories.store');
-        Route::put('/categories/{category}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateCategory'])->name('categories.update');
-        Route::patch('/categories/{category}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleCategoryStatus'])->name('categories.toggle');
+        Route::post('/categories', [CatalogController::class, 'storeCategory'])->name('categories.store');
+        Route::put('/categories/{category}', [CatalogController::class, 'updateCategory'])->name('categories.update');
+        Route::patch('/categories/{category}/toggle', [CatalogController::class, 'toggleCategoryStatus'])->name('categories.toggle');
 
-        Route::post('/products', [\App\Http\Controllers\Admin\CatalogController::class, 'storeProduct'])->name('products.store');
-        Route::put('/products/{product}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateProduct'])->name('products.update');
-        Route::patch('/products/{product}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleProductStatus'])->name('products.toggle');
+        Route::post('/products', [CatalogController::class, 'storeProduct'])->name('products.store');
+        Route::put('/products/{product}', [CatalogController::class, 'updateProduct'])->name('products.update');
+        Route::patch('/products/{product}/toggle', [CatalogController::class, 'toggleProductStatus'])->name('products.toggle');
 
-        Route::post('/variants', [\App\Http\Controllers\Admin\CatalogController::class, 'storeVariant'])->name('variants.store');
-        Route::put('/variants/{variant}', [\App\Http\Controllers\Admin\CatalogController::class, 'updateVariant'])->name('variants.update');
-        Route::patch('/variants/{variant}/toggle', [\App\Http\Controllers\Admin\CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
- });
+        Route::post('/variants', [CatalogController::class, 'storeVariant'])->name('variants.store');
+        Route::put('/variants/{variant}', [CatalogController::class, 'updateVariant'])->name('variants.update');
+        Route::patch('/variants/{variant}/toggle', [CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
+    });
 });
 
 // Modul Seller: Pengelolaan Listing
@@ -95,21 +92,21 @@ Route::middleware(['auth', 'active_account'])
     ->prefix('seller/listings')
     ->name('seller.listings.')
     ->group(function () {
-        Route::get('/', [\App\Http\Controllers\Seller\ListingController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\Seller\ListingController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Seller\ListingController::class, 'store'])->name('store');
-        Route::get('/{listing}/edit', [\App\Http\Controllers\Seller\ListingController::class, 'edit'])->name('edit');
-        Route::put('/{listing}', [\App\Http\Controllers\Seller\ListingController::class, 'update'])->name('update');
-        Route::patch('/{listing}/toggle-status', [\App\Http\Controllers\Seller\ListingController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('/', [ListingController::class, 'index'])->name('index');
+        Route::get('/create', [ListingController::class, 'create'])->name('create');
+        Route::post('/', [ListingController::class, 'store'])->name('store');
+        Route::get('/{listing}/edit', [ListingController::class, 'edit'])->name('edit');
+        Route::put('/{listing}', [ListingController::class, 'update'])->name('update');
+        Route::patch('/{listing}/toggle-status', [ListingController::class, 'toggleStatus'])->name('toggle-status');
     });
 
-    // Pengelolaan Forum Post oleh pengguna aktif
-    Route::middleware(['auth', 'active_account'])->group(function () {
-        Route::get('/forum/create', [ForumPostController::class, 'create'])->name('forum.create');
-        Route::post('/forum', [ForumPostController::class, 'store'])->name('forum.store');
-        Route::get('/forum/{post}/edit', [ForumPostController::class, 'edit'])->name('forum.edit');
-        Route::put('/forum/{post}', [ForumPostController::class, 'update'])->name('forum.update');
-        Route::post('/forum/{post}/close', [ForumPostController::class, 'close'])->name('forum.close');
+// Pengelolaan Forum Post oleh pengguna aktif
+Route::middleware(['auth', 'active_account'])->group(function () {
+    Route::get('/forum/create', [ForumPostController::class, 'create'])->name('forum.create');
+    Route::post('/forum', [ForumPostController::class, 'store'])->name('forum.store');
+    Route::get('/forum/{post}/edit', [ForumPostController::class, 'edit'])->name('forum.edit');
+    Route::put('/forum/{post}', [ForumPostController::class, 'update'])->name('forum.update');
+    Route::post('/forum/{post}/close', [ForumPostController::class, 'close'])->name('forum.close');
 
     // Interaksi Forum: Komentar, Like, dan Negosiasi
     Route::post('/forum/{post}/comments', [ForumCommentController::class, 'store'])->name('forum.comments.store');
@@ -117,7 +114,7 @@ Route::middleware(['auth', 'active_account'])
     Route::post('/forum/{post}/like', [ForumLikeController::class, 'togglePost'])->name('forum.posts.like');
     Route::post('/forum/comments/{comment}/like', [ForumLikeController::class, 'toggleComment'])->name('forum.comments.like');
     Route::post('/forum/{post}/negotiate', [ForumPostController::class, 'negotiate'])->name('forum.negotiate');
-    });
+});
 
-    // Detail posting dapat dibaca publik
-    Route::get('/forum/{post}', [ForumPostController::class, 'show'])->name('forum.show');
+// Detail posting dapat dibaca publik
+Route::get('/forum/{post}', [ForumPostController::class, 'show'])->name('forum.show');

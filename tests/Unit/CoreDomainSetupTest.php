@@ -8,7 +8,6 @@ use App\Contracts\Services\FeeCalculationServiceInterface;
 use App\Contracts\Services\NotificationServiceInterface;
 use App\Contracts\Services\PayoutDestinationServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
-use App\DTOs\AgreementSnapshotDTO;
 use App\DTOs\FeeCalculationResultDTO;
 use App\DTOs\PayoutDestinationDTO;
 use App\Enums\AgreementStatus;
@@ -116,7 +115,7 @@ class CoreDomainSetupTest extends TestCase
      */
     public function test_fee_calculation_service_matches_skpl_2_5_2_tiers(): void
     {
-        $calculator = new FeeCalculationService();
+        $calculator = new FeeCalculationService;
 
         // Rentang 1: Rp5.000 - Rp10.000 (10% flat)
         $res1 = $calculator->calculate(10000, FeeType::EXCLUDE);
@@ -161,7 +160,7 @@ class CoreDomainSetupTest extends TestCase
      */
     public function test_payout_destination_validation(): void
     {
-        $service = new PayoutDestinationService();
+        $service = new PayoutDestinationService;
 
         // Valid Bank
         $validBank = new PayoutDestinationDTO(

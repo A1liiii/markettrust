@@ -22,7 +22,7 @@ class ConversationWorkflowTest extends TestCase
     protected function createCategory(): ProductCategory
     {
         return ProductCategory::create([
-            'category_name' => 'Game Accounts ' . uniqid(),
+            'category_name' => 'Game Accounts '.uniqid(),
             'is_active' => true,
         ]);
     }
@@ -33,7 +33,7 @@ class ConversationWorkflowTest extends TestCase
 
         return Product::create([
             'category_id' => $category->category_id,
-            'product_name' => 'Mobile Legends ' . uniqid(),
+            'product_name' => 'Mobile Legends '.uniqid(),
             'is_active' => true,
         ]);
     }
@@ -44,7 +44,7 @@ class ConversationWorkflowTest extends TestCase
 
         return ProductVariant::create([
             'product_id' => $product->product_id,
-            'variant_name' => 'Mythic Account ' . uniqid(),
+            'variant_name' => 'Mythic Account '.uniqid(),
             'is_active' => true,
         ]);
     }
