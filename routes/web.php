@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Forum\ForumCommentController;
+use App\Http\Controllers\Forum\ForumLikeController;
 use App\Http\Controllers\Admin\FeeConfigController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -108,6 +110,13 @@ Route::middleware(['auth', 'active_account'])
         Route::get('/forum/{post}/edit', [ForumPostController::class, 'edit'])->name('forum.edit');
         Route::put('/forum/{post}', [ForumPostController::class, 'update'])->name('forum.update');
         Route::post('/forum/{post}/close', [ForumPostController::class, 'close'])->name('forum.close');
+
+    // Interaksi Forum: Komentar, Like, dan Negosiasi
+    Route::post('/forum/{post}/comments', [ForumCommentController::class, 'store'])->name('forum.comments.store');
+    Route::delete('/forum/comments/{comment}', [ForumCommentController::class, 'destroy'])->name('forum.comments.destroy');
+    Route::post('/forum/{post}/like', [ForumLikeController::class, 'togglePost'])->name('forum.posts.like');
+    Route::post('/forum/comments/{comment}/like', [ForumLikeController::class, 'toggleComment'])->name('forum.comments.like');
+    Route::post('/forum/{post}/negotiate', [ForumPostController::class, 'negotiate'])->name('forum.negotiate');
     });
 
     // Detail posting dapat dibaca publik

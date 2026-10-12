@@ -71,7 +71,14 @@ class ForumPostController extends Controller
      */
     public function show(ForumPost $post): View
     {
-        $post->load(['author', 'variant.product']);
+        $post->load([
+            'author',
+            'variant.product',
+            'likes',
+            'comments' => function ($q) {
+                $q->with(['author', 'likes'])->oldest('created_at');
+            },
+        ])->loadCount(['likes', 'comments']);
 
         return view('forum.show', compact('post'));
     }
@@ -120,5 +127,21 @@ class ForumPostController extends Controller
 
         return redirect()->route('forum.show', $post->post_id)
             ->with('info', 'Postingan forum telah ditutup.');
+    }
+
+    /**
+     * Initiate negotiation conversation related to the forum post.
+     */
+    public function negotiate(Request $request, ForumPost $post): RedirectResponse
+    {
+        if ($request->user()->user_id === $post->author_id) {
+            return redirect()->route('forum.show', $post->post_id)
+                ->with('warning', 'Anda tidak dapat memulai percakapan negosiasi dengan postingan Anda sendiri.');
+        }
+
+        $conversation = $this->forumService->initiateConversation($request->user(), $post);
+
+        return redirect()->route('forum.show', $post->post_id)
+            ->with('success', 'Percakapan negosiasi #'.$conversation->conversation_id.' berhasil diinisiasi untuk postingan ini. Ruang obrolan langsung (DM) akan aktif pada integrasi percakapan Zinky.');
     }
 }

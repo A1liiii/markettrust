@@ -191,17 +191,34 @@
                                         {{ strtoupper(substr($post->author->username, 0, 1)) }}
                                     </div>
                                 @endif
-                                <span class="font-semibold text-slate-700 truncate max-w-[120px]">
+                                <span class="font-semibold text-slate-700 truncate max-w-[100px]">
                                     @<span>{{ $post->author->username }}</span>
                                 </span>
                             </div>
 
-                            <a href="{{ route('forum.show', $post->post_id) }}" class="text-indigo-600 font-semibold hover:text-indigo-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                                Detail
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </a>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2 text-slate-500 text-[11px]">
+                                    <span class="inline-flex items-center gap-1" title="Suka">
+                                        <svg class="w-3.5 h-3.5 text-rose-500" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                        </svg>
+                                        {{ $post->likes_count ?? 0 }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1" title="Komentar">
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        {{ $post->comments_count ?? 0 }}
+                                    </span>
+                                </div>
+
+                                <a href="{{ route('forum.show', $post->post_id) }}" class="text-indigo-600 font-semibold hover:text-indigo-700 inline-flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                                    Detail
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </article>
                 @endforeach
