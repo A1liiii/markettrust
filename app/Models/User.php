@@ -199,6 +199,11 @@ class User extends Authenticatable
         return $this->forumPosts()->where('status', 'ACTIVE')->count();
     }
 
+    public function hasListings(): bool
+    {
+        return $this->listings()->exists();
+    }
+
     public function listings(): HasMany
     {
         return $this->hasMany(Listing::class, 'seller_id', 'user_id');

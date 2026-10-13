@@ -113,8 +113,11 @@
                             Mulai jualan produk digital Anda dengan membuat listing penawaran pertama sekarang.
                         @endif
                     </p>
-                    <div class="mt-5">
-                        <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-2 px-4">
+                    <div class="mt-6 mb-6">
+                        <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs sm:text-sm py-2.5 px-5 shadow-md shadow-indigo-500/20 inline-flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
                             Buat Listing Pertama
                         </a>
                     </div>
