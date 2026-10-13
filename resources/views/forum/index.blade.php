@@ -123,7 +123,7 @@
                     <div class="glass-card glass-card-interactive p-4 sm:p-5 rounded-2xl transition hover:shadow-lg hover:border-indigo-300/60 cursor-pointer group"
                          onclick="handleCardClick(event, '{{ route('forum.show', $post->post_id) }}')"
                          id="post-card-{{ $post->post_id }}">
-                        
+
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <!-- Info Utama Postingan -->
                             <div class="flex-1 min-w-0">

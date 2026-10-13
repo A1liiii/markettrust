@@ -194,7 +194,7 @@
                                    value="{{ old('delivery_method', $listing->delivery_method) }}"
                                    required maxlength="100"
                                    class="glass-input w-full text-sm @error('delivery_method') border-rose-400 ring-rose-200 @enderror">
-                            
+
                             <!-- Quick Suggestion Chips -->
                             <div class="flex flex-wrap gap-1.5 mt-2">
                                 <button type="button" onclick="setDeliveryMethod('Kredensial Akun via Catatan Terenkripsi')"

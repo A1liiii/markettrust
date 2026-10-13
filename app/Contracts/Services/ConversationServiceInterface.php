@@ -5,6 +5,7 @@ namespace App\Contracts\Services;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 interface ConversationServiceInterface
 {
@@ -16,5 +17,5 @@ interface ConversationServiceInterface
     /**
      * Send message in conversation.
      */
-    public function sendMessage(Conversation $conversation, User $sender, string $content): Message;
+    public function sendMessage(Conversation $conversation, User $sender, ?string $content = null, ?UploadedFile $attachment = null): Message;
 }

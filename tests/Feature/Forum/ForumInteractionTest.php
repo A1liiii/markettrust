@@ -241,7 +241,8 @@ class ForumInteractionTest extends TestCase
 
         // 1. Buyer initiates conversation
         $response = $this->actingAs($negotiator)->post("/forum/{$post->post_id}/negotiate");
-        $response->assertRedirect("/forum/{$post->post_id}");
+        $conversation = Conversation::where('post_id', $post->post_id)->first();
+        $response->assertRedirect("/forum/{$post->post_id}?open_dm={$conversation->conversation_id}");
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('conversations', [

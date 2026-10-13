@@ -10,7 +10,9 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
 class ConversationService implements ConversationServiceInterface
@@ -141,16 +143,36 @@ class ConversationService implements ConversationServiceInterface
      * Send message in conversation.
      * Validates that sender is a participant.
      */
-    public function sendMessage(Conversation $conversation, User $sender, string $content): Message
-    {
+    public function sendMessage(
+        Conversation $conversation,
+        User $sender,
+        ?string $content = null,
+        ?UploadedFile $attachment = null
+    ): Message {
         if (! $this->isParticipant($conversation, $sender)) {
             throw new AuthorizationException('Pengirim bukan merupakan peserta percakapan.');
+        }
+
+        $attachmentPath = null;
+        $attachmentName = null;
+        $attachmentMime = null;
+        $attachmentSize = null;
+
+        if ($attachment) {
+            $attachmentPath = Storage::disk('local')->putFile('dm_attachments', $attachment);
+            $attachmentName = $attachment->getClientOriginalName();
+            $attachmentMime = $attachment->getClientMimeType() ?? $attachment->getMimeType();
+            $attachmentSize = $attachment->getSize();
         }
 
         return Message::create([
             'conversation_id' => $conversation->conversation_id,
             'sender_id' => $sender->user_id,
-            'content' => trim($content),
+            'content' => $content !== null ? trim($content) : null,
+            'attachment_path' => $attachmentPath,
+            'attachment_name' => $attachmentName,
+            'attachment_mime' => $attachmentMime,
+            'attachment_size' => $attachmentSize,
             'sent_at' => now(),
             'read_at' => null,
         ]);

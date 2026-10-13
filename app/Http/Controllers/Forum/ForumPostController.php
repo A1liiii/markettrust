@@ -164,7 +164,9 @@ class ForumPostController extends Controller
 
         $conversation = $this->forumService->initiateConversation($request->user(), $post);
 
-        return redirect()->route('forum.show', $post->post_id)
-            ->with('success', 'Percakapan negosiasi #'.$conversation->conversation_id.' berhasil diinisiasi untuk postingan ini. Ruang obrolan langsung (DM) akan aktif pada integrasi percakapan Zinky.');
+        return redirect()->route('forum.show', [
+            'post' => $post->post_id,
+            'open_dm' => $conversation->conversation_id,
+        ])->with('success', 'Percakapan negosiasi #'.$conversation->conversation_id.' berhasil diinisiasi untuk postingan ini.');
     }
 }

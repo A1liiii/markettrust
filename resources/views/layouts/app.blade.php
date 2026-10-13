@@ -210,5 +210,9 @@
             </div>
         </div>
     </footer>
+
+    @auth
+        @include('conversations.partials.global-drawer')
+    @endauth
 </body>
 </html>

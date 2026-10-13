@@ -16,6 +16,16 @@
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Kotak Masuk Pesan</h1>
             <p class="text-sm text-slate-600 mt-1">Komunikasi aman antar peserta transaksi dan diskusi produk digital.</p>
         </div>
+        <div>
+            <button type="button"
+                    data-open-dm-drawer
+                    class="dm-floating-launcher text-white text-xs font-bold py-2.5 px-4 rounded-2xl flex items-center gap-2 shadow-md hover:scale-105 transition cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span>Buka di Side Panel</span>
+            </button>
+        </div>
     </div>
 
     <!-- Conversation List -->
@@ -46,14 +56,16 @@
                     $latestMsg = $conversation->messages->first();
                 @endphp
                 <a href="{{ route('conversations.show', $conversation->conversation_id) }}"
-                   class="glass-card glass-card-interactive block p-4 sm:p-5 transition">
+                   data-open-dm-drawer
+                   data-conversation-id="{{ $conversation->conversation_id }}"
+                   class="dm-bubble-pop-card block p-4 sm:p-5 transition">
                     <div class="flex items-start gap-4">
                         <!-- User Avatar -->
                         <div class="shrink-0">
                             @if($otherUser && $otherUser->avatar_url)
-                                <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-12 h-12 rounded-full object-cover border border-white/80 shadow-xs">
+                                <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-12 h-12 rounded-2xl object-cover border border-white/80 shadow-xs">
                             @else
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-base shadow-xs">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white flex items-center justify-center font-bold text-base shadow-md shadow-indigo-500/20">
                                     {{ $otherUser ? strtoupper(substr($otherUser->username, 0, 1)) : '?' }}
                                 </div>
                             @endif
