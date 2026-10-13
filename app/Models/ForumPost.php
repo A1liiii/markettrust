@@ -63,4 +63,33 @@ class ForumPost extends Model
     {
         return $this->hasMany(Transaction::class, 'post_id', 'post_id');
     }
+
+    /**
+     * Format timestamp in Indonesian locale and WIB timezone.
+     */
+    public function getFormattedTimeAttribute(): string
+    {
+        if (! $this->created_at) {
+            return '';
+        }
+
+        $time = $this->created_at->timezone('Asia/Jakarta');
+        if ($time->diffInDays(now('Asia/Jakarta')) < 7) {
+            return $time->locale('id')->diffForHumans();
+        }
+
+        return $time->locale('id')->translatedFormat('d M Y, H:i').' WIB';
+    }
+
+    /**
+     * Get exact date and time in WIB.
+     */
+    public function getExactWibTimeAttribute(): string
+    {
+        if (! $this->created_at) {
+            return '';
+        }
+
+        return $this->created_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M Y, H:i').' WIB';
+    }
 }

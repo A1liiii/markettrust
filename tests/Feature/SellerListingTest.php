@@ -270,4 +270,90 @@ class SellerListingTest extends TestCase
             'title' => 'Listing Akun Suspended',
         ]);
     }
+
+    /**
+     * TC-LS-01: Navbar menampilkan tombol 'Mulai Berjualan' jika user aktif belum memiliki listing penawaran.
+     */
+    public function test_navbar_displays_mulai_berjualan_when_user_has_no_listings(): void
+    {
+        $user = User::factory()->create(['account_status' => 'ACTIVE']);
+
+        $response = $this->actingAs($user)->get(route('home'));
+
+        $response->assertOk();
+        $response->assertSee('Mulai Berjualan');
+        $response->assertDontSee('Listing Saya');
+    }
+
+    /**
+     * TC-LS-01: Navbar menampilkan tombol 'Listing Saya' setelah user memiliki minimal 1 listing penawaran.
+     */
+    public function test_navbar_displays_listing_saya_when_user_has_at_least_one_listing(): void
+    {
+        $user = User::factory()->create(['account_status' => 'ACTIVE']);
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        Listing::factory()->create([
+            'seller_id' => $user->user_id,
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Perdana User',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('home'));
+
+        $response->assertOk();
+        $response->assertSee('Listing Saya');
+    }
+
+    /**
+     * TC-LS-04: Format harga string dengan 'Rp' dan titik ribuan disanitasi otomatis menjadi numerik murni.
+     */
+    public function test_creating_listing_with_formatted_rupiah_price_string_is_sanitized_and_stored_correctly(): void
+    {
+        $seller = User::factory()->create(['account_status' => 'ACTIVE']);
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        $response = $this->actingAs($seller)->post('/seller/listings', [
+            'variant_id' => $variant->variant_id,
+            'title' => 'Akun Terformat Rupiah',
+            'description' => 'Deskripsi akun dengan format rupiah',
+            'price' => 'Rp 150.000',
+            'delivery_method' => 'Kredensial Akun via Catatan Terenkripsi',
+            'estimated_delivery_value' => 30,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ]);
+
+        $response->assertRedirect(route('seller.listings.index'));
+        $this->assertDatabaseHas('listings', [
+            'seller_id' => $seller->user_id,
+            'title' => 'Akun Terformat Rupiah',
+            'price' => 150000.00,
+        ]);
+    }
+
+    /**
+     * TC-LS-05 & TC-LS-04: Pembuatan listing dengan harga di bawah Rp 5.000 ditolak.
+     */
+    public function test_creating_listing_with_price_below_5000_is_rejected(): void
+    {
+        $seller = User::factory()->create(['account_status' => 'ACTIVE']);
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        $response = $this->actingAs($seller)->post('/seller/listings', [
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Murah di Bawah Batas Fee Platform',
+            'description' => 'Deskripsi listing',
+            'price' => 4500, // Di bawah batas platform 5000
+            'delivery_method' => 'Notes',
+            'estimated_delivery_value' => 1,
+            'estimated_delivery_unit' => 'HOUR',
+            'status' => 'ACTIVE',
+        ]);
+
+        $response->assertSessionHasErrors('price');
+        $this->assertDatabaseMissing('listings', [
+            'title' => 'Listing Murah di Bawah Batas Fee Platform',
+        ]);
+    }
 }

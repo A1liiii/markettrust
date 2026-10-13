@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Forum\StoreForumPostRequest;
 use App\Http\Requests\Forum\UpdateForumPostRequest;
 use App\Models\ForumPost;
+use App\Models\ProductCategory;
 use App\Models\ProductVariant;
 use App\Services\ForumService;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +25,11 @@ class ForumPostController extends Controller
      */
     public function index(Request $request): View
     {
-        $category = $request->query('category');
+        $category = $request->query('category', 'GENERAL');
+        if (! in_array($category, ['GENERAL', 'WTB', 'WTS'], true)) {
+            $category = 'GENERAL';
+        }
+
         $search = $request->query('q');
         $variantId = $request->query('variant_id') ? (int) $request->query('variant_id') : null;
 
@@ -43,12 +48,21 @@ class ForumPostController extends Controller
      */
     public function create(): View
     {
+        $categories = ProductCategory::with(['products' => function ($pq) {
+            $pq->where('is_active', true)->with(['variants' => function ($vq) {
+                $vq->where('is_active', true)->orderBy('variant_name');
+            }])->orderBy('product_name');
+        }])
+            ->where('is_active', true)
+            ->orderBy('category_name')
+            ->get();
+
         $variants = ProductVariant::with('product')
             ->where('is_active', true)
             ->orderBy('variant_name')
             ->get();
 
-        return view('forum.create', compact('variants'));
+        return view('forum.create', compact('categories', 'variants'));
     }
 
     /**
@@ -90,12 +104,21 @@ class ForumPostController extends Controller
     {
         Gate::authorize('update', $post);
 
+        $categories = ProductCategory::with(['products' => function ($pq) {
+            $pq->where('is_active', true)->with(['variants' => function ($vq) {
+                $vq->where('is_active', true)->orderBy('variant_name');
+            }])->orderBy('product_name');
+        }])
+            ->where('is_active', true)
+            ->orderBy('category_name')
+            ->get();
+
         $variants = ProductVariant::with('product')
             ->where('is_active', true)
             ->orderBy('variant_name')
             ->get();
 
-        return view('forum.edit', compact('post', 'variants'));
+        return view('forum.edit', compact('post', 'categories', 'variants'));
     }
 
     /**
@@ -144,6 +167,6 @@ class ForumPostController extends Controller
         return redirect()->route('forum.show', [
             'post' => $post->post_id,
             'open_dm' => $conversation->conversation_id,
-        ]);
+        ])->with('success', 'Percakapan negosiasi #'.$conversation->conversation_id.' berhasil diinisiasi untuk postingan ini.');
     }
 }
