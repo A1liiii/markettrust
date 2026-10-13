@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -56,11 +57,11 @@ class ForumPostTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
-        // 1. View all active posts
+        // 1. View forum index (defaults to GENERAL category per TC-FR-07)
         $response = $this->get('/forum');
         $response->assertStatus(200);
         $response->assertSee('Diskusi Komunitas Pertama');
-        $response->assertSee('Cari Akun Murah');
+        $response->assertDontSee('Cari Akun Murah');
 
         // 2. View filtered category WTB
         $responseFiltered = $this->get('/forum?category=WTB');
@@ -269,5 +270,57 @@ class ForumPostTest extends TestCase
             'post_id' => $post->post_id,
             'status' => 'CLOSED',
         ]);
+    }
+
+    public function test_search_is_case_insensitive_for_roblox_variations(): void
+    {
+        $author = User::factory()->create();
+
+        ForumPost::create([
+            'author_id' => $author->user_id,
+            'category_code' => 'GENERAL',
+            'title' => 'Topup ROBLOX Robux Legal',
+            'content' => 'Tersedia robux rate bersahabat.',
+            'status' => 'ACTIVE',
+        ]);
+
+        // 1. Search with lowercase 'roblox'
+        $resLower = $this->get('/forum?category=GENERAL&q=roblox');
+        $resLower->assertOk();
+        $resLower->assertSee('Topup ROBLOX Robux Legal');
+
+        // 2. Search with UPPERCASE 'ROBLOX'
+        $resUpper = $this->get('/forum?category=GENERAL&q=ROBLOX');
+        $resUpper->assertOk();
+        $resUpper->assertSee('Topup ROBLOX Robux Legal');
+
+        // 3. Search with MixedCase 'Roblox'
+        $resMixed = $this->get('/forum?category=GENERAL&q=Roblox');
+        $resMixed->assertOk();
+        $resMixed->assertSee('Topup ROBLOX Robux Legal');
+    }
+
+    public function test_post_publication_time_displays_in_indonesia_timezone(): void
+    {
+        $author = User::factory()->create();
+
+        // Set test now to a known UTC timestamp: 2026-10-12 03:00:00 UTC = 10:00:00 WIB (+7)
+        Carbon::setTestNow(Carbon::create(2026, 10, 12, 3, 0, 0, 'UTC'));
+
+        $post = ForumPost::create([
+            'author_id' => $author->user_id,
+            'category_code' => 'GENERAL',
+            'title' => 'Diskusi Waktu WIB',
+            'content' => 'Memastikan format waktu sesuai zona waktu Indonesia.',
+            'status' => 'ACTIVE',
+        ]);
+
+        $this->assertStringContainsString('10:00 WIB', $post->exact_wib_time);
+
+        $response = $this->get(route('forum.show', $post->post_id));
+        $response->assertOk();
+        $response->assertSee('10:00 WIB');
+
+        Carbon::setTestNow();
     }
 }
