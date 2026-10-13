@@ -49,42 +49,42 @@
             </div>
         </div>
 
-        <!-- Metric Stat Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="glass-card p-4 sm:p-5 flex items-center justify-between">
+        <!-- Metric Stat Cards (TC-CAT-01) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <div class="glass-card p-5 sm:p-6 flex items-center justify-between h-full shadow-xs">
                 <div>
                     <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kategori Produk</span>
-                    <h3 class="text-2xl font-black text-slate-900 mt-1">{{ $categories->total() }}</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">{{ $categories->total() }}</h3>
                     <p class="text-[11px] text-slate-500 mt-0.5">{{ $allActiveCategories->count() }} kategori aktif</p>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold border border-indigo-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold border border-indigo-500/20 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="glass-card p-4 sm:p-5 flex items-center justify-between">
+            <div class="glass-card p-5 sm:p-6 flex items-center justify-between h-full shadow-xs">
                 <div>
                     <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Identitas Produk</span>
-                    <h3 class="text-2xl font-black text-slate-900 mt-1">{{ $products->total() }}</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">{{ $products->total() }}</h3>
                     <p class="text-[11px] text-slate-500 mt-0.5">{{ $allActiveProducts->count() }} produk aktif</p>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-violet-500/10 text-violet-600 flex items-center justify-center font-bold border border-violet-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-600 flex items-center justify-center font-bold border border-violet-500/20 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                 </div>
             </div>
 
-            <div class="glass-card p-4 sm:p-5 flex items-center justify-between">
+            <div class="glass-card p-5 sm:p-6 flex items-center justify-between h-full shadow-xs">
                 <div>
                     <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Spesifikasi Varian</span>
-                    <h3 class="text-2xl font-black text-slate-900 mt-1">{{ $variants->total() }}</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">{{ $variants->total() }}</h3>
                     <p class="text-[11px] text-slate-500 mt-0.5">Siap digunakan listing seller</p>
                 </div>
-                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold border border-emerald-500/20">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold border border-emerald-500/20 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                     </svg>
                 </div>
@@ -93,11 +93,11 @@
 
         <!-- Main Glass Panel (Tabs + Search + Table) -->
         <div class="glass-panel overflow-hidden border border-white/80">
-            <!-- Navigation Tabs -->
-            <div class="flex items-center justify-between border-b border-slate-200/70 bg-white/40 px-4 sm:px-6 pt-3">
-                <nav class="flex space-x-2 sm:space-x-6 -mb-px" aria-label="Tabs">
+            <!-- Navigation Tabs & Search Toolbar (TC-CAT-02) -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/70 bg-white/40 px-4 sm:px-6 pt-3 pb-2.5">
+                <nav class="flex space-x-2 sm:space-x-6 -mb-px overflow-x-auto" aria-label="Tabs">
                     <a href="{{ route('admin.catalog.index', ['tab' => 'categories']) }}"
-                       class="py-3 px-3 text-sm font-semibold border-b-2 transition flex items-center gap-2 {{ $currentTab === 'categories' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
+                       class="py-2.5 px-3 text-xs sm:text-sm font-semibold border-b-2 transition flex items-center gap-2 shrink-0 {{ $currentTab === 'categories' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
                         <span>Kategori</span>
                         <span class="text-xs px-2 py-0.5 rounded-full {{ $currentTab === 'categories' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200/70 text-slate-600' }}">
                             {{ $categories->total() }}
@@ -105,7 +105,7 @@
                     </a>
 
                     <a href="{{ route('admin.catalog.index', ['tab' => 'products']) }}"
-                       class="py-3 px-3 text-sm font-semibold border-b-2 transition flex items-center gap-2 {{ $currentTab === 'products' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
+                       class="py-2.5 px-3 text-xs sm:text-sm font-semibold border-b-2 transition flex items-center gap-2 shrink-0 {{ $currentTab === 'products' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
                         <span>Identitas Produk</span>
                         <span class="text-xs px-2 py-0.5 rounded-full {{ $currentTab === 'products' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200/70 text-slate-600' }}">
                             {{ $products->total() }}
@@ -113,7 +113,7 @@
                     </a>
 
                     <a href="{{ route('admin.catalog.index', ['tab' => 'variants']) }}"
-                       class="py-3 px-3 text-sm font-semibold border-b-2 transition flex items-center gap-2 {{ $currentTab === 'variants' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
+                       class="py-2.5 px-3 text-xs sm:text-sm font-semibold border-b-2 transition flex items-center gap-2 shrink-0 {{ $currentTab === 'variants' ? 'border-indigo-600 text-indigo-600 font-bold' : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300' }}">
                         <span>Varian Produk</span>
                         <span class="text-xs px-2 py-0.5 rounded-full {{ $currentTab === 'variants' ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-200/70 text-slate-600' }}">
                             {{ $variants->total() }}
@@ -121,15 +121,25 @@
                     </a>
                 </nav>
 
-                <!-- Search Input per Tab -->
-                <form action="{{ route('admin.catalog.index') }}" method="GET" class="hidden sm:flex items-center pb-2">
+                <!-- Search Input per Tab (Konsisten di Desktop & Mobile) -->
+                @php
+                    $tabLabels = [
+                        'categories' => 'kategori',
+                        'products' => 'identitas produk',
+                        'variants' => 'spesifikasi varian',
+                    ];
+                    $currentPlaceholder = $tabLabels[$currentTab] ?? 'katalog';
+                @endphp
+                <form action="{{ route('admin.catalog.index') }}" method="GET" class="w-full md:w-auto">
                     <input type="hidden" name="tab" value="{{ $currentTab }}">
-                    <div class="relative">
-                        <input type="text" name="q" value="{{ $search }}" placeholder="Cari {{ $currentTab }}..."
-                               class="glass-input text-xs py-1.5 pl-8 pr-3 w-48 lg:w-64">
-                        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
+                    <div class="relative w-full md:w-64">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input type="text" name="q" value="{{ $search }}" placeholder="Cari {{ $currentPlaceholder }}..."
+                               class="glass-input text-xs sm:text-sm py-1.5 pl-9 pr-3 w-full">
                     </div>
                 </form>
             </div>
