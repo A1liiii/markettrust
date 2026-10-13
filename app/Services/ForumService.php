@@ -14,28 +14,31 @@ use InvalidArgumentException;
 
 class ForumService
 {
+    public function __construct(
+        protected SupabaseStorageService $storageService
+    ) {}
+
     /**
      * Retrieve paginated active forum posts with optional category, search, and variant filters.
      */
-    public function getFeedPosts(?string $category = null, ?string $search = null, ?int $variantId = null, int $perPage = 12): LengthAwarePaginator
+    public function getFeedPosts(?string $category = 'GENERAL', ?string $search = null, ?int $variantId = null, int $perPage = 12): LengthAwarePaginator
     {
+        $selectedCategory = ($category && in_array($category, ['GENERAL', 'WTB', 'WTS'], true)) ? $category : 'GENERAL';
+
         $query = ForumPost::with(['author', 'variant.product'])
             ->withCount(['comments', 'likes'])
-            ->where('status', 'ACTIVE');
+            ->where('status', 'ACTIVE')
+            ->where('category_code', $selectedCategory);
 
-        if ($category && in_array($category, ['GENERAL', 'WTB', 'WTS'], true)) {
-            $query->where('category_code', $category);
-        }
-
-        if ($variantId) {
+        if ($variantId && in_array($selectedCategory, ['WTB', 'WTS'], true)) {
             $query->where('variant_id', $variantId);
         }
 
         if ($search && trim($search) !== '') {
-            $term = '%'.trim($search).'%';
+            $term = '%'.mb_strtolower(trim($search)).'%';
             $query->where(function ($q) use ($term) {
-                $q->where('title', 'like', $term)
-                    ->orWhere('content', 'like', $term);
+                $q->whereRaw('LOWER(title) LIKE ?', [$term])
+                    ->orWhereRaw('LOWER(content) LIKE ?', [$term]);
             });
         }
 
@@ -55,8 +58,7 @@ class ForumService
         if (! empty($uploadedFiles)) {
             foreach ($uploadedFiles as $file) {
                 if ($file instanceof UploadedFile) {
-                    $path = $file->store('forum_images', 'public');
-                    $imageUrls[] = Storage::url($path);
+                    $imageUrls[] = $this->storageService->uploadFile($file);
                 }
             }
         }
@@ -100,18 +102,14 @@ class ForumService
         // 2. Remove discarded images from storage
         $discardedImages = array_diff($existingImages, $finalImages);
         foreach ($discardedImages as $discardedUrl) {
-            $relativePath = str_replace('/storage/', '', $discardedUrl);
-            if (Storage::disk('public')->exists($relativePath)) {
-                Storage::disk('public')->delete($relativePath);
-            }
+            $this->storageService->deleteFile($discardedUrl);
         }
 
         // 3. Store new uploaded files
         if (! empty($newFiles)) {
             foreach ($newFiles as $file) {
                 if ($file instanceof UploadedFile && count($finalImages) < 4) {
-                    $path = $file->store('forum_images', 'public');
-                    $finalImages[] = Storage::url($path);
+                    $finalImages[] = $this->storageService->uploadFile($file);
                 }
             }
         }

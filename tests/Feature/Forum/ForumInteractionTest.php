@@ -7,6 +7,7 @@ use App\Models\ForumComment;
 use App\Models\ForumLike;
 use App\Models\ForumPost;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -256,5 +257,82 @@ class ForumInteractionTest extends TestCase
 
         // Total conversations remains 1 (idempotent / no invalid self-conversation)
         $this->assertSame(1, Conversation::count());
+    }
+
+    public function test_comment_time_displays_relative_under_7_days_and_exact_date_after_7_days(): void
+    {
+        $user = User::factory()->create();
+        $post = $this->createPost();
+
+        // Comment 7 days or older (created on 2026-10-11 05:00:00 UTC = 12:00:00 WIB)
+        Carbon::setTestNow('2026-10-11 05:00:00');
+        $oldComment = ForumComment::create([
+            'post_id' => $post->post_id,
+            'author_id' => $user->user_id,
+            'content' => 'Komentar lama sekali.',
+        ]);
+
+        // Comment under 7 days (created on 2026-10-18 12:00:00)
+        Carbon::setTestNow('2026-10-18 12:00:00');
+        $recentComment = ForumComment::create([
+            'post_id' => $post->post_id,
+            'author_id' => $user->user_id,
+            'content' => 'Komentar baru.',
+        ]);
+
+        // Move current time forward to 2026-10-20 12:00:00 (2 days after recentComment, 9 days after oldComment)
+        Carbon::setTestNow('2026-10-20 12:00:00');
+
+        // Check formatted_time attribute
+        $this->assertStringContainsString('hari yang lalu', $recentComment->formatted_time);
+        $this->assertStringContainsString('11 Okt 2026, 05:00 WIB', $oldComment->formatted_time);
+
+        // Check show page renders both correctly
+        $response = $this->get(route('forum.show', $post->post_id));
+        $response->assertOk();
+        $response->assertSee('hari yang lalu');
+        $response->assertSee('11 Okt 2026, 05:00 WIB');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_comment_ajax_store_and_destroy_return_json(): void
+    {
+        $author = User::factory()->create();
+        $post = $this->createPost('ACTIVE', $author);
+        $commenter = User::factory()->create();
+
+        // 1. Store via AJAX JSON
+        $responseStore = $this->actingAs($commenter)
+            ->postJson("/forum/{$post->post_id}/comments", [
+                'content' => 'Komentar via AJAX interaktif.',
+            ]);
+
+        $responseStore->assertOk();
+        $responseStore->assertJsonStructure([
+            'success',
+            'message',
+            'comment' => [
+                'comment_id',
+                'author_username',
+                'content',
+                'formatted_time',
+            ],
+            'comments_count',
+        ]);
+        $this->assertSame(1, $responseStore->json('comments_count'));
+
+        $commentId = $responseStore->json('comment.comment_id');
+
+        // 2. Destroy via AJAX JSON
+        $responseDestroy = $this->actingAs($commenter)
+            ->deleteJson("/forum/comments/{$commentId}");
+
+        $responseDestroy->assertOk();
+        $responseDestroy->assertJson([
+            'success' => true,
+            'comments_count' => 0,
+        ]);
+        $this->assertDatabaseMissing('forum_comments', ['comment_id' => $commentId]);
     }
 }

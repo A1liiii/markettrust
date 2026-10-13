@@ -35,4 +35,35 @@ class ForumComment extends Model
     {
         return $this->hasMany(ForumLike::class, 'comment_id', 'comment_id');
     }
+
+    /**
+     * Format timestamp according to TC-FR-02 & TC-FR-03:
+     * - Under 7 days: relative time (diffForHumans) in Indonesian.
+     * - 7 days or older: exact date and time in WIB (e.g. "12 Okt 2026, 14:30 WIB").
+     */
+    public function getFormattedTimeAttribute(): string
+    {
+        if (! $this->created_at) {
+            return '';
+        }
+
+        $time = $this->created_at->timezone('Asia/Jakarta');
+        if ($time->diffInDays(now('Asia/Jakarta')) < 7) {
+            return $time->locale('id')->diffForHumans();
+        }
+
+        return $time->locale('id')->translatedFormat('d M Y, H:i').' WIB';
+    }
+
+    /**
+     * Get exact date and time in WIB.
+     */
+    public function getExactWibTimeAttribute(): string
+    {
+        if (! $this->created_at) {
+            return '';
+        }
+
+        return $this->created_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('d M Y, H:i').' WIB';
+    }
 }
