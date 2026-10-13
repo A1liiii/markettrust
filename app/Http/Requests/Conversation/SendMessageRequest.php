@@ -23,7 +23,8 @@ class SendMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => ['required', 'string', 'min:1', 'max:5000'],
+            'content' => ['nullable', 'string', 'max:5000', 'required_without:attachment'],
+            'attachment' => ['nullable', 'file', 'max:15360', 'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,mp4,webm,zip'],
         ];
     }
 
@@ -35,9 +36,10 @@ class SendMessageRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'content.required' => 'Isi pesan tidak boleh kosong.',
-            'content.min' => 'Pesan minimal berisi 1 karakter.',
+            'content.required_without' => 'Isi pesan tidak boleh kosong jika tidak melampirkan file.',
             'content.max' => 'Pesan maksimal 5.000 karakter.',
+            'attachment.max' => 'Ukuran file lampiran maksimal 5 MB.',
+            'attachment.mimes' => 'Format file lampiran harus berupa PDF, Word, Excel, Teks, Gambar (JPG/PNG), atau ZIP.',
         ];
     }
 }

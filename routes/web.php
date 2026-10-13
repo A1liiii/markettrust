@@ -63,8 +63,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::match(['get', 'post'], '/conversations/listing/{listing}', [ConversationController::class, 'startFromListing'])->name('conversations.from-listing');
     Route::match(['get', 'post'], '/conversations/post/{post}', [ConversationController::class, 'startFromPost'])->name('conversations.from-post');
+    Route::post('/conversations/post/{post}/quick', [ConversationController::class, 'startFromPostQuick'])->name('conversations.from-post.quick');
     Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->name('conversations.messages.send');
+    Route::get('/conversations/{conversation}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])->name('conversations.messages.attachment');
+    Route::get('/conversations/{conversation}/sync', [ConversationController::class, 'sync'])->name('conversations.sync');
 });
 
 // Area Khusus Administrator

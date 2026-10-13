@@ -72,7 +72,7 @@
                     @auth
                         @if (auth()->id() !== $post->author_id)
                             <div class="shrink-0">
-                                <form action="{{ route('forum.negotiate', $post->post_id) }}" method="POST">
+                                <form action="{{ route('forum.negotiate', $post->post_id) }}" method="POST" id="forum-negotiate-form">
                                     @csrf
                                     <button type="submit" class="glass-btn-primary text-xs py-2 px-3.5 shadow-md shadow-indigo-500/20">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,4 +343,45 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const negotiateForm = document.getElementById('forum-negotiate-form');
+    if (negotiateForm) {
+        negotiateForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const startUrl = @json(route('conversations.from-post.quick', $post->post_id));
+            const csrfToken = @json(csrf_token());
+
+            try {
+                const res = await fetch(startUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (window.openGlobalDmDrawer) {
+                        window.openGlobalDmDrawer(data.conversation_id);
+                    }
+                } else {
+                    negotiateForm.submit();
+                }
+            } catch (err) {
+                negotiateForm.submit();
+            }
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('open_dm') && window.openGlobalDmDrawer) {
+        window.openGlobalDmDrawer(urlParams.get('open_dm'));
+    }
+});
+</script>
 @endsection
