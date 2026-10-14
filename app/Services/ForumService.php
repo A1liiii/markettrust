@@ -56,10 +56,17 @@ class ForumService
         $imageUrls = [];
 
         if (! empty($uploadedFiles)) {
-            foreach ($uploadedFiles as $file) {
-                if ($file instanceof UploadedFile) {
-                    $imageUrls[] = $this->storageService->uploadFile($file);
+            try {
+                foreach ($uploadedFiles as $file) {
+                    if ($file instanceof UploadedFile) {
+                        $imageUrls[] = $this->storageService->uploadFile($file);
+                    }
                 }
+            } catch (\Throwable $e) {
+                foreach ($imageUrls as $url) {
+                    $this->storageService->deleteFile($url);
+                }
+                throw $e;
             }
         }
 
@@ -99,20 +106,30 @@ class ForumService
             }
         }
 
-        // 2. Remove discarded images from storage
+        // 2. Upload new files first, rolling back if upload fails
+        $newUploadedUrls = [];
+        if (! empty($newFiles)) {
+            try {
+                foreach ($newFiles as $file) {
+                    if ($file instanceof UploadedFile && (count($finalImages) + count($newUploadedUrls)) < 4) {
+                        $newUploadedUrls[] = $this->storageService->uploadFile($file);
+                    }
+                }
+            } catch (\Throwable $e) {
+                foreach ($newUploadedUrls as $url) {
+                    $this->storageService->deleteFile($url);
+                }
+                throw $e;
+            }
+        }
+
+        // 3. Remove discarded images from storage after new uploads succeed
         $discardedImages = array_diff($existingImages, $finalImages);
         foreach ($discardedImages as $discardedUrl) {
             $this->storageService->deleteFile($discardedUrl);
         }
 
-        // 3. Store new uploaded files
-        if (! empty($newFiles)) {
-            foreach ($newFiles as $file) {
-                if ($file instanceof UploadedFile && count($finalImages) < 4) {
-                    $finalImages[] = $this->storageService->uploadFile($file);
-                }
-            }
-        }
+        $allImages = array_merge($finalImages, $newUploadedUrls);
 
         $category = $data['category_code'];
         $variantId = $category === 'GENERAL' ? null : ($data['variant_id'] ?? null);
@@ -122,7 +139,7 @@ class ForumService
             'variant_id' => $variantId,
             'title' => $data['title'],
             'content' => $data['content'],
-            'image_urls' => ! empty($finalImages) ? array_values($finalImages) : null,
+            'image_urls' => ! empty($allImages) ? array_values($allImages) : null,
             'price_offer' => $data['price_offer'] ?? null,
         ]);
 

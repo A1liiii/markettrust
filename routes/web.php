@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminModuleController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -72,6 +74,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
 
 // Area Khusus Administrator
 Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Pusat Kontrol & Analitik
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [AdminDashboardController::class, 'analytics'])->name('dashboard.analytics');
+
     // Master Katalog
     Route::middleware('can:manage-catalog')->prefix('catalog')->name('catalog.')->group(function () {
         Route::get('/', [CatalogController::class, 'index'])->name('index');
@@ -88,6 +94,12 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::put('/variants/{variant}', [CatalogController::class, 'updateVariant'])->name('variants.update');
         Route::patch('/variants/{variant}/toggle', [CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
     });
+
+    // Modul Lanjutan Administrator
+    Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
+    Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
+    Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
+    Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');
 });
 
 // Modul Seller: Pengelolaan Listing

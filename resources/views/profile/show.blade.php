@@ -166,7 +166,7 @@
             </div>
         </div>
 
-        <!-- Detail Keamanan & Ketentuan PBL Grid -->
+        <!-- Detail Keamanan & Ketentuan Transaksi Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-8 relative z-10">
             <!-- Kolom 1: Status Autentikasi & Keamanan Akun -->
             <div class="glass-card p-6">
@@ -229,7 +229,7 @@
                     </div>
                     <div>
                         <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Informasi Transaksi</span>
-                        <h4 class="text-base font-bold text-slate-900">Lingkungan Simulasi PBL</h4>
+                        <h4 class="text-base font-bold text-slate-900">Ketentuan Transaksi dan Layanan</h4>
                     </div>
                 </div>
 

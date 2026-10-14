@@ -2,18 +2,18 @@
 @auth
 <!-- 1. Floating Action Bubble Launcher (Sudut Kanan Bawah) -->
 <div id="global-dm-floating-launcher"
-     class="fixed bottom-6 right-6 z-40 transition-all duration-300"
+     class="fixed bottom-6 right-6 z-40 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
      title="Buka Obrolan Langsung">
     <button type="button"
             id="global-dm-launcher-btn"
             class="dm-floating-launcher relative w-14 h-14 rounded-full text-white flex items-center justify-center cursor-pointer shadow-xl focus:outline-none focus:ring-4 focus:ring-indigo-300/50"
             aria-label="Buka Obrolan">
         <!-- Chat Bubble Icon (saat widget tertutup) -->
-        <svg id="global-dm-launcher-icon-chat" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="global-dm-launcher-icon-chat" class="w-6 h-6 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
         </svg>
         <!-- Close / Minimize Icon (saat widget terbuka) -->
-        <svg id="global-dm-launcher-icon-close" class="w-6 h-6 hidden transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="global-dm-launcher-icon-close" class="w-6 h-6 hidden transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
         <!-- Floating unread pulse badge -->
@@ -26,18 +26,18 @@
 
 <!-- 2. Image Lightbox Modal for Full View Zoom (Hanya aktif saat preview foto diklik) -->
 <div id="global-dm-lightbox-modal"
-     class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0"
+     class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-4 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0"
      aria-hidden="true">
     <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center">
         <button type="button"
                 id="global-dm-lightbox-close"
-                class="absolute -top-10 right-0 p-1.5 rounded-full text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition cursor-pointer"
+                class="absolute -top-10 right-0 p-1.5 rounded-full text-white/80 hover:text-white bg-white/10 hover:bg-white/20 transition duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer active:scale-95"
                 title="Tutup Preview">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
-        <img id="global-dm-lightbox-img" src="" alt="Preview Gambar" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl object-contain border border-white/20">
+        <img id="global-dm-lightbox-img" src="" alt="Preview Gambar" class="max-h-[80vh] max-w-full rounded-2xl shadow-2xl object-contain border border-white/20 transition-transform duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
         <div class="mt-3 flex items-center justify-between w-full px-2 text-white text-xs">
             <span id="global-dm-lightbox-name" class="truncate font-medium text-slate-300 max-w-[70%]"></span>
             <a id="global-dm-lightbox-download" href="#" class="glass-btn-primary text-xs py-1.5 px-3 rounded-xl shrink-0" download>Unduh File</a>
@@ -73,14 +73,6 @@
             </div>
 
             <div class="flex items-center gap-1">
-                <!-- Minimize Button -->
-                <button type="button"
-                        class="global-dm-minimize-btn p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-                        title="Minimalkan Widget">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/>
-                    </svg>
-                </button>
                 <!-- Close Button -->
                 <button type="button"
                         class="global-dm-close-btn p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
@@ -152,14 +144,6 @@
             </div>
 
             <div class="flex items-center gap-1 shrink-0">
-                <!-- Minimize Button -->
-                <button type="button"
-                        class="global-dm-minimize-btn p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-                        title="Minimalkan Widget">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/>
-                    </svg>
-                </button>
                 <!-- Close Button -->
                 <button type="button"
                         class="global-dm-close-btn p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"

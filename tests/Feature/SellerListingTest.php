@@ -272,23 +272,25 @@ class SellerListingTest extends TestCase
     }
 
     /**
-     * TC-LS-01: Navbar menampilkan tombol 'Mulai Berjualan' jika user aktif belum memiliki listing penawaran.
+     * Navbar tidak menampilkan tombol 'Mulai Berjualan' maupun menu 'Listing' jika user belum memiliki listing.
+     * Tombol 'Ingin berjualan?' ditampilkan pada section Marketplace di homepage.
      */
-    public function test_navbar_displays_mulai_berjualan_when_user_has_no_listings(): void
+    public function test_navbar_hides_listing_and_mulai_berjualan_when_user_has_no_listings(): void
     {
         $user = User::factory()->create(['account_status' => 'ACTIVE']);
 
         $response = $this->actingAs($user)->get(route('home'));
 
         $response->assertOk();
-        $response->assertSee('Mulai Berjualan');
-        $response->assertDontSee('Listing Saya');
+        $response->assertDontSee('Mulai Berjualan');
+        $response->assertDontSee('href="'.route('seller.listings.index').'"', false);
+        $response->assertSee('Ingin berjualan?');
     }
 
     /**
-     * TC-LS-01: Navbar menampilkan tombol 'Listing Saya' setelah user memiliki minimal 1 listing penawaran.
+     * Navbar menampilkan menu 'Listing' setelah user memiliki minimal 1 listing penawaran.
      */
-    public function test_navbar_displays_listing_saya_when_user_has_at_least_one_listing(): void
+    public function test_navbar_displays_listing_menu_when_user_has_at_least_one_listing(): void
     {
         $user = User::factory()->create(['account_status' => 'ACTIVE']);
         $variant = ProductVariant::factory()->create(['is_active' => true]);
@@ -302,7 +304,9 @@ class SellerListingTest extends TestCase
         $response = $this->actingAs($user)->get(route('home'));
 
         $response->assertOk();
-        $response->assertSee('Listing Saya');
+        $response->assertSee('href="'.route('seller.listings.index').'"', false);
+        $response->assertDontSee('Mulai Berjualan');
+        $response->assertSee('Ingin berjualan?');
     }
 
     /**

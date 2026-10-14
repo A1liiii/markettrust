@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -120,6 +121,16 @@ class ForumPostTest extends TestCase
 
     public function test_authenticated_user_can_create_wtb_post_with_variant_and_images(): void
     {
+        config([
+            'services.supabase.url' => 'https://test-project.supabase.co',
+            'services.supabase.secret_key' => 'sb_secret_test123',
+            'services.supabase.bucket' => 'forum_images',
+        ]);
+
+        Http::fake([
+            'https://test-project.supabase.co/storage/v1/object/forum_images/*' => Http::response(['Key' => 'forum_images/test.jpg'], 200),
+        ]);
+
         Storage::fake('public');
         $user = User::factory()->create();
         $variant = $this->createVariant('Akun Mythic Immortal');
@@ -143,11 +154,11 @@ class ForumPostTest extends TestCase
         $this->assertEquals($variant->variant_id, $post->variant_id);
         $this->assertCount(2, $post->image_urls);
 
-        // Verify storage files exist
+        // Verify storage URLs point to Supabase public bucket and no local storage files created
         foreach ($post->image_urls as $url) {
-            $path = str_replace('/storage/', '', $url);
-            Storage::disk('public')->assertExists($path);
+            $this->assertStringStartsWith('https://test-project.supabase.co/storage/v1/object/public/forum_images/', $url);
         }
+        $this->assertEmpty(Storage::disk('public')->allFiles());
     }
 
     public function test_create_post_fails_if_wtb_has_no_variant(): void
@@ -322,5 +333,45 @@ class ForumPostTest extends TestCase
         $response->assertSee('10:00 WIB');
 
         Carbon::setTestNow();
+    }
+
+    public function test_authenticated_user_can_view_create_post_page_with_discussion_form(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/forum/create?category=GENERAL');
+        $response->assertOk();
+        $response->assertSee('Pilih Kategori Postingan');
+        $response->assertSee('Jenis Diskusi');
+        $response->assertSee('Pertanyaan');
+        $response->assertSee('Berbagi Pengalaman');
+        $response->assertSee('Tips');
+        $response->assertSee('Opini');
+        $response->assertSee('Apa yang ingin kamu diskusikan?');
+        $response->assertSee('Ceritakan pertanyaan, pengalaman, atau pendapatmu di sini.');
+        $response->assertSee('Publikasikan Diskusi');
+    }
+
+    public function test_authenticated_user_creating_general_post_sanitizes_price_and_variant(): void
+    {
+        $user = User::factory()->create();
+        $variant = $this->createVariant('Varian Diabaikan');
+
+        $response = $this->actingAs($user)->post('/forum', [
+            'category_code' => 'GENERAL',
+            'title' => '[Tips] Tips Keamanan Transaksi Digital',
+            'content' => 'Selalu periksa detail transaksi sebelum mengonfirmasi.',
+            'price_offer' => 999999,
+            'variant_id' => $variant->variant_id,
+        ]);
+
+        $post = ForumPost::where('title', '[Tips] Tips Keamanan Transaksi Digital')->first();
+        $this->assertNotNull($post);
+
+        $response->assertRedirect(route('forum.show', $post->post_id));
+        $this->assertNull($post->price_offer);
+        $this->assertNull($post->variant_id);
+        $this->assertEquals('GENERAL', $post->category_code);
+        $this->assertEquals('ACTIVE', $post->status);
     }
 }

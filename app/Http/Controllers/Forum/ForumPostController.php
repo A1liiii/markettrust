@@ -70,11 +70,17 @@ class ForumPostController extends Controller
      */
     public function store(StoreForumPostRequest $request): RedirectResponse
     {
-        $post = $this->forumService->createPost(
-            $request->user(),
-            $request->validated(),
-            $request->file('images')
-        );
+        try {
+            $post = $this->forumService->createPost(
+                $request->user(),
+                $request->validated(),
+                $request->file('images')
+            );
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['images' => $e->getMessage()]);
+        }
 
         return redirect()->route('forum.show', $post->post_id)
             ->with('success', 'Postingan forum berhasil dipublikasikan!');
@@ -128,12 +134,18 @@ class ForumPostController extends Controller
     {
         Gate::authorize('update', $post);
 
-        $this->forumService->updatePost(
-            $post,
-            $request->validated(),
-            $request->file('images'),
-            $request->input('keep_images')
-        );
+        try {
+            $this->forumService->updatePost(
+                $post,
+                $request->validated(),
+                $request->file('images'),
+                $request->input('keep_images')
+            );
+        } catch (\Throwable $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['images' => $e->getMessage()]);
+        }
 
         return redirect()->route('forum.show', $post->post_id)
             ->with('success', 'Postingan forum berhasil diperbarui!');

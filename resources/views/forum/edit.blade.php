@@ -123,8 +123,8 @@
                            class="glass-input w-full px-3.5 py-2.5 text-sm">
                 </div>
 
-                <!-- Price Offer (Optional) -->
-                <div>
+                <!-- Price Offer (Optional untuk WTB/WTS, disembunyikan untuk GENERAL) -->
+                <div id="price-section" class="{{ $initCategory === 'GENERAL' ? 'hidden' : '' }}">
                     <label for="price_offer" class="glass-label">Tawaran Harga (Rp) <span class="text-slate-400 font-normal lowercase">(opsional)</span></label>
                     <input type="number"
                            id="price_offer"
@@ -227,12 +227,20 @@
         // Toggle Catalog Dropdown (TC-FR-06)
         const catalogSection = document.getElementById('catalog-section');
         const variantSelect = document.getElementById('variant_id');
+        const priceSection = document.getElementById('price-section');
+        const priceInput = document.getElementById('price_offer');
+
         if (category === 'WTB' || category === 'WTS') {
             catalogSection.classList.remove('hidden');
             variantSelect.setAttribute('required', 'required');
+            if (priceSection) priceSection.classList.remove('hidden');
         } else {
             catalogSection.classList.add('hidden');
             variantSelect.removeAttribute('required');
+            if (priceSection) {
+                priceSection.classList.add('hidden');
+                if (priceInput) priceInput.value = '';
+            }
         }
     }
 

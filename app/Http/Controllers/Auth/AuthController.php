@@ -55,6 +55,11 @@ class AuthController extends Controller
         Auth::login($user, (bool) $request->boolean('remember'));
         $request->session()->regenerate();
 
+        if ($user->isAdmin()) {
+            return redirect()->intended(route('admin.dashboard'))
+                ->with('success', 'Selamat datang di Panel Admin, @'.$user->username.'!');
+        }
+
         return redirect()->intended(route('home'))
             ->with('success', 'Selamat datang kembali, '.$user->username.'!');
     }
