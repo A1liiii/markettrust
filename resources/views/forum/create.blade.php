@@ -25,7 +25,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                     Buat Postingan Forum Baru
                 </h1>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1">
+                <p id="form-subtitle" class="text-xs sm:text-sm text-slate-600 mt-1">
                     Bagikan diskusi umum atau ajukan penawaran jual/beli produk digital terverifikasi.
                 </p>
             </div>
@@ -61,11 +61,52 @@
                             </button>
                         </div>
                     </div>
-                    <input type="hidden" name="category_code" id="category_code" value="{{ old('category_code', 'GENERAL') }}">
+                    <input type="hidden" name="category_code" id="category_code" value="{{ old('category_code', request()->query('category', 'GENERAL')) }}">
+                </div>
+
+                <!-- Discussion Type Selector for Forum Umum (GENERAL) -->
+                <div id="discussion-type-section" class="space-y-2.5 p-4 rounded-2xl bg-blue-50/50 border border-blue-200/70">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <label class="glass-label text-xs font-bold text-slate-800 mb-0">
+                            Jenis Diskusi <span class="text-slate-400 font-normal lowercase">(opsional)</span>
+                        </label>
+                        <span class="text-[11px] text-slate-500">Pilih jenis untuk mempermudah anggota komunitas memahami topik</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button type="button"
+                                onclick="toggleDiscussionType('Pertanyaan')"
+                                id="dtype-Pertanyaan"
+                                class="dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50">
+                            <span>❓</span>
+                            <span>Pertanyaan</span>
+                        </button>
+                        <button type="button"
+                                onclick="toggleDiscussionType('Berbagi Pengalaman')"
+                                id="dtype-Berbagi-Pengalaman"
+                                class="dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50">
+                            <span>💡</span>
+                            <span>Pengalaman</span>
+                        </button>
+                        <button type="button"
+                                onclick="toggleDiscussionType('Tips')"
+                                id="dtype-Tips"
+                                class="dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50">
+                            <span>📌</span>
+                            <span>Tips</span>
+                        </button>
+                        <button type="button"
+                                onclick="toggleDiscussionType('Opini')"
+                                id="dtype-Opini"
+                                class="dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50">
+                            <span>💬</span>
+                            <span>Opini</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="discussion_type" id="discussion_type" value="">
                 </div>
 
                 <!-- TC-FR-06: Pilihan Katalog Bertingkat pada Form WTB/WTS -->
-                <div id="catalog-section" class="{{ in_array(old('category_code'), ['WTB', 'WTS']) ? '' : 'hidden' }} space-y-4 p-4 sm:p-5 rounded-2xl bg-blue-50/40 border border-blue-200/70">
+                <div id="catalog-section" class="{{ in_array(old('category_code', request()->query('category', 'GENERAL')), ['WTB', 'WTS']) ? '' : 'hidden' }} space-y-4 p-4 sm:p-5 rounded-2xl bg-blue-50/40 border border-blue-200/70">
                     <div class="flex items-center gap-2 mb-1">
                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -110,19 +151,22 @@
 
                 <!-- Title -->
                 <div>
-                    <label for="title" class="glass-label">Judul Postingan <span class="text-rose-500">*</span></label>
+                    <label for="title" id="title-label" class="glass-label">Judul Diskusi <span class="text-rose-500">*</span></label>
                     <input type="text"
                            id="title"
                            name="title"
                            value="{{ old('title') }}"
                            required
                            maxlength="150"
-                           placeholder="Contoh: [WTS] Akun Mobile Legends Mythic Skin Legend Lengkap"
+                           placeholder="Apa yang ingin kamu diskusikan?"
                            class="glass-input w-full px-3.5 py-2.5 text-sm">
+                    <p id="title-helper" class="text-[11px] text-slate-500 mt-1">
+                        Tuliskan pertanyaan atau topik yang jelas dan santun agar mudah dipahami komunitas.
+                    </p>
                 </div>
 
-                <!-- Price Offer (Optional) -->
-                <div>
+                <!-- Price Offer (Hanya untuk WTB/WTS, disembunyikan untuk Forum Umum) -->
+                <div id="price-section" class="hidden">
                     <label for="price_offer" class="glass-label">Tawaran Harga (Rp) <span class="text-slate-400 font-normal lowercase">(opsional)</span></label>
                     <input type="number"
                            id="price_offer"
@@ -136,19 +180,19 @@
 
                 <!-- Content -->
                 <div>
-                    <label for="content" class="glass-label">Isi Postingan / Deskripsi <span class="text-rose-500">*</span></label>
+                    <label for="content" id="content-label" class="glass-label">Isi Diskusi <span class="text-rose-500">*</span></label>
                     <textarea id="content"
                               name="content"
                               rows="6"
                               required
-                              placeholder="Tuliskan rincian diskusi atau spesifikasi item digital yang ingin Anda tawarkan/cari..."
+                              placeholder="Ceritakan pertanyaan, pengalaman, atau pendapatmu di sini."
                               class="glass-input w-full px-3.5 py-2.5 text-sm leading-relaxed">{{ old('content') }}</textarea>
                 </div>
 
                 <!-- TC-FR-13: Upload Foto & Preview Thumbnail Instan Sebelum Submit -->
                 <div>
                     <label class="glass-label">
-                        Unggah Foto Lampiran <span class="text-slate-400 font-normal lowercase">(maksimal 4 file, format JPG/PNG/WEBP, per file maks 3 MB)</span>
+                        Unggah Foto Lampiran <span class="text-slate-400 font-normal lowercase">(opsional, maksimal 4 file, format JPG/PNG/WEBP, per file maks 3 MB)</span>
                     </label>
                     <div class="glass-card p-4 border-dashed border-2 border-slate-300/80 rounded-xl">
                         <input type="file"
@@ -184,8 +228,8 @@
                     <a href="{{ route('forum.index') }}" class="glass-btn-secondary text-sm">
                         Batal
                     </a>
-                    <button type="submit" class="glass-btn-primary text-sm shadow-md shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 text-white">
-                        <span>Publikasikan Postingan</span>
+                    <button type="submit" id="submit-btn" class="glass-btn-primary text-sm shadow-md shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 text-white">
+                        <span id="submit-btn-text">Publikasikan Diskusi</span>
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>
@@ -199,8 +243,52 @@
 <script>
     const catalogData = @json($categories);
     const oldVariantId = "{{ old('variant_id') }}";
+    let currentDiscussionType = '';
 
-    // TC-FR-12: Pilihan Kategori Gaya Biru di Tengah
+    // Toggle Jenis Diskusi (TC-FR discussion chip selector)
+    function toggleDiscussionType(type) {
+        const inputTitle = document.getElementById('title');
+        const knownTypes = ['Pertanyaan', 'Berbagi Pengalaman', 'Tips', 'Opini'];
+
+        if (currentDiscussionType === type) {
+            currentDiscussionType = '';
+        } else {
+            currentDiscussionType = type;
+        }
+
+        const dtypeHidden = document.getElementById('discussion_type');
+        if (dtypeHidden) dtypeHidden.value = currentDiscussionType;
+
+        knownTypes.forEach(t => {
+            const btnId = 'dtype-' + t.replace(/\s+/g, '-');
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                if (t === currentDiscussionType) {
+                    btn.className = 'dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-bold transition bg-blue-600 text-white border-blue-600 shadow-sm';
+                } else {
+                    btn.className = 'dtype-btn flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50';
+                }
+            }
+        });
+
+        if (inputTitle) {
+            let val = inputTitle.value.trim();
+            knownTypes.forEach(t => {
+                const prefix = `[${t}]`;
+                if (val.startsWith(prefix)) {
+                    val = val.substring(prefix.length).trim();
+                }
+            });
+
+            if (currentDiscussionType) {
+                inputTitle.value = `[${currentDiscussionType}] ${val}`.trim();
+            } else {
+                inputTitle.value = val;
+            }
+        }
+    }
+
+    // TC-FR-12: Pilihan Kategori Gaya Biru di Tengah & Penyesuaian Form Dinamis
     function selectCategory(category) {
         document.getElementById('category_code').value = category;
 
@@ -213,15 +301,60 @@
             }
         });
 
-        // Toggle Catalog Dropdown (TC-FR-06)
         const catalogSection = document.getElementById('catalog-section');
         const variantSelect = document.getElementById('variant_id');
-        if (category === 'WTB' || category === 'WTS') {
-            catalogSection.classList.remove('hidden');
-            variantSelect.setAttribute('required', 'required');
+        const priceSection = document.getElementById('price-section');
+        const priceInput = document.getElementById('price_offer');
+        const discussionTypeSection = document.getElementById('discussion-type-section');
+        const titleLabel = document.getElementById('title-label');
+        const titleInput = document.getElementById('title');
+        const titleHelper = document.getElementById('title-helper');
+        const contentLabel = document.getElementById('content-label');
+        const contentInput = document.getElementById('content');
+        const formSubtitle = document.getElementById('form-subtitle');
+        const submitBtnText = document.getElementById('submit-btn-text');
+
+        if (category === 'GENERAL') {
+            // Mode Diskusi Forum Umum
+            if (discussionTypeSection) discussionTypeSection.classList.remove('hidden');
+            if (catalogSection) catalogSection.classList.add('hidden');
+            if (variantSelect) variantSelect.removeAttribute('required');
+            if (priceSection) priceSection.classList.add('hidden');
+            if (priceInput) priceInput.value = '';
+
+            if (titleLabel) titleLabel.innerHTML = 'Judul Diskusi <span class="text-rose-500">*</span>';
+            if (titleInput) titleInput.placeholder = 'Apa yang ingin kamu diskusikan?';
+            if (titleHelper) titleHelper.textContent = 'Tuliskan pertanyaan atau topik yang jelas dan santun agar mudah dipahami komunitas.';
+
+            if (contentLabel) contentLabel.innerHTML = 'Isi Diskusi <span class="text-rose-500">*</span>';
+            if (contentInput) contentInput.placeholder = 'Ceritakan pertanyaan, pengalaman, atau pendapatmu di sini.';
+
+            if (formSubtitle) formSubtitle.textContent = 'Mulai percakapan baru, tanyakan pertanyaan, atau bagikan pengalaman Anda bersama komunitas MarketTrust.';
+            if (submitBtnText) submitBtnText.textContent = 'Publikasikan Diskusi';
         } else {
-            catalogSection.classList.add('hidden');
-            variantSelect.removeAttribute('required');
+            // Mode Marketplace WTB/WTS
+            if (discussionTypeSection) discussionTypeSection.classList.add('hidden');
+            if (catalogSection) catalogSection.classList.remove('hidden');
+            if (variantSelect) variantSelect.setAttribute('required', 'required');
+            if (priceSection) priceSection.classList.remove('hidden');
+
+            if (titleLabel) titleLabel.innerHTML = 'Judul Postingan <span class="text-rose-500">*</span>';
+            if (titleInput) {
+                titleInput.placeholder = category === 'WTB'
+                    ? 'Contoh: [WTB] Cari Akun Mobile Legends Mythic Immortal Siap Rekber'
+                    : 'Contoh: [WTS] Akun Mobile Legends Mythic Skin Legend Lengkap';
+            }
+            if (titleHelper) titleHelper.textContent = 'Gunakan judul yang jelas mencantumkan nama produk dan status penawaran Anda.';
+
+            if (contentLabel) contentLabel.innerHTML = 'Isi Postingan / Deskripsi <span class="text-rose-500">*</span>';
+            if (contentInput) contentInput.placeholder = 'Tuliskan rincian diskusi atau spesifikasi item digital yang ingin Anda tawarkan/cari...';
+
+            if (formSubtitle) {
+                formSubtitle.textContent = category === 'WTB'
+                    ? 'Ajukan permintaan pembelian item digital terverifikasi dengan kesepakatan harga dan rekber MarketTrust.'
+                    : 'Tawarkan produk digital akun, item, atau voucher terverifikasi dengan proteksi escrow MarketTrust.';
+            }
+            if (submitBtnText) submitBtnText.textContent = 'Publikasikan Postingan';
         }
     }
 

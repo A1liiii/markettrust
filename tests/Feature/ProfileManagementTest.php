@@ -387,7 +387,7 @@ class ProfileManagementTest extends TestCase
         $response->assertSee('Poin');
         $response->assertSee('Belum Ditinjau');
         $response->assertDontSee('Terverifikasi (LEGIT)');
-        $response->assertSee('Lingkungan Simulasi PBL');
+        $response->assertSee('Ketentuan Transaksi dan Layanan');
         $response->assertSee('Midtrans Sandbox');
     }
 

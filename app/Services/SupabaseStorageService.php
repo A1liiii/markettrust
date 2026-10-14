@@ -5,8 +5,8 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class SupabaseStorageService
 {
@@ -18,91 +18,115 @@ class SupabaseStorageService
 
     public function __construct()
     {
-        $this->supabaseUrl = rtrim(config('services.supabase.url', env('SUPABASE_URL', 'https://abxvoixyidljckqmsjuw.supabase.co')), '/');
-        $this->supabaseKey = config('services.supabase.key', env('SUPABASE_KEY', env('SUPABASE_ANON_KEY', null)));
-        $this->defaultBucket = config('services.supabase.bucket', env('SUPABASE_BUCKET', 'forum_images'));
+        $this->supabaseUrl = rtrim((string) config('services.supabase.url', ''), '/');
+        $this->supabaseKey = config('services.supabase.secret_key');
+        $this->defaultBucket = (string) config('services.supabase.bucket', 'forum_images');
     }
 
     /**
-     * Upload an uploaded file to Supabase Storage or fallback to local disk.
+     * Upload an uploaded file to Supabase Storage.
+     *
+     * @throws RuntimeException
      */
     public function uploadFile(UploadedFile $file, ?string $bucket = null): string
     {
+        if (empty($this->supabaseUrl) || empty($this->supabaseKey)) {
+            throw new RuntimeException('Konfigurasi Supabase Storage (SUPABASE_URL / SUPABASE_SECRET_KEY) belum disetel.');
+        }
+
         $targetBucket = $bucket ?: $this->defaultBucket;
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+        $extension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'jpg';
+        $filename = Str::uuid()->toString().'.'.$extension;
+        $uploadUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$filename}";
 
-        // If Supabase credentials are not provided (e.g. local offline unit test), fallback to public disk
-        if (empty($this->supabaseKey)) {
-            $path = $file->store($targetBucket, 'public');
+        $mimeType = $file->getMimeType() ?: 'application/octet-stream';
+        $contents = file_get_contents($file->getRealPath());
 
-            return Storage::url($path);
+        if ($contents === false) {
+            throw new RuntimeException('Gagal membaca isi file yang diunggah.');
         }
 
         try {
-            $extension = $file->getClientOriginalExtension() ?: 'jpg';
-            $filename = Str::random(40).'.'.$extension;
-            $uploadUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$filename}";
-
-            $response = Http::withHeaders([
-                'apikey' => $this->supabaseKey,
-                'Authorization' => 'Bearer '.$this->supabaseKey,
-            ])->attach(
-                'file',
-                file_get_contents($file->getRealPath()),
-                $filename,
-                ['Content-Type' => $file->getMimeType() ?: 'application/octet-stream']
-            )->post($uploadUrl);
+            $response = Http::withHeaders($this->getHeaders())
+                ->withBody($contents, $mimeType)
+                ->post($uploadUrl);
 
             if ($response->successful()) {
                 return "{$this->supabaseUrl}/storage/v1/object/public/{$targetBucket}/{$filename}";
             }
 
-            Log::warning('Supabase storage upload failed, falling back to local storage', [
+            Log::error('Supabase storage upload failed', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+
+            $message = $response->json('message') ?: $response->body() ?: 'HTTP '.$response->status();
+
+            throw new RuntimeException("Gagal mengunggah gambar ke Supabase Storage: {$message}");
+        } catch (RuntimeException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error('Exception during Supabase storage upload', [
                 'error' => $e->getMessage(),
             ]);
+
+            throw new RuntimeException('Terjadi kesalahan koneksi saat mengunggah gambar ke Supabase Storage: '.$e->getMessage(), 0, $e);
         }
-
-        // Fallback to local public disk
-        $path = $file->store($targetBucket, 'public');
-
-        return Storage::url($path);
     }
 
     /**
-     * Delete a file from Supabase storage or local disk.
+     * Delete a file from Supabase storage.
      */
     public function deleteFile(string $url, ?string $bucket = null): bool
     {
         $targetBucket = $bucket ?: $this->defaultBucket;
 
-        if (str_contains($url, $this->supabaseUrl) && ! empty($this->supabaseKey)) {
-            try {
-                $filename = basename(parse_url($url, PHP_URL_PATH));
-                $deleteUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$filename}";
-
-                $response = Http::withHeaders([
-                    'apikey' => $this->supabaseKey,
-                    'Authorization' => 'Bearer '.$this->supabaseKey,
-                ])->delete($deleteUrl);
-
-                return $response->successful();
-            } catch (\Throwable $e) {
-                Log::warning('Failed deleting file from Supabase storage: '.$e->getMessage());
-
-                return false;
-            }
+        if (empty($this->supabaseUrl) || empty($this->supabaseKey)) {
+            return false;
         }
 
-        // Local storage delete
-        $relativePath = Str::after($url, '/storage/');
-        if (Storage::disk('public')->exists($relativePath)) {
-            return Storage::disk('public')->delete($relativePath);
+        $publicPrefix = "{$this->supabaseUrl}/storage/v1/object/public/{$targetBucket}/";
+
+        if (! str_starts_with($url, $publicPrefix)) {
+            return false;
         }
 
-        return false;
+        $objectPath = ltrim(substr($url, strlen($publicPrefix)), '/');
+        if ($objectPath === '') {
+            return false;
+        }
+
+        try {
+            $deleteUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$objectPath}";
+
+            $response = Http::withHeaders($this->getHeaders())->delete($deleteUrl);
+
+            return $response->successful();
+        } catch (\Throwable $e) {
+            Log::warning('Failed deleting file from Supabase storage: '.$e->getMessage());
+
+            return false;
+        }
+    }
+
+    /**
+     * Build the request headers for Supabase Storage REST API.
+     *
+     * @return array<string, string>
+     */
+    protected function getHeaders(): array
+    {
+        $headers = [
+            'apikey' => (string) $this->supabaseKey,
+        ];
+
+        // Secret keys starting with sb_secret_ are not JWTs, so they must not be sent as Bearer tokens.
+        // Only attach Authorization Bearer if the key is explicitly a legacy JWT.
+        if (! empty($this->supabaseKey) && ! str_starts_with($this->supabaseKey, 'sb_secret_') && substr_count($this->supabaseKey, '.') === 2) {
+            $headers['Authorization'] = 'Bearer '.$this->supabaseKey;
+        }
+
+        return $headers;
     }
 }

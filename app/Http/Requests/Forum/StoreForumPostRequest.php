@@ -16,6 +16,19 @@ class StoreForumPostRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('category_code') === 'GENERAL') {
+            $this->merge([
+                'variant_id' => null,
+                'price_offer' => null,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

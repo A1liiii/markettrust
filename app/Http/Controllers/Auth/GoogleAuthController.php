@@ -77,6 +77,11 @@ class GoogleAuthController extends Controller
             Auth::login($existingGoogleUser);
             $request->session()->regenerate();
 
+            if ($existingGoogleUser->isAdmin()) {
+                return redirect()->intended(route('admin.dashboard'))
+                    ->with('success', 'Selamat datang di Panel Admin, @'.$existingGoogleUser->username.'!');
+            }
+
             return redirect()->intended(route('home'))
                 ->with('success', 'Berhasil masuk dengan akun Google @'.$existingGoogleUser->username.'!');
         }

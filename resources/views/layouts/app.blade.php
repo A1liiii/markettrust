@@ -25,49 +25,40 @@
                     <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
                             <svg class="w-6 h-6 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016A11.955 11.955 0 0112 2.944z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8.5v9M13.5 10h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
                             </svg>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xl font-bold tracking-tight text-slate-900">Market<span class="text-indigo-600">Trust</span></span>
-                            <span class="hidden sm:inline-block glass-badge glass-badge-primary">Escrow PBL</span>
+                            @if (auth()->check() && auth()->user()->isAdmin())
+                                <span class="hidden sm:inline-block glass-badge glass-badge-primary">Panel Admin</span>
+                            @else
+                                <span class="hidden sm:inline-block glass-badge glass-badge-primary">Digital Escrow</span>
+                            @endif
                         </div>
                     </a>
                 </div>
 
                 <!-- Nav Menu (Desktop) -->
                 <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-                    <a href="{{ route('home') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'text-indigo-600 font-semibold' : '' }}">Beranda</a>
-                    <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition">Marketplace</a>
-                    <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : '' }}">Forum</a>
-                    <a href="{{ route('home') }}#escrow" class="hover:text-indigo-600 transition">Sistem Escrow</a>
-                    @auth
-                        @if (auth()->user()->hasListings())
-                            <a href="{{ route('seller.listings.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1 {{ request()->routeIs('seller.listings.*') ? 'text-indigo-600 font-semibold' : '' }}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                                Listing Saya
-                            </a>
-                        @else
-                            <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                Mulai Berjualan
-                            </a>
-                        @endif
-
-                        <a href="{{ route('conversations.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1.5 {{ request()->routeIs('conversations.*') ? 'text-indigo-600 font-semibold' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                            </svg>
-                            <span>Pesan</span>
+                    @if (auth()->check() && auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="glass-btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5 shadow-xs">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                            Panel Admin (Control Panel)
                         </a>
-                    @endauth
-
-                    @can('manage-catalog')
-                        <a href="{{ route('admin.catalog.index') }}" class="hover:text-indigo-600 transition font-semibold text-indigo-600 flex items-center gap-1 {{ request()->routeIs('admin.catalog.*') ? 'underline underline-offset-4' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                            Katalog
-                        </a>
-                    @endcan
+                    @else
+                        <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Marketplace</a>
+                        <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Forum</a>
+                        @auth
+                            @if (auth()->user()->hasListings())
+                                <a href="{{ route('seller.listings.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1 {{ request()->routeIs('seller.listings.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                                    Listing
+                                </a>
+                            @endif
+                        @endauth
+                    @endif
                 </nav>
 
                 <!-- Auth Buttons & Mobile Toggle -->
@@ -105,7 +96,7 @@
                     @endauth
 
                     <!-- Mobile Hamburger Toggle -->
-                    <button id="mobile-menu-toggle" type="button" class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-white/60 transition border border-transparent hover:border-white/60" aria-label="Toggle navigation">
+                    <button id="mobile-menu-toggle" type="button" class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-white/60 transition duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] border border-transparent hover:border-white/60 active:scale-95" aria-label="Toggle navigation">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -115,34 +106,27 @@
         </div>
 
         <!-- Mobile Menu Drawer -->
-        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-1 border-t border-white/50 bg-white/70 backdrop-blur-xl">
-            <a href="{{ route('home') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Beranda</a>
+        <div id="mobile-menu" class="md:hidden overflow-hidden max-h-0 opacity-0 -translate-y-2 pointer-events-none transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] px-4 space-y-1 border-t border-white/50 bg-white/70 backdrop-blur-xl will-change-[max-height,opacity,transform]">
             @auth
                 <a href="{{ route('profile.show') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('profile.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Profil Saya (@<span>{{ auth()->user()->username }}</span>)</a>
             @endauth
-            <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
-            <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
-            <a href="{{ route('home') }}#escrow" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Sistem Escrow</a>
-            @auth
-                @if (auth()->user()->hasListings())
-                    <a href="{{ route('seller.listings.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('seller.listings.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}">
-                        Listing Saya (Seller)
-                    </a>
-                @else
-                    <a href="{{ route('seller.listings.create') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold bg-indigo-50/80 text-indigo-700 hover:bg-indigo-100 transition {{ request()->routeIs('seller.listings.create') ? 'ring-1 ring-indigo-300' : '' }}">
-                        + Mulai Berjualan
-                    </a>
-                @endif
-                <a href="{{ route('conversations.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('conversations.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">
-                    Pesan (DM)
-                </a>
-            @endauth
 
-            @can('manage-catalog')
-                <a href="{{ route('admin.catalog.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium bg-indigo-50/80 text-indigo-700 hover:bg-indigo-100 transition">
-                    Kelola Katalog (Admin)
+            @if (auth()->check() && auth()->user()->isAdmin())
+                <div class="pt-2 pb-1 px-3 text-[10px] uppercase font-bold tracking-wider text-slate-400">Pusat Kontrol</div>
+                <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold text-indigo-600 bg-indigo-50/80 transition">
+                    Buka Panel Admin (Control Panel)
                 </a>
-            @endcan
+            @else
+                <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
+                <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
+                @auth
+                    @if (auth()->user()->hasListings())
+                        <a href="{{ route('seller.listings.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('seller.listings.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}">
+                            Listing
+                        </a>
+                    @endif
+                @endauth
+            @endif
         </div>
     </header>
 
@@ -201,12 +185,12 @@
     <footer class="mt-auto border-t border-white/60 bg-white/50 backdrop-blur-md py-8 text-slate-600 text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2 font-medium">
-                <span class="font-bold text-slate-900">Market<span class="text-indigo-600">Trust</span></span> &copy; 2026. Riset PBL Marketplace & Escrow Digital.
+                <span class="font-bold text-slate-900">Market<span class="text-indigo-600">Trust</span></span> &copy; 2026. Platform Marketplace & Escrow Digital Terpercaya.
             </div>
             <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs text-slate-500">
-                <span class="glass-badge glass-badge-neutral">Item Digital Tanpa QC Fisik</span>
-                <span class="glass-badge glass-badge-neutral">Sandbox Payment Gateway</span>
-                <span class="glass-badge glass-badge-neutral">Settlement Manual Simulatif</span>
+                <span class="glass-badge glass-badge-neutral">Transaksi Item Digital Aman</span>
+                <span class="glass-badge glass-badge-neutral">Escrow Rekber Otomatis</span>
+                <span class="glass-badge glass-badge-neutral">Resolusi Sengketa Terpercaya</span>
             </div>
         </div>
     </footer>
@@ -214,5 +198,24 @@
     @auth
         @include('conversations.partials.global-drawer')
     @endauth
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileToggle && mobileMenu) {
+            mobileToggle.addEventListener('click', function () {
+                const isOpen = mobileMenu.classList.contains('opacity-100');
+                if (isOpen) {
+                    mobileMenu.classList.remove('max-h-96', 'opacity-100', 'translate-y-0', 'pointer-events-auto', 'py-3');
+                    mobileMenu.classList.add('max-h-0', 'opacity-0', '-translate-y-2', 'pointer-events-none');
+                } else {
+                    mobileMenu.classList.remove('max-h-0', 'opacity-0', '-translate-y-2', 'pointer-events-none');
+                    mobileMenu.classList.add('max-h-96', 'opacity-100', 'translate-y-0', 'pointer-events-auto', 'py-3');
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>
