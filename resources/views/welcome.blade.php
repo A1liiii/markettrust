@@ -202,7 +202,7 @@
                     </p>
                 </div>
                 <div class="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                    <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3.5 shadow-xs inline-flex items-center gap-1.5 font-semibold" title="Buka formulir pembuatan listing penawaran">
+                    <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3.5 shadow-xs inline-flex items-center gap-1.5 font-semibold" title="Buka formulir pembuatan listing penawaran" data-cy="btn-ingin-berjualan">
                         <span>Ingin berjualan?</span>
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>

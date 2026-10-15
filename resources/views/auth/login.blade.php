@@ -50,6 +50,7 @@
                         autofocus
                         placeholder="nama@email.com atau username"
                         class="glass-input w-full px-3.5 py-2.5 text-sm"
+                        data-cy="input-login"
                     >
                 </div>
             </div>
@@ -64,18 +65,19 @@
                         required
                         placeholder="••••••••"
                         class="glass-input w-full px-3.5 py-2.5 text-sm"
+                        data-cy="input-password"
                     >
                 </div>
             </div>
 
             <div class="flex items-center justify-between text-sm pt-1">
                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">
+                    <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30" data-cy="checkbox-remember">
                     <span class="text-slate-600 text-xs">Ingat saya di perangkat ini</span>
                 </label>
             </div>
 
-            <button type="submit" class="glass-btn-primary w-full py-2.5 sm:py-3 text-sm mt-2">
+            <button type="submit" class="glass-btn-primary w-full py-2.5 sm:py-3 text-sm mt-2" data-cy="btn-login">
                 <span>Masuk Sekarang</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>

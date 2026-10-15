@@ -65,7 +65,7 @@
                 <div class="flex items-center gap-2 sm:gap-3">
                     @auth
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('profile.show') }}" class="flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya">
+                            <a href="{{ route('profile.show') }}" class="flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya" data-cy="nav-user-profile">
                                 @if (auth()->user()->avatar_url)
                                     <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover">
                                 @else
@@ -81,16 +81,16 @@
 
                             <form action="{{ route('logout') }}" method="POST" class="inline">
                                 @csrf
-                                <button type="submit" class="glass-btn-danger text-xs sm:text-sm py-1.5 px-2.5 sm:px-3">
+                                <button type="submit" class="glass-btn-danger text-xs sm:text-sm py-1.5 px-2.5 sm:px-3" data-cy="btn-logout">
                                     Keluar
                                 </button>
                             </form>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="glass-btn-secondary text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4">
+                        <a href="{{ route('login') }}" class="glass-btn-secondary text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4" data-cy="nav-login">
                             Masuk
                         </a>
-                        <a href="{{ route('register') }}" class="glass-btn-primary text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4">
+                        <a href="{{ route('register') }}" class="glass-btn-primary text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4" data-cy="nav-register">
                             Daftar
                         </a>
                     @endauth
@@ -133,7 +133,7 @@
     <!-- Flash Alerts -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
         @if (session('success'))
-            <div class="glass-alert glass-alert-success mb-4">
+            <div class="glass-alert glass-alert-success mb-4" data-cy="alert-success">
                 <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
@@ -142,7 +142,7 @@
         @endif
 
         @if (session('warning'))
-            <div class="glass-alert glass-alert-warning mb-4">
+            <div class="glass-alert glass-alert-warning mb-4" data-cy="alert-warning">
                 <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
@@ -151,7 +151,7 @@
         @endif
 
         @if (session('info'))
-            <div class="glass-alert glass-alert-info mb-4">
+            <div class="glass-alert glass-alert-info mb-4" data-cy="alert-info">
                 <svg class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -160,7 +160,7 @@
         @endif
 
         @if ($errors->any())
-            <div class="glass-alert glass-alert-error mb-4">
+            <div class="glass-alert glass-alert-error mb-4" data-cy="alert-error">
                 <svg class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -168,7 +168,7 @@
                     <div class="font-semibold text-sm mb-1 text-rose-900">Periksa kembali data Anda:</div>
                     <ul class="list-disc list-inside text-xs sm:text-sm space-y-0.5 text-rose-800">
                         @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                            <li data-cy="error-message">{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>

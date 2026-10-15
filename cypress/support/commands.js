@@ -7,19 +7,28 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+// Custom commands for MarketTrust Cypress testing
+
+Cypress.Commands.add('loginByForm', (login, password) => {
+  cy.visit('/login');
+  cy.get('[data-cy="input-login"]').clear().type(login);
+  cy.get('[data-cy="input-password"]').clear().type(password);
+  cy.get('[data-cy="btn-login"]').click();
+});
+
+Cypress.Commands.add('registerByForm', (username, email, password, passwordConfirmation) => {
+  cy.visit('/register');
+  if (username !== undefined && username !== null && username !== '') {
+    cy.get('[data-cy="input-username"]').clear().type(username);
+  }
+  if (email !== undefined && email !== null && email !== '') {
+    cy.get('[data-cy="input-email"]').clear().type(email);
+  }
+  if (password !== undefined && password !== null && password !== '') {
+    cy.get('[data-cy="input-password"]').clear().type(password);
+  }
+  if (passwordConfirmation !== undefined && passwordConfirmation !== null && passwordConfirmation !== '') {
+    cy.get('[data-cy="input-password-confirmation"]').clear().type(passwordConfirmation);
+  }
+  cy.get('[data-cy="btn-register"]').click();
+});

@@ -53,6 +53,7 @@
                         autofocus
                         placeholder="contoh_username"
                         class="glass-input w-full pl-8 pr-3.5 py-2.5 text-sm"
+                        data-cy="input-username"
                     >
                 </div>
                 <p class="text-[11px] text-slate-500 mt-1">3–30 karakter huruf kecil, angka, atau underscore (_).</p>
@@ -70,6 +71,7 @@
                     required
                     placeholder="nama@email.com"
                     class="glass-input w-full px-3.5 py-2.5 text-sm"
+                    data-cy="input-email"
                 >
             </div>
 
@@ -84,6 +86,7 @@
                     required
                     placeholder="Minimal 8 karakter"
                     class="glass-input w-full px-3.5 py-2.5 text-sm"
+                    data-cy="input-password"
                 >
             </div>
 
@@ -98,10 +101,11 @@
                     required
                     placeholder="Ulangi password di atas"
                     class="glass-input w-full px-3.5 py-2.5 text-sm"
+                    data-cy="input-password-confirmation"
                 >
             </div>
 
-            <button type="submit" class="glass-btn-primary w-full py-2.5 sm:py-3 text-sm mt-3">
+            <button type="submit" class="glass-btn-primary w-full py-2.5 sm:py-3 text-sm mt-3" data-cy="btn-register">
                 <span>Daftar Akun Baru</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
