@@ -62,6 +62,7 @@ class StoreListingRequest extends FormRequest
             'estimated_delivery_value' => ['required', 'integer', 'min:1', 'max:999'],
             'estimated_delivery_unit' => ['required', 'in:MINUTE,HOUR,DAY'],
             'status' => ['required', 'in:DRAFT,ACTIVE,CLOSED'],
+            'submission_token' => ['nullable', 'string', 'max:100'],
         ];
     }
 

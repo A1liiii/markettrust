@@ -25,6 +25,7 @@
         <div class="glass-panel p-6 sm:p-8 bg-white/95 border border-white/90 shadow-xl">
             <form id="listing-form" action="{{ route('seller.listings.store') }}" method="POST" class="space-y-8">
                 @csrf
+                <input type="hidden" name="submission_token" value="{{ $submissionToken ?? '' }}">
 
                 <!-- ========================================== -->
                 <!-- BAGIAN 1: IDENTITAS & SPESIFIKASI PRODUK -->
@@ -434,14 +435,76 @@
             }
         }
 
-        // Pastikan nilai hidden selalu bersih sebelum form disubmit
+        // ========================================================
+        // Proteksi Submit Ganda (Enter Berulang & Klik Ganda)
+        // ========================================================
+        let isSubmitting = false;
+        const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+
+        function resetSubmitState() {
+            isSubmitting = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
+            }
+        }
+
         if (form) {
-            form.addEventListener('submit', function () {
+            // Cegah pengiriman form jika sedang dalam status submisi
+            form.addEventListener('submit', function (e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+
                 if (priceDisplay.value) {
                     priceHidden.value = priceDisplay.value.replace(/\D/g, '');
                 }
+
+                // Jika HTML5 form validation gagal, jangan kunci submisi
+                if (!form.checkValidity()) {
+                    return;
+                }
+
+                isSubmitting = true;
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                        <span class="inline-flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Menyimpan Penawaran...</span>
+                        </span>
+                    `;
+                }
+            });
+
+            // Cegah penekanan Enter berulang pada input saat request sedang diproses
+            form.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    // Pastikan Enter pada textarea tetap menghasilkan baris baru (newline) normal
+                    if (e.target.tagName.toLowerCase() === 'textarea') {
+                        return;
+                    }
+
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
             });
         }
+
+        // Aktifkan kembali form jika pengguna kembali ke halaman melalui browser back (bfcache)
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                resetSubmitState();
+            }
+        });
     });
 </script>
 @endsection
