@@ -360,4 +360,82 @@ class SellerListingTest extends TestCase
             'title' => 'Listing Murah di Bawah Batas Fee Platform',
         ]);
     }
+
+    /**
+     * Regresi BUG-01: Submisi ganda dengan submission_token yang sama hanya menghasilkan tepat satu record di database.
+     */
+    public function test_duplicate_submission_with_same_token_creates_only_one_listing_record(): void
+    {
+        $seller = User::factory()->create(['account_status' => 'ACTIVE']);
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+        $token = 'test-token-'.uniqid();
+
+        $payload = [
+            'submission_token' => $token,
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Uji Idempotensi Token Unik',
+            'description' => 'Deskripsi listing idempotensi',
+            'price' => 150000,
+            'delivery_method' => 'Pengiriman Otomatis',
+            'estimated_delivery_value' => 15,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ];
+
+        // Submisi pertama
+        $response1 = $this->actingAs($seller)->post('/seller/listings', $payload);
+        $response1->assertRedirect(route('seller.listings.index'));
+
+        // Submisi kedua dengan token yang sama (misal dari Enter berulang / burst network)
+        $response2 = $this->actingAs($seller)->post('/seller/listings', $payload);
+        $response2->assertRedirect(route('seller.listings.index'));
+
+        // Pastikan di database hanya ada tepat 1 record
+        $this->assertSame(
+            1,
+            Listing::where('seller_id', $seller->user_id)
+                ->where('title', 'Listing Uji Idempotensi Token Unik')
+                ->count()
+        );
+    }
+
+    /**
+     * Regresi BUG-01: Seller tetap dapat membuat listing baru lainnya secara sengaja setelah submisi selesai.
+     */
+    public function test_seller_can_create_subsequent_listing_intentionally(): void
+    {
+        $seller = User::factory()->create(['account_status' => 'ACTIVE']);
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        // Listing pertama
+        $this->actingAs($seller)->post('/seller/listings', [
+            'submission_token' => 'token-1-'.uniqid(),
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Pertama Penjual',
+            'description' => 'Deskripsi pertama',
+            'price' => 100000,
+            'delivery_method' => 'Metode 1',
+            'estimated_delivery_value' => 10,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ])->assertRedirect(route('seller.listings.index'));
+
+        // Listing kedua secara sengaja
+        $this->actingAs($seller)->post('/seller/listings', [
+            'submission_token' => 'token-2-'.uniqid(),
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Kedua Penjual',
+            'description' => 'Deskripsi kedua',
+            'price' => 200000,
+            'delivery_method' => 'Metode 2',
+            'estimated_delivery_value' => 20,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ])->assertRedirect(route('seller.listings.index'));
+
+        $this->assertSame(
+            2,
+            Listing::where('seller_id', $seller->user_id)->count()
+        );
+    }
 }

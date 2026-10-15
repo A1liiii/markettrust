@@ -9,7 +9,9 @@ use App\Models\Listing;
 use App\Models\ProductCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ListingController extends Controller
@@ -79,20 +81,70 @@ class ListingController extends Controller
             ->orderBy('category_name')
             ->get();
 
+        $submissionToken = (string) Str::uuid();
+
         return view('seller.listings.create', [
             'categories' => $categories,
+            'submissionToken' => $submissionToken,
         ]);
     }
 
     /**
-     * Simpan penawaran listing baru ke database.
+     * Simpan penawaran listing baru ke database dengan proteksi submit ganda (idempotency).
      */
     public function store(StoreListingRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $data['seller_id'] = $request->user()->user_id;
+        $sellerId = $request->user()->user_id;
+        $data['seller_id'] = $sellerId;
 
-        Listing::create($data);
+        $token = $request->input('submission_token');
+
+        // 1. Idempotency Token Guard: Mencegah form instance yang sama diproses ganda
+        if ($token) {
+            $tokenCacheKey = "listing_token_processed_{$sellerId}_{$token}";
+            if (Cache::has($tokenCacheKey)) {
+                return redirect()->route('seller.listings.index')
+                    ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
+            }
+        }
+
+        // 2. Atomic Lock Per Seller & Payload Hash: Mencegah request ganda serentak
+        $payloadSignature = md5(json_encode([
+            $data['variant_id'] ?? null,
+            $data['title'] ?? null,
+            $data['price'] ?? null,
+            $data['delivery_method'] ?? null,
+            $data['estimated_delivery_value'] ?? null,
+            $data['estimated_delivery_unit'] ?? null,
+            $data['status'] ?? null,
+        ]));
+        $lockKey = "seller_listing_store_{$sellerId}_{$payloadSignature}";
+
+        $lock = Cache::lock($lockKey, 5);
+
+        if (! $lock->get()) {
+            return redirect()->route('seller.listings.index')
+                ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
+        }
+
+        try {
+            if ($token && Cache::has($tokenCacheKey)) {
+                return redirect()->route('seller.listings.index')
+                    ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
+            }
+
+            // Hapus field non-database sebelum penyimpanan
+            unset($data['submission_token']);
+
+            Listing::create($data);
+
+            if ($token) {
+                Cache::put($tokenCacheKey, true, now()->addMinutes(5));
+            }
+        } finally {
+            optional($lock)->release();
+        }
 
         return redirect()->route('seller.listings.index')
             ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
