@@ -274,6 +274,7 @@
 
                                     <a
                                         href="{{ route('conversations.from-listing', $listing) }}"
+                                        id="btn-contact-seller"
                                         class="w-full glass-btn-secondary py-2.5 text-center text-xs sm:text-sm font-semibold flex items-center justify-center gap-2"
                                         data-cy="btn-hubungi-seller"
                                     >
@@ -381,6 +382,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.classList.add('border-indigo-600', 'scale-102', 'ring-2', 'ring-indigo-500/20');
                 }
             });
+        });
+    const contactBtn = document.getElementById('btn-contact-seller');
+    if (contactBtn) {
+        contactBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            contactBtn.classList.add('opacity-70', 'pointer-events-none');
+
+            try {
+                const res = await fetch(contactBtn.href, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.conversation_id && window.openGlobalDmDrawer) {
+                        window.openGlobalDmDrawer(data.conversation_id);
+                        return;
+                    }
+                }
+                window.location.href = contactBtn.href;
+            } catch (err) {
+                window.location.href = contactBtn.href;
+            } finally {
+                contactBtn.classList.remove('opacity-70', 'pointer-events-none');
+            }
         });
     }
 });
