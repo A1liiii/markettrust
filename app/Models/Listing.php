@@ -25,6 +25,7 @@ class Listing extends Model
         'estimated_delivery_value',
         'estimated_delivery_unit',
         'status',
+        'image_urls',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class Listing extends Model
         return [
             'price' => 'decimal:2',
             'estimated_delivery_value' => 'integer',
+            'image_urls' => 'array',
         ];
     }
 
@@ -94,5 +96,39 @@ class Listing extends Model
         $userId = $user instanceof User ? $user->user_id : $user;
 
         return $this->seller_id === $userId;
+    }
+
+    /**
+     * Dapatkan URL gambar sampul utama listing.
+     */
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        if (is_array($this->image_urls) && ! empty($this->image_urls)) {
+            return $this->image_urls[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * Dapatkan seluruh URL gambar yang valid.
+     *
+     * @return list<string>
+     */
+    public function getAllImageUrlsAttribute(): array
+    {
+        return is_array($this->image_urls) ? array_values($this->image_urls) : [];
+    }
+
+    /**
+     * Konversi durasi estimasi penyerahan ke total menit.
+     */
+    public function getEstimatedMinutesAttribute(): int
+    {
+        return match ($this->estimated_delivery_unit) {
+            'HOUR' => $this->estimated_delivery_value * 60,
+            'DAY' => $this->estimated_delivery_value * 1440,
+            default => $this->estimated_delivery_value,
+        };
     }
 }

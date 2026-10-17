@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Seller;
 
+use App\Contracts\Services\MarketplaceServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Seller\StoreListingRequest;
 use App\Http\Requests\Seller\UpdateListingRequest;
 use App\Models\Listing;
 use App\Models\ProductCategory;
+use App\Services\SupabaseStorageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -16,6 +19,10 @@ use Illuminate\View\View;
 
 class ListingController extends Controller
 {
+    public function __construct(
+        protected SupabaseStorageService $storageService,
+    ) {}
+
     /**
      * Tampilkan daftar listing milik seller yang sedang login.
      */
@@ -128,20 +135,39 @@ class ListingController extends Controller
                 ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
         }
 
+        $newUploadedUrls = [];
+
         try {
             if ($token && Cache::has($tokenCacheKey)) {
                 return redirect()->route('seller.listings.index')
                     ->with('success', 'Penawaran listing baru berhasil dipublikasikan.');
             }
 
+            // Unggah gambar jika ada
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    if ($file instanceof UploadedFile && count($newUploadedUrls) < 4) {
+                        $newUploadedUrls[] = $this->storageService->uploadFile($file);
+                    }
+                }
+            }
+
             // Hapus field non-database sebelum penyimpanan
-            unset($data['submission_token']);
+            unset($data['submission_token'], $data['images']);
+            $data['image_urls'] = ! empty($newUploadedUrls) ? array_values($newUploadedUrls) : null;
 
             Listing::create($data);
 
             if ($token) {
                 Cache::put($tokenCacheKey, true, now()->addMinutes(5));
             }
+        } catch (\Throwable $e) {
+            // Rollback gambar yang sudah terunggah jika gagal simpan
+            foreach ($newUploadedUrls as $url) {
+                $this->storageService->deleteFile($url);
+            }
+
+            throw $e;
         } finally {
             optional($lock)->release();
         }
@@ -181,10 +207,72 @@ class ListingController extends Controller
     {
         Gate::authorize('update', $listing);
 
-        $listing->update($request->validated());
+        $data = $request->validated();
+        $existingImages = $listing->all_image_urls;
+
+        // 1. Gambar lama yang secara eksplisit dipertahankan
+        $keepImages = $request->input('keep_images', []);
+        $finalImages = [];
+        if (is_array($keepImages)) {
+            foreach ($keepImages as $url) {
+                if (in_array($url, $existingImages, true)) {
+                    $finalImages[] = $url;
+                }
+            }
+        }
+
+        // 2. Unggah gambar baru
+        $newUploadedUrls = [];
+        if ($request->hasFile('images')) {
+            try {
+                foreach ($request->file('images') as $file) {
+                    if ($file instanceof UploadedFile && (count($finalImages) + count($newUploadedUrls)) < 4) {
+                        $newUploadedUrls[] = $this->storageService->uploadFile($file);
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Rollback gambar baru yang baru terunggah jika error
+                foreach ($newUploadedUrls as $url) {
+                    $this->storageService->deleteFile($url);
+                }
+                throw $e;
+            }
+        }
+
+        // 3. Hapus gambar yang dibuang dari storage setelah upload baru sukses
+        $discardedImages = array_diff($existingImages, $finalImages);
+        foreach ($discardedImages as $discardedUrl) {
+            $this->storageService->deleteFile($discardedUrl);
+        }
+
+        $allImages = array_merge($finalImages, $newUploadedUrls);
+
+        unset($data['images'], $data['keep_images']);
+        $data['image_urls'] = ! empty($allImages) ? array_values($allImages) : null;
+
+        $listing->update($data);
 
         return redirect()->route('seller.listings.index')
             ->with('success', "Penawaran listing '{$listing->title}' berhasil diperbarui.");
+    }
+
+    /**
+     * Tampilkan pratinjau listing privat milik seller.
+     */
+    public function preview(Request $request, Listing $listing): View
+    {
+        Gate::authorize('preview', $listing);
+
+        $listing->load(['seller', 'variant.product.category']);
+
+        $marketStats = app(MarketplaceServiceInterface::class)
+            ->getProductMarketStats($listing->variant_id);
+
+        return view('marketplace.show', [
+            'listing' => $listing,
+            'marketStats' => $marketStats,
+            'isPreview' => true,
+        ]);
     }
 
     /**

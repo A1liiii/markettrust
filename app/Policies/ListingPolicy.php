@@ -16,11 +16,24 @@ class ListingPolicy
     }
 
     /**
-     * Tentukan apakah pengguna dapat melihat detail listing tertentu.
+     * Tentukan apakah pengguna (termasuk tamu) dapat melihat detail listing tertentu.
+     * Listing aktif dapat dilihat publik; listing nonaktif (DRAFT/CLOSED) hanya oleh pemilik.
      */
-    public function view(User $user, Listing $listing): bool
+    public function view(?User $user, Listing $listing): bool
     {
-        return $user->user_id === $listing->seller_id;
+        if ($listing->status === 'ACTIVE') {
+            return true;
+        }
+
+        return $user !== null && $user->user_id === $listing->seller_id;
+    }
+
+    /**
+     * Tentukan apakah seller dapat melihat pratinjau (preview) listing miliknya.
+     */
+    public function preview(User $user, Listing $listing): bool
+    {
+        return $user->user_id === $listing->seller_id && $user->isActive();
     }
 
     /**

@@ -48,7 +48,7 @@
                             Panel Admin (Control Panel)
                         </a>
                     @else
-                        <a href="{{ route('home') }}#marketplace" class="hover:text-indigo-600 transition {{ request()->routeIs('home') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Marketplace</a>
+                        <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('marketplace.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Marketplace</a>
                         <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Forum</a>
                         @auth
                             @if (auth()->user()->hasListings())
@@ -117,7 +117,7 @@
                     Buka Panel Admin (Control Panel)
                 </a>
             @else
-                <a href="{{ route('home') }}#marketplace" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition">Marketplace</a>
+                <a href="{{ route('marketplace.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('marketplace.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Marketplace</a>
                 <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
                 @auth
                     @if (auth()->user()->hasListings())

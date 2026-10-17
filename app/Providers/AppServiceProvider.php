@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Contracts\Services\AgreementServiceInterface;
 use App\Contracts\Services\ConversationServiceInterface;
 use App\Contracts\Services\FeeCalculationServiceInterface;
+use App\Contracts\Services\MarketplaceServiceInterface;
 use App\Contracts\Services\NotificationServiceInterface;
 use App\Contracts\Services\PayoutDestinationServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
@@ -14,6 +15,7 @@ use App\Policies\ListingPolicy;
 use App\Services\AgreementService;
 use App\Services\ConversationService;
 use App\Services\FeeCalculationService;
+use App\Services\MarketplaceService;
 use App\Services\NotificationService;
 use App\Services\PayoutDestinationService;
 use App\Services\TransactionService;
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(NotificationServiceInterface::class, NotificationService::class);
         $this->app->bind(AgreementServiceInterface::class, AgreementService::class);
         $this->app->bind(ConversationServiceInterface::class, ConversationService::class);
+        $this->app->bind(MarketplaceServiceInterface::class, MarketplaceService::class);
     }
 
     /**

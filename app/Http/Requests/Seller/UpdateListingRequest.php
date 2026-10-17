@@ -69,7 +69,26 @@ class UpdateListingRequest extends FormRequest
             'estimated_delivery_value' => ['required', 'integer', 'min:1', 'max:999'],
             'estimated_delivery_unit' => ['required', 'in:MINUTE,HOUR,DAY'],
             'status' => ['required', 'in:DRAFT,ACTIVE,CLOSED'],
+            'images' => ['nullable', 'array', 'max:4'],
+            'images.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
+            'keep_images' => ['nullable', 'array', 'max:4'],
+            'keep_images.*' => ['string'],
         ];
+    }
+
+    /**
+     * Konfigurasi validasi kustom lanjutan untuk total batas kombinasi gambar.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $keepCount = is_array($this->input('keep_images')) ? count($this->input('keep_images')) : 0;
+            $newCount = is_array($this->file('images')) ? count($this->file('images')) : 0;
+
+            if (($keepCount + $newCount) > 4) {
+                $validator->errors()->add('images', 'Total kombinasi gambar lama dan baru tidak boleh melebihi 4 gambar.');
+            }
+        });
     }
 
     /**
@@ -93,6 +112,10 @@ class UpdateListingRequest extends FormRequest
             'estimated_delivery_unit.in' => 'Satuan estimasi harus berupa MINUTE (Menit), HOUR (Jam), atau DAY (Hari).',
             'status.required' => 'Status penawaran wajib ditentukan.',
             'status.in' => 'Status penawaran harus berupa DRAFT, ACTIVE, atau CLOSED.',
+            'images.max' => 'Maksimal 4 gambar yang dapat diunggah.',
+            'images.*.image' => 'File lampiran harus berupa gambar yang valid.',
+            'images.*.mimes' => 'Format gambar harus berupa JPG, PNG, atau WEBP.',
+            'images.*.max' => 'Ukuran gambar maksimal adalah 3 MB per file.',
         ];
     }
 }

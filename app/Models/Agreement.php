@@ -7,6 +7,7 @@ use App\Enums\FeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Agreement extends Model
@@ -95,5 +96,10 @@ class Agreement extends Model
     public function transaction(): HasOne
     {
         return $this->hasOne(Transaction::class, 'agreement_id', 'agreement_id');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'agreement_id', 'agreement_id');
     }
 }
