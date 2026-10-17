@@ -201,13 +201,18 @@
                         Katalog produk digital terstruktur per kategori dan varian. Harga transparan dihitung langsung dari penawaran seller ditambah fee platform yang jelas.
                     </p>
                 </div>
-                <div class="pt-4 border-t border-slate-200/60 flex items-center justify-between gap-2">
-                    <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3.5 shadow-xs inline-flex items-center gap-1.5 font-semibold" title="Buka formulir pembuatan listing penawaran" data-cy="btn-ingin-berjualan">
-                        <span>Ingin berjualan?</span>
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                        </svg>
-                    </a>
+                <div class="pt-4 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary text-xs py-1.5 px-3">
+                            Jelajahi &rarr;
+                        </a>
+                        <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3.5 shadow-xs inline-flex items-center gap-1.5 font-semibold" title="Buka formulir pembuatan listing penawaran" data-cy="btn-ingin-berjualan">
+                            <span>Ingin berjualan?</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </a>
+                    </div>
                     <span class="text-xs font-semibold text-slate-500 shrink-0">
                         {{ $activeListingsCount }} Listing Aktif
                     </span>

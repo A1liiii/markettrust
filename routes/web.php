@@ -11,8 +11,11 @@ use App\Http\Controllers\Forum\ForumCommentController;
 use App\Http\Controllers\Forum\ForumLikeController;
 use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarketplaceCheckoutController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +26,10 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Utama / Index
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Katalog & Detail Marketplace Digital (Publik)
+Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+Route::get('/marketplace/{listing}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 
 // Forum Komunitas (Publik)
 Route::get('/forum', [ForumPostController::class, 'index'])->name('forum.index');
@@ -70,6 +77,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->name('conversations.messages.send');
     Route::get('/conversations/{conversation}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])->name('conversations.messages.attachment');
     Route::get('/conversations/{conversation}/sync', [ConversationController::class, 'sync'])->name('conversations.sync');
+
+    // Checkout Marketplace & Detail Transaksi Kesepakatan
+    Route::get('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'review'])->name('marketplace.checkout.review');
+    Route::post('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'confirm'])->name('marketplace.checkout.confirm');
+    Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
 });
 
 // Area Khusus Administrator
@@ -112,6 +124,7 @@ Route::middleware(['auth', 'active_account'])
         Route::post('/', [ListingController::class, 'store'])->name('store');
         Route::get('/{listing}/edit', [ListingController::class, 'edit'])->name('edit');
         Route::put('/{listing}', [ListingController::class, 'update'])->name('update');
+        Route::get('/{listing}/preview', [ListingController::class, 'preview'])->name('preview');
         Route::patch('/{listing}/toggle-status', [ListingController::class, 'toggleStatus'])->name('toggle-status');
     });
 

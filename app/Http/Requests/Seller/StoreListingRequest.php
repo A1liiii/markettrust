@@ -63,6 +63,8 @@ class StoreListingRequest extends FormRequest
             'estimated_delivery_unit' => ['required', 'in:MINUTE,HOUR,DAY'],
             'status' => ['required', 'in:DRAFT,ACTIVE,CLOSED'],
             'submission_token' => ['nullable', 'string', 'max:100'],
+            'images' => ['nullable', 'array', 'max:4'],
+            'images.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
         ];
     }
 
@@ -87,6 +89,10 @@ class StoreListingRequest extends FormRequest
             'estimated_delivery_unit.in' => 'Satuan estimasi harus berupa MINUTE (Menit), HOUR (Jam), atau DAY (Hari).',
             'status.required' => 'Status awal penawaran wajib ditentukan.',
             'status.in' => 'Status penawaran harus berupa DRAFT, ACTIVE, atau CLOSED.',
+            'images.max' => 'Maksimal 4 gambar yang dapat diunggah.',
+            'images.*.image' => 'File lampiran harus berupa gambar yang valid.',
+            'images.*.mimes' => 'Format gambar harus berupa JPG, PNG, atau WEBP.',
+            'images.*.max' => 'Ukuran gambar maksimal adalah 3 MB per file.',
         ];
     }
 }

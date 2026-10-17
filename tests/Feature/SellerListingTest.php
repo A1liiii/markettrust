@@ -6,7 +6,9 @@ use App\Models\Listing;
 use App\Models\ProductCategory;
 use App\Models\ProductVariant;
 use App\Models\User;
+use App\Services\SupabaseStorageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class SellerListingTest extends TestCase
@@ -437,5 +439,77 @@ class SellerListingTest extends TestCase
             2,
             Listing::where('seller_id', $seller->user_id)->count()
         );
+    }
+
+    /**
+     * Seller dapat membuat listing baru dengan gambar (maksimal 4 gambar).
+     */
+    public function test_seller_can_create_listing_with_images(): void
+    {
+        $storageMock = \Mockery::mock(SupabaseStorageService::class);
+        $storageMock->shouldReceive('uploadFile')
+            ->twice()
+            ->andReturn('https://supabase.test/img1.webp', 'https://supabase.test/img2.webp');
+        $this->app->instance(SupabaseStorageService::class, $storageMock);
+
+        $seller = User::factory()->create();
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        $file1 = UploadedFile::fake()->image('photo1.jpg');
+        $file2 = UploadedFile::fake()->image('photo2.png');
+
+        $response = $this->actingAs($seller)->post('/seller/listings', [
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing dengan Foto Galeri',
+            'description' => 'Deskripsi listing foto',
+            'price' => 120000,
+            'delivery_method' => 'INSTANT',
+            'estimated_delivery_value' => 15,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+            'images' => [$file1, $file2],
+        ]);
+
+        $response->assertRedirect(route('seller.listings.index'));
+
+        $listing = Listing::where('title', 'Listing dengan Foto Galeri')->first();
+        $this->assertNotNull($listing);
+        $this->assertIsArray($listing->image_urls);
+        $this->assertCount(2, $listing->image_urls);
+        $this->assertEquals('https://supabase.test/img1.webp', $listing->cover_image_url);
+    }
+
+    /**
+     * Pembuatan listing dengan lebih dari 4 gambar ditolak oleh validasi.
+     */
+    public function test_creating_listing_with_more_than_4_images_is_rejected(): void
+    {
+        $seller = User::factory()->create();
+        $variant = ProductVariant::factory()->create(['is_active' => true]);
+
+        $files = [
+            UploadedFile::fake()->image('img1.jpg'),
+            UploadedFile::fake()->image('img2.jpg'),
+            UploadedFile::fake()->image('img3.jpg'),
+            UploadedFile::fake()->image('img4.jpg'),
+            UploadedFile::fake()->image('img5.jpg'),
+        ];
+
+        $response = $this->actingAs($seller)->post('/seller/listings', [
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Terlalu Banyak Foto',
+            'description' => 'Deskripsi listing',
+            'price' => 120000,
+            'delivery_method' => 'INSTANT',
+            'estimated_delivery_value' => 15,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+            'images' => $files,
+        ]);
+
+        $response->assertSessionHasErrors('images');
+        $this->assertDatabaseMissing('listings', [
+            'title' => 'Listing Terlalu Banyak Foto',
+        ]);
     }
 }

@@ -23,7 +23,7 @@
 
         <!-- Form Card Container -->
         <div class="glass-panel p-6 sm:p-8 bg-white/95 border border-white/90 shadow-xl">
-            <form id="listing-form" action="{{ route('seller.listings.store') }}" method="POST" class="space-y-8">
+            <form id="listing-form" action="{{ route('seller.listings.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
                 <input type="hidden" name="submission_token" value="{{ $submissionToken ?? '' }}">
 
@@ -92,6 +92,30 @@
                                   class="glass-input w-full text-sm @error('description') border-rose-400 ring-rose-200 @enderror">{{ old('description') }}</textarea>
                         <p class="text-[11px] text-slate-500 mt-1">Cantumkan semua informasi penting agar buyer mendapatkan gambaran akurat sebelum melakukan checkout.</p>
                         @error('description')
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- 1.4 Unggah Foto / Screenshot Item (Maks. 4 File) -->
+                    <div>
+                        <label for="images" class="glass-label flex items-center justify-between">
+                            <span>Unggah Foto / Screenshot Item (Opsional)</span>
+                            <span class="text-[11px] text-slate-400 font-normal">Maks. 4 Gambar &bull; JPG, PNG, WEBP &bull; Maks. 3 MB/file</span>
+                        </label>
+                        <input
+                            type="file"
+                            id="images"
+                            name="images[]"
+                            multiple
+                            accept=".jpg,.jpeg,.png,.webp"
+                            class="glass-input w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer @error('images') border-rose-400 ring-rose-200 @enderror @error('images.*') border-rose-400 ring-rose-200 @enderror"
+                            data-cy="input-listing-images"
+                        >
+                        <p class="text-[11px] text-slate-500 mt-1">Unggah bukti kepemilikan akun, screenshot skin/hero/item, atau bukti legalitas lainnya.</p>
+                        @error('images')
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                        @error('images.*')
                             <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
                         @enderror
                     </div>

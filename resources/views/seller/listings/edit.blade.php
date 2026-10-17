@@ -23,7 +23,7 @@
 
         <!-- Form Card Container -->
         <div class="glass-panel p-6 sm:p-8 bg-white/95 border border-white/90 shadow-xl">
-            <form id="edit-listing-form" action="{{ route('seller.listings.update', $listing->listing_id) }}" method="POST" class="space-y-8">
+            <form id="edit-listing-form" action="{{ route('seller.listings.update', $listing->listing_id) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                 @csrf
                 @method('PUT')
 
@@ -89,6 +89,51 @@
                                   class="glass-input w-full text-sm @error('description') border-rose-400 ring-rose-200 @enderror">{{ old('description', $listing->description) }}</textarea>
                         <p class="text-[11px] text-slate-500 mt-1">Cantumkan semua informasi penting agar buyer mendapatkan gambaran akurat sebelum melakukan checkout.</p>
                         @error('description')
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- 1.4 Kelola Foto Item (Maks. 4 File) -->
+                    <div>
+                        <label class="glass-label flex items-center justify-between">
+                            <span>Foto / Screenshot Item Terpasang</span>
+                            <span class="text-[11px] text-slate-400 font-normal">Maks. 4 Gambar gabungan</span>
+                        </label>
+
+                        @if (!empty($listing->all_image_urls))
+                            <div class="mb-3 p-3 bg-slate-50/80 rounded-xl border border-slate-200">
+                                <span class="block text-[11px] font-semibold text-slate-600 mb-2">Centang gambar yang ingin dipertahankan:</span>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    @foreach ($listing->all_image_urls as $imgUrl)
+                                        <label class="relative block rounded-lg overflow-hidden border-2 border-indigo-200 bg-white p-1 cursor-pointer group">
+                                            <img src="{{ $imgUrl }}" alt="Foto Listing" class="w-full h-20 object-cover rounded">
+                                            <div class="mt-1 flex items-center justify-between px-1">
+                                                <span class="text-[10px] text-slate-600 font-medium">Pertahankan</span>
+                                                <input type="checkbox" name="keep_images[]" value="{{ $imgUrl }}" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <label for="images" class="text-xs font-semibold text-slate-700 block mb-1">
+                            Unggah Gambar Baru Tambahan:
+                        </label>
+                        <input
+                            type="file"
+                            id="images"
+                            name="images[]"
+                            multiple
+                            accept=".jpg,.jpeg,.png,.webp"
+                            class="glass-input w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer @error('images') border-rose-400 ring-rose-200 @enderror @error('images.*') border-rose-400 ring-rose-200 @enderror"
+                            data-cy="input-listing-images"
+                        >
+                        <p class="text-[11px] text-slate-500 mt-1">Format JPG, PNG, WEBP. Maksimal 3 MB per file. Total gabungan gambar lama dan baru maksimal 4 file.</p>
+                        @error('images')
+                            <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                        @error('images.*')
                             <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
