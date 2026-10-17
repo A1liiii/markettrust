@@ -115,7 +115,10 @@ class ConversationWorkflowTest extends TestCase
         $conversation = Conversation::where('listing_id', $listing->listing_id)->first();
         $this->assertNotNull($conversation);
 
-        $response->assertRedirect(route('conversations.show', $conversation->conversation_id));
+        $response->assertRedirect(route('marketplace.show', [
+            'listing' => $listing,
+            'open_dm' => $conversation->conversation_id,
+        ]));
 
         $expectedOne = min($buyer->user_id, $seller->user_id);
         $expectedTwo = max($buyer->user_id, $seller->user_id);
@@ -127,6 +130,11 @@ class ConversationWorkflowTest extends TestCase
         // Calling again does not duplicate the conversation
         $this->actingAs($buyer)->get(route('conversations.from-listing', $listing->listing_id));
         $this->assertEquals(1, Conversation::where('listing_id', $listing->listing_id)->count());
+
+        // Calling via AJAX returns JSON with conversation_id
+        $ajaxResponse = $this->actingAs($buyer)->getJson(route('conversations.from-listing', $listing->listing_id));
+        $ajaxResponse->assertOk();
+        $ajaxResponse->assertJson(['conversation_id' => $conversation->conversation_id]);
     }
 
     /**

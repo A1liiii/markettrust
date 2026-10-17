@@ -25,6 +25,7 @@ class TransactionController extends Controller
             'agreement.buyer',
             'agreement.seller',
             'agreement.variant.product.category',
+            'agreement.conversation',
             'listing',
             'payment',
             'statusHistories.changedBy',

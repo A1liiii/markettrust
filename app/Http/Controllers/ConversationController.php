@@ -83,19 +83,36 @@ class ConversationController extends Controller
     /**
      * Start or open a DM initiated from a Listing.
      */
-    public function startFromListing(Listing $listing): RedirectResponse
+    public function startFromListing(Listing $listing): RedirectResponse|JsonResponse
     {
         $user = auth()->user();
 
         if ($user->user_id === $listing->seller_id) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Anda tidak dapat mengirim pesan ke listing milik Anda sendiri.'], 422);
+            }
+
             return back()->with('warning', 'Anda tidak dapat mengirim pesan ke listing milik Anda sendiri.');
         }
 
         try {
             $conversation = $this->conversationService->startFromListing($user, $listing);
 
-            return redirect()->route('conversations.show', $conversation);
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'conversation_id' => $conversation->conversation_id,
+                ]);
+            }
+
+            return redirect()->route('marketplace.show', [
+                'listing' => $listing,
+                'open_dm' => $conversation->conversation_id,
+            ]);
         } catch (InvalidArgumentException $e) {
+            if (request()->expectsJson()) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+
             return back()->with('warning', $e->getMessage());
         }
     }
