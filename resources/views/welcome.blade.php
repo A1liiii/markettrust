@@ -177,61 +177,71 @@
             <!-- Pillar 1: Marketplace -->
             <div id="marketplace" class="glass-card glass-card-interactive p-6 sm:p-8 flex flex-col justify-between">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold mb-6 border border-indigo-500/20 shadow-xs">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                        </svg>
+                    <div class="flex items-start justify-between gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold border border-indigo-500/20 shadow-xs shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100/80 shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                            {{ $activeListingsCount }} Listing Aktif
+                        </span>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Marketplace Digital</h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
                         Katalog produk digital terstruktur per kategori dan varian. Harga transparan dihitung langsung dari penawaran seller ditambah fee platform yang jelas.
                     </p>
                 </div>
-                <div class="pt-4 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary text-xs py-1.5 px-3">
-                            Jelajahi &rarr;
-                        </a>
-                        <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3 shadow-xs inline-flex items-center font-semibold" data-cy="btn-ingin-berjualan">
-                            <span>Ingin berjualan?</span>
-                        </a>
-                    </div>
-                    <span class="text-xs font-semibold text-slate-500 shrink-0">
-                        {{ $activeListingsCount }} Listing Aktif
-                    </span>
+                <div class="pt-4 border-t border-slate-200/60 grid grid-cols-2 gap-2.5">
+                    <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary text-xs py-2 px-3 text-center justify-center font-semibold">
+                        Jelajahi &rarr;
+                    </a>
+                    <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-2 px-3 text-center justify-center font-semibold shadow-xs" data-cy="btn-ingin-berjualan">
+                        <span>Ingin berjualan?</span>
+                    </a>
                 </div>
             </div>
 
             <!-- Pillar 2: Forum WTB/WTS -->
             <div id="forum" class="glass-card glass-card-interactive p-6 sm:p-8 flex flex-col justify-between">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold mb-6 border border-amber-500/20 shadow-xs">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
+                    <div class="flex items-start justify-between gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold border border-amber-500/20 shadow-xs shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100/80 shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            {{ $forumPostsCount }} Diskusi
+                        </span>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Forum Komunitas & Negosiasi</h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
                         Ruang diskusi terbuka untuk WTB (Want to Buy), WTS (Want to Sell), dan General. Komentar, likes, dan tombol langsung beralih ke DM kesepakatan.
                     </p>
                 </div>
-                <div class="pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                    <a href="{{ route('forum.index') }}" class="glass-btn-primary text-xs py-1 px-3">
+                <div class="pt-4 border-t border-slate-200/60">
+                    <a href="{{ route('forum.index') }}" class="glass-btn-primary w-full text-xs py-2 px-3 text-center justify-center font-semibold">
                         Kunjungi Forum &rarr;
                     </a>
-                    <span class="text-xs font-semibold text-slate-500">
-                        {{ $forumPostsCount }} Diskusi
-                    </span>
                 </div>
             </div>
 
             <!-- Pillar 3: Escrow & Settlement -->
             <div id="escrow" class="glass-card glass-card-interactive p-6 sm:p-8 flex flex-col justify-between">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold mb-6 border border-emerald-500/20 shadow-xs">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                    <div class="flex items-start justify-between gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold border border-emerald-500/20 shadow-xs shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100/80 shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Proteksi 100%
+                        </span>
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Escrow Rekber Otomatis</h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
@@ -239,9 +249,9 @@
                     </p>
                 </div>
                 <div class="pt-4 border-t border-slate-200/60">
-                    <span class="glass-badge glass-badge-success">
-                        Proteksi Sengketa & Bukti
-                    </span>
+                    <a href="#simulasi-fee" class="glass-btn-secondary w-full text-xs py-2 px-3 text-center justify-center font-semibold text-slate-700 hover:text-indigo-600">
+                        Simulasi Biaya Escrow &rarr;
+                    </a>
                 </div>
             </div>
         </div>
