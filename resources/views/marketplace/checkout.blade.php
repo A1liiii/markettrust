@@ -21,14 +21,14 @@
         <div class="border-b border-white/60 pb-6">
             <div class="inline-flex items-center gap-2 mb-2">
                 <span class="glass-badge glass-badge-primary">
-                    Kesepakatan Final Marketplace (UC09)
+                    Transaksi Escrow Aman & Terpercaya
                 </span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Tinjauan Rincian & Konfirmasi Transaksi
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
-                Periksa item digital, rincian biaya layanan platform, dan komitmen SLA penyerahan sebelum menyetujui transaksi escrow.
+                Periksa item digital dan estimasi waktu penyerahan sebelum menyetujui transaksi rekening bersama.
             </p>
         </div>
 
@@ -57,9 +57,9 @@
                         </div>
                     </div>
                     <div class="text-left sm:text-right shrink-0">
-                        <span class="block text-[10px] uppercase font-bold text-slate-400">Harga Bersih Listing</span>
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Total Harga</span>
                         <span class="text-xl font-black text-slate-900" data-cy="checkout-base-price">
-                            Rp {{ number_format($feeCalculation->basePrice, 0, ',', '.') }}
+                            Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
@@ -68,46 +68,24 @@
             <!-- Financial Calculation Table -->
             <div class="space-y-4">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Rincian Biaya Transaksi Resmi (Marketplace EXCLUDE)
+                    Rincian Pembayaran Transaksi
                 </h3>
 
                 <div class="bg-white/50 rounded-2xl p-5 border border-slate-200/60 space-y-3 text-sm">
                     <div class="flex justify-between items-center text-slate-600">
-                        <span>Harga Dasar Produk:</span>
+                        <span>Harga Produk:</span>
                         <span class="font-semibold text-slate-900">
-                            Rp {{ number_format($feeCalculation->basePrice, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    <div class="flex justify-between items-center text-slate-600">
-                        <span class="flex items-center gap-1.5">
-                            <span>Biaya Layanan Platform (Rekber Escrow):</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
-                                7 Jenjang SKPL
-                            </span>
-                        </span>
-                        <span class="font-semibold text-indigo-600" data-cy="checkout-fee-amount">
-                            + Rp {{ number_format($feeCalculation->feeAmount, 0, ',', '.') }}
+                            Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
                         </span>
                     </div>
 
                     <div class="border-t border-slate-200/80 pt-3 flex justify-between items-center">
                         <div>
-                            <span class="block text-xs font-bold text-slate-900">Total Yang Wajib Dibayar Buyer:</span>
+                            <span class="block text-xs font-bold text-slate-900">Total Pembayaran:</span>
                             <span class="text-[10px] text-slate-500">Ditahan aman di rekening bersama MarketTrust</span>
                         </div>
                         <span class="text-xl sm:text-2xl font-black text-slate-900 text-indigo-700" data-cy="checkout-buyer-total">
                             Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    <div class="border-t border-slate-200/80 pt-3 flex justify-between items-center text-xs">
-                        <div>
-                            <span class="block font-semibold text-slate-700">Penerimaan Bersih Penjual:</span>
-                            <span class="text-[10px] text-slate-500">Dicairkan ke seller setelah transaksi selesai</span>
-                        </div>
-                        <span class="font-bold text-emerald-600" data-cy="checkout-seller-net">
-                            Rp {{ number_format($feeCalculation->sellerNet, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
@@ -128,18 +106,6 @@
                 </ul>
             </div>
 
-            <!-- Seller Payout Validation Check (TC-09-06) -->
-            @if (!$hasSellerPayout)
-                <div class="glass-alert glass-alert-warning" data-cy="alert-no-payout">
-                    <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    <div class="text-xs sm:text-sm font-medium">
-                        <strong>Perhatian:</strong> Penjual belum melengkapi rekening/tujuan pencairan (payout) yang aktif di platform. Sesuai kebijakan keamanan escrow (TC-09-06), pembayaran baru diizinkan setelah penjual mendaftarkan rekening payout.
-                    </div>
-                </div>
-            @endif
-
             <!-- Confirmation Form -->
             <form action="{{ route('marketplace.checkout.confirm', $listing) }}" method="POST" id="checkout-confirm-form">
                 @csrf
@@ -155,29 +121,17 @@
                         &larr; Batalkan / Kembali ke Listing
                     </a>
 
-                    @if ($hasSellerPayout)
-                        <button
-                            type="submit"
-                            id="btn-confirm-checkout"
-                            class="glass-btn-primary w-full sm:w-auto px-8 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
-                            data-cy="btn-confirm-checkout"
-                        >
-                            <span>Setuju & Mulai Transaksi</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                            </svg>
-                        </button>
-                    @else
-                        <button
-                            type="button"
-                            disabled
-                            class="glass-btn-neutral w-full sm:w-auto px-8 py-3 text-xs sm:text-sm font-bold opacity-60 cursor-not-allowed"
-                            title="Menunggu penjual melengkapi data payout"
-                            data-cy="btn-checkout-blocked"
-                        >
-                            Pembayaran Belum Diizinkan
-                        </button>
-                    @endif
+                    <button
+                        type="submit"
+                        id="btn-confirm-checkout"
+                        class="glass-btn-primary w-full sm:w-auto px-8 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
+                        data-cy="btn-confirm-checkout"
+                    >
+                        <span>Setuju & Mulai Transaksi</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
                 </div>
             </form>
 

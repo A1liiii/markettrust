@@ -238,11 +238,6 @@ class MarketplaceService implements MarketplaceServiceInterface
                     ));
                 }
 
-                // Cek rekening payout seller (TC-09-06)
-                if (! $this->validateSellerPayoutAvailable($freshListing->seller)) {
-                    throw new LogicException('Penjual belum melengkapi rekening/tujuan pencairan (payout) yang aktif. Pembayaran belum dapat diproses.');
-                }
-
                 // Hitung rincian fee resmi Marketplace (selalu EXCLUDE, ditanggung Buyer)
                 $feeCalc = $this->feeCalculationService->calculateForMarketplace($currentPrice);
 

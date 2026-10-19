@@ -3,47 +3,44 @@
 @section('title', 'Marketplace Digital - Beli Item, Akun & Voucher Aman')
 
 @section('content')
-<div class="py-8 sm:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+<div class="py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
 
         <!-- Header / Banner Section -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-white/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/60">
             <div>
-                <div class="inline-flex items-center gap-2 mb-3">
-                    <span class="glass-badge glass-badge-primary">
-                        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                <div class="inline-flex items-center gap-2 mb-1">
+                    <span class="glass-badge glass-badge-primary text-[11px] py-0.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
                         Katalog Terverifikasi Escrow
                     </span>
                     <span class="text-xs font-semibold text-slate-500">
                         {{ $totalActiveListings }} Listing Aktif
                     </span>
                 </div>
-                <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                     Marketplace <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Produk Digital</span>
                 </h1>
-                <p class="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-                    Jual-beli akun, item game, in-game currency, dan voucher digital terstruktur. Dilindungi rekening bersama otomatis dan rincian biaya yang transparan.
+                <p class="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed mt-0.5">
+                    Jual-beli akun, item game, in-game currency, dan voucher digital terpercaya dilindungi rekening bersama.
                 </p>
             </div>
 
-            <!-- CTA Seller -->
+            <!-- CTA Seller (Tanpa tombol +) -->
             <div class="shrink-0">
-                <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary py-2.5 px-4 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm" data-cy="btn-ingin-berjualan" id="marketplace-cta-jual">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary py-2 px-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center shadow-sm" data-cy="btn-ingin-berjualan" id="marketplace-cta-jual">
                     <span>Ingin Berjualan?</span>
                 </a>
             </div>
         </div>
 
         <!-- Filter & Search Toolbar Glass Panel -->
-        <div class="glass-panel p-5 sm:p-6 border border-white/80 shadow-sm" id="marketplace-filter-toolbar">
-            <form action="{{ route('marketplace.index') }}" method="GET" id="marketplace-search-form" class="space-y-4">
+        <div class="glass-panel p-3.5 sm:p-4 border border-white/80 shadow-sm" id="marketplace-filter-toolbar">
+            <form action="{{ route('marketplace.index') }}" method="GET" id="marketplace-search-form" class="space-y-3">
                 <!-- Search Keyword -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
@@ -53,7 +50,7 @@
                         id="search-input"
                         value="{{ request('q') }}"
                         placeholder="Cari judul listing, varian, atau nama game..."
-                        class="w-full pl-11 pr-24 py-2.5 sm:py-3 rounded-xl bg-white/80 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm font-medium transition"
+                        class="w-full pl-10 pr-24 py-2 sm:py-2.5 rounded-xl bg-white/80 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-xs sm:text-sm font-medium transition"
                         data-cy="input-search-marketplace"
                     >
                     @if (request('q'))
@@ -63,108 +60,136 @@
                             </a>
                         </div>
                     @endif
-                    <button type="submit" class="absolute inset-y-1.5 right-1.5 px-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-xs" data-cy="btn-submit-search">
+                    <button type="submit" class="absolute inset-y-1 right-1 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition shadow-xs" data-cy="btn-submit-search">
                         Cari
                     </button>
                 </div>
 
-                <!-- Hierarchical Filter Selectors -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                <!-- Hierarchical Filter Selectors dengan Custom Chevron Down & Padding Nyaman -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
                     <!-- Kategori -->
                     <div>
-                        <label for="filter-category" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        <label for="filter-category" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                             Kategori Produk
                         </label>
-                        <select
-                            name="category_id"
-                            id="filter-category"
-                            class="w-full py-2 px-3 rounded-lg bg-white/90 border border-slate-200 text-xs sm:text-sm text-slate-700 focus:outline-none focus:border-indigo-500 transition"
-                            data-cy="select-category"
-                        >
-                            <option value="">Semua Kategori</option>
-                            @foreach ($categories as $cat)
-                                <option value="{{ $cat->category_id }}" @selected(request('category_id') == $cat->category_id)>
-                                    {{ $cat->category_name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            <select
+                                name="category_id"
+                                id="filter-category"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
+                                data-cy="select-category"
+                            >
+                                <option value="">Semua Kategori</option>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->category_id }}" @selected(request('category_id') == $cat->category_id)>
+                                        {{ $cat->category_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Produk -->
                     <div>
-                        <label for="filter-product" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        <label for="filter-product" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                             Produk Master
                         </label>
-                        <select
-                            name="product_id"
-                            id="filter-product"
-                            class="w-full py-2 px-3 rounded-lg bg-white/90 border border-slate-200 text-xs sm:text-sm text-slate-700 focus:outline-none focus:border-indigo-500 transition"
-                            data-cy="select-product"
-                        >
-                            <option value="">Semua Produk</option>
-                            @foreach ($categories as $cat)
-                                @foreach ($cat->products as $prod)
-                                    <option
-                                        value="{{ $prod->product_id }}"
-                                        data-category="{{ $cat->category_id }}"
-                                        @selected(request('product_id') == $prod->product_id)
-                                    >
-                                        {{ $cat->category_name }} &rsaquo; {{ $prod->product_name }}
-                                    </option>
+                        <div class="relative">
+                            <select
+                                name="product_id"
+                                id="filter-product"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
+                                data-cy="select-product"
+                            >
+                                <option value="">Semua Produk</option>
+                                @foreach ($categories as $cat)
+                                    @foreach ($cat->products as $prod)
+                                        <option
+                                            value="{{ $prod->product_id }}"
+                                            data-category="{{ $cat->category_id }}"
+                                            @selected(request('product_id') == $prod->product_id)
+                                        >
+                                            {{ $cat->category_name }} &rsaquo; {{ $prod->product_name }}
+                                        </option>
+                                    @endforeach
                                 @endforeach
-                            @endforeach
-                        </select>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Varian -->
                     <div>
-                        <label for="filter-variant" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                        <label for="filter-variant" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                             Varian Item
                         </label>
-                        <select
-                            name="variant_id"
-                            id="filter-variant"
-                            class="w-full py-2 px-3 rounded-lg bg-white/90 border border-slate-200 text-xs sm:text-sm text-slate-700 focus:outline-none focus:border-indigo-500 transition"
-                            data-cy="select-variant"
-                        >
-                            <option value="">Semua Varian</option>
-                            @foreach ($categories as $cat)
-                                @foreach ($cat->products as $prod)
-                                    @foreach ($prod->variants as $var)
-                                        <option
-                                            value="{{ $var->variant_id }}"
-                                            data-product="{{ $prod->product_id }}"
-                                            data-category="{{ $cat->category_id }}"
-                                            @selected(request('variant_id') == $var->variant_id)
-                                        >
-                                            {{ $prod->product_name }} - {{ $var->variant_name }}
-                                        </option>
+                        <div class="relative">
+                            <select
+                                name="variant_id"
+                                id="filter-variant"
+                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
+                                data-cy="select-variant"
+                            >
+                                <option value="">Semua Varian</option>
+                                @foreach ($categories as $cat)
+                                    @foreach ($cat->products as $prod)
+                                        @foreach ($prod->variants as $var)
+                                            <option
+                                                value="{{ $var->variant_id }}"
+                                                data-product="{{ $prod->product_id }}"
+                                                data-category="{{ $cat->category_id }}"
+                                                @selected(request('variant_id') == $var->variant_id)
+                                            >
+                                                {{ $prod->product_name }} - {{ $var->variant_name }}
+                                            </option>
+                                        @endforeach
                                     @endforeach
                                 @endforeach
-                            @endforeach
-                        </select>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Pengurutan & Aksi Reset -->
                     <div class="flex items-end gap-2">
                         <div class="flex-1">
-                            <label for="filter-sort" class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                            <label for="filter-sort" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                                 Urutkan
                             </label>
-                            <select
-                                name="sort"
-                                id="filter-sort"
-                                class="w-full py-2 px-3 rounded-lg bg-white/90 border border-slate-200 text-xs sm:text-sm text-slate-700 focus:outline-none focus:border-indigo-500 transition"
-                                data-cy="select-sort"
-                            >
-                                <option value="latest" @selected(request('sort') === 'latest' || !request('sort'))>Terbaru</option>
-                                <option value="price_asc" @selected(request('sort') === 'price_asc')>Harga Terendah</option>
-                                <option value="price_desc" @selected(request('sort') === 'price_desc')>Harga Tertinggi</option>
-                            </select>
+                            <div class="relative">
+                                <select
+                                    name="sort"
+                                    id="filter-sort"
+                                    class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
+                                    data-cy="select-sort"
+                                >
+                                    <option value="latest" @selected(request('sort') === 'latest' || !request('sort'))>Terbaru</option>
+                                    <option value="price_asc" @selected(request('sort') === 'price_asc')>Harga Terendah</option>
+                                    <option value="price_desc" @selected(request('sort') === 'price_desc')>Harga Tertinggi</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                         <a
                             href="{{ route('marketplace.index') }}"
-                            class="glass-btn-secondary py-2 px-3 text-xs font-semibold flex items-center justify-center shrink-0 h-[38px]"
+                            class="glass-btn-secondary py-2 px-3 text-xs font-semibold flex items-center justify-center shrink-0 h-[38px] rounded-xl"
                             title="Reset semua filter"
                             data-cy="btn-reset-filter"
                         >
@@ -175,14 +200,18 @@
             </form>
         </div>
 
-        <!-- Listing Grid Section -->
+        <!-- Listing Grid Section (4 Kolom x 2 Baris = 8 Item) -->
         <div>
             @if ($listings->count() > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="marketplace-grid" data-cy="marketplace-grid">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="marketplace-grid" data-cy="marketplace-grid">
                     @foreach ($listings as $listing)
-                        <div class="glass-card glass-card-interactive flex flex-col justify-between overflow-hidden group border border-white/80 hover:border-indigo-300 transition-all duration-300">
+                        <a
+                            href="{{ route('marketplace.show', $listing) }}"
+                            class="glass-card glass-card-interactive flex flex-col justify-between overflow-hidden group border border-white/80 hover:border-indigo-300 transition-all duration-300 cursor-pointer text-left block"
+                            data-cy="listing-card-{{ $listing->listing_id }}"
+                        >
                             <!-- Image Header / Fallback Cover -->
-                            <div class="relative aspect-video bg-gradient-to-tr from-slate-100 via-slate-50 to-indigo-50/40 border-b border-slate-100 flex items-center justify-center overflow-hidden">
+                            <div class="relative aspect-[16/10] bg-gradient-to-tr from-slate-100 via-slate-50 to-indigo-50/40 border-b border-slate-100 flex items-center justify-center overflow-hidden">
                                 @if ($listing->cover_image_url)
                                     <img
                                         src="{{ $listing->cover_image_url }}"
@@ -191,11 +220,11 @@
                                         loading="lazy"
                                     >
                                 @else
-                                    <div class="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
-                                        <svg class="w-10 h-10 mb-1 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex flex-col items-center justify-center text-slate-400 p-3 text-center">
+                                        <svg class="w-8 h-8 mb-1 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                         </svg>
-                                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                                        <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider truncate max-w-[140px]">
                                             {{ $listing->variant?->product?->product_name ?? 'Digital Item' }}
                                         </span>
                                     </div>
@@ -219,33 +248,31 @@
                             </div>
 
                             <!-- Body Content -->
-                            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                            <div class="p-3.5 flex-1 flex flex-col justify-between space-y-2.5">
                                 <div>
-                                    <div class="text-[11px] font-medium text-slate-500 mb-1 flex items-center gap-1">
-                                        <span>{{ $listing->variant?->product?->product_name }}</span>
+                                    <div class="text-[11px] font-medium text-slate-500 mb-0.5 flex items-center gap-1">
+                                        <span class="truncate max-w-[120px]">{{ $listing->variant?->product?->product_name }}</span>
                                         <span>&bull;</span>
-                                        <span class="text-indigo-600 font-semibold truncate">{{ $listing->variant?->variant_name }}</span>
+                                        <span class="text-indigo-600 font-semibold truncate max-w-[100px]">{{ $listing->variant?->variant_name }}</span>
                                     </div>
-                                    <h3 class="font-bold text-slate-900 text-sm leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                                        <a href="{{ route('marketplace.show', $listing) }}" class="focus:outline-none" data-cy="listing-card-title-{{ $listing->listing_id }}">
-                                            {{ $listing->title }}
-                                        </a>
+                                    <h3 class="font-bold text-slate-900 text-sm leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors" data-cy="listing-card-title-{{ $listing->listing_id }}">
+                                        {{ $listing->title }}
                                     </h3>
-                                    <p class="text-xs text-slate-500 line-clamp-2 mt-1.5 leading-relaxed">
+                                    <p class="text-xs text-slate-500 line-clamp-1 mt-1 leading-relaxed">
                                         {{ $listing->description }}
                                     </p>
                                 </div>
 
-                                <!-- Price & Seller Footer -->
-                                <div class="pt-3 border-t border-slate-100 flex items-end justify-between gap-2">
+                                <!-- Price (Harga Total Pembeli) & Seller Footer -->
+                                <div class="pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
                                     <div>
-                                        <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Harga Bersih</span>
+                                        <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Harga</span>
                                         <span class="text-base font-extrabold text-slate-900" data-cy="listing-card-price-{{ $listing->listing_id }}">
-                                            Rp {{ number_format($listing->price, 0, ',', '.') }}
+                                            Rp {{ number_format($listing->buyer_total, 0, ',', '.') }}
                                         </span>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-[11px] font-semibold text-slate-700 truncate max-w-[110px]">
+                                        <div class="text-[11px] font-semibold text-slate-700 truncate max-w-[100px]">
                                             @<span>{{ $listing->seller?->username }}</span>
                                         </div>
                                         <div class="text-[10px] text-emerald-600 font-medium">
@@ -255,40 +282,39 @@
                                 </div>
                             </div>
 
-                            <!-- Card Action Link -->
-                            <div class="px-4 pb-4 pt-1">
-                                <a
-                                    href="{{ route('marketplace.show', $listing) }}"
-                                    class="w-full glass-btn-primary py-2 text-xs font-semibold flex items-center justify-center gap-1.5"
+                            <!-- Card Action Button -->
+                            <div class="px-3.5 pb-3.5 pt-0.5">
+                                <span
+                                    class="w-full glass-btn-primary py-1.5 text-xs font-semibold flex items-center justify-center gap-1.5 group-hover:bg-indigo-700 transition"
                                     data-cy="btn-view-listing-{{ $listing->listing_id }}"
                                 >
                                     <span>Lihat Rincian</span>
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                     </svg>
-                                </a>
+                                </span>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-8 flex justify-center" data-cy="marketplace-pagination">
+                <div class="mt-4 flex justify-center" data-cy="marketplace-pagination">
                     {{ $listings->links() }}
                 </div>
             @else
                 <!-- Empty State -->
-                <div class="glass-card p-12 text-center max-w-xl mx-auto border border-white/80" data-cy="marketplace-empty-state">
-                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-2xs">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="glass-card p-10 text-center max-w-xl mx-auto border border-white/80" data-cy="marketplace-empty-state">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mx-auto mb-3 border border-indigo-100 shadow-2xs">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 14v-4m0 0l-2 2m2-2l2 2"/>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 mb-2">Tidak Ada Listing yang Sesuai</h3>
-                    <p class="text-sm text-slate-500 mb-6 leading-relaxed">
+                    <h3 class="text-base font-bold text-slate-900 mb-1.5">Tidak Ada Listing yang Sesuai</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-5 leading-relaxed">
                         Kami tidak menemukan penawaran produk digital yang cocok dengan filter atau kata kunci pencarian Anda. Coba gunakan kata kunci lain atau reset filter.
                     </p>
-                    <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary px-5 py-2.5 text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5" data-cy="btn-clear-search">
+                    <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary px-4 py-2 text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5" data-cy="btn-clear-search">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>

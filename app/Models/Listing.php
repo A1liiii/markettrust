@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Services\FeeCalculationServiceInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -130,5 +131,15 @@ class Listing extends Model
             'DAY' => $this->estimated_delivery_value * 1440,
             default => $this->estimated_delivery_value,
         };
+    }
+
+    /**
+     * Total harga yang dibayar oleh pembeli (harga seller + fee layanan).
+     */
+    public function getBuyerTotalAttribute(): float
+    {
+        $feeService = app(FeeCalculationServiceInterface::class);
+
+        return $feeService->calculateForMarketplace((float) $this->price)->buyerTotal;
     }
 }

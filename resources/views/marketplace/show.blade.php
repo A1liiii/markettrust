@@ -3,39 +3,39 @@
 @section('title', $listing->title . ' - Marketplace MarketTrust')
 
 @section('content')
-<div class="py-8 sm:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+<div class="pt-4 pb-12 sm:pt-4 sm:pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <!-- Breadcrumbs Navigation -->
-        <nav class="flex items-center gap-2 text-xs text-slate-500 overflow-x-auto pb-1" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
-            <span>&rsaquo;</span>
-            <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition">Marketplace</a>
-            <span>&rsaquo;</span>
-            <a href="{{ route('marketplace.index', ['category_id' => $listing->variant?->product?->category_id]) }}" class="hover:text-indigo-600 transition">
-                {{ $listing->variant?->product?->category?->category_name ?? 'Kategori' }}
-            </a>
-            <span>&rsaquo;</span>
-            <span class="text-slate-800 font-semibold truncate max-w-[200px]">{{ $listing->title }}</span>
-        </nav>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
-        <!-- Preview Mode Alert Banner -->
-        @if ($isPreview ?? false)
-            <div class="glass-alert glass-alert-warning" data-cy="alert-preview-mode">
-                <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                </svg>
-                <div class="text-sm font-medium">
-                    <strong>Mode Pratinjau Seller:</strong> Listing ini berstatus <span class="uppercase font-bold underline">{{ $listing->status }}</span> dan tidak terlihat oleh publik.
-                </div>
-            </div>
-        @endif
+            <!-- Left Column: Breadcrumb, Preview Alert, Gallery, Specs, & Market Insights (8 Cols) -->
+            <div class="lg:col-span-8 space-y-6">
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Breadcrumbs Navigation -->
+                <nav class="flex items-center gap-2 text-xs text-slate-500 overflow-x-auto pb-1" aria-label="Breadcrumb">
+                    <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
+                    <span>&rsaquo;</span>
+                    <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition">Marketplace</a>
+                    <span>&rsaquo;</span>
+                    <a href="{{ route('marketplace.index', ['category_id' => $listing->variant?->product?->category_id]) }}" class="hover:text-indigo-600 transition">
+                        {{ $listing->variant?->product?->category?->category_name ?? 'Kategori' }}
+                    </a>
+                    <span>&rsaquo;</span>
+                    <span class="text-slate-800 font-semibold truncate max-w-[200px]">{{ $listing->title }}</span>
+                </nav>
 
-            <!-- Left Column: Gallery, Description, & Market Insights (8 Cols) -->
-            <div class="lg:col-span-8 space-y-8">
+                <!-- Preview Mode Alert Banner -->
+                @if ($isPreview ?? false)
+                    <div class="glass-alert glass-alert-warning" data-cy="alert-preview-mode">
+                        <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        <div class="text-sm font-medium">
+                            <strong>Mode Pratinjau Seller:</strong> Listing ini berstatus <span class="uppercase font-bold underline">{{ $listing->status }}</span> dan tidak terlihat oleh publik.
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Image Gallery Component -->
                 <div class="glass-card p-4 sm:p-6 overflow-hidden border border-white/80 shadow-sm" id="listing-gallery">
@@ -134,7 +134,7 @@
                     </div>
                 </div>
 
-                <!-- Product Market Insights Widget (UC05) -->
+                <!-- Product Market Insights Widget -->
                 <div class="glass-card p-6 sm:p-8 space-y-6 border border-white/80 shadow-sm relative overflow-hidden" id="widget-informasi-pasar" data-cy="widget-informasi-pasar">
                     <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">
                         <div class="flex items-center gap-3">
@@ -227,27 +227,27 @@
             </div>
 
             <!-- Right Column: Sticky Pricing, Actions, & Seller Profile (4 Cols) -->
-            <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-20 self-start">
 
                 <!-- Pricing & Action Card -->
-                <div class="glass-card p-6 border border-white/90 shadow-md space-y-5">
+                <div class="glass-card p-5 border border-white/90 shadow-md space-y-4">
                     <div>
                         <div class="flex items-center justify-between gap-2 mb-1.5">
-                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Penawaran</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Produk</span>
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase {{ $listing->status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' }}">
-                                {{ $listing->status === 'ACTIVE' ? 'Aktif Dijual' : $listing->status }}
+                                {{ $listing->status === 'ACTIVE' ? 'Tersedia' : $listing->status }}
                             </span>
                         </div>
                         <div class="text-3xl font-black text-slate-900 tracking-tight" data-cy="listing-price-display">
-                            Rp {{ number_format($listing->price, 0, ',', '.') }}
+                            Rp {{ number_format($listing->buyer_total, 0, ',', '.') }}
                         </div>
                         <p class="text-[11px] text-slate-500 mt-1">
-                            Biaya layanan platform ditanggung pembeli saat checkout (skema transparan SKPL).
+                            Sudah termasuk perlindungan rekening bersama (escrow) MarketTrust.
                         </p>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="space-y-3 pt-3 border-t border-slate-100">
+                    <div class="space-y-2.5 pt-3 border-t border-slate-100">
                         @if ($listing->status === 'ACTIVE')
                             @auth
                                 @if (auth()->user()->user_id === $listing->seller_id)
@@ -308,7 +308,7 @@
                 </div>
 
                 <!-- Seller Profile Card -->
-                <div class="glass-card p-6 border border-white/80 shadow-sm space-y-4">
+                <div class="glass-card p-5 border border-white/80 shadow-sm space-y-3.5">
                     <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         Informasi Penjual
                     </span>

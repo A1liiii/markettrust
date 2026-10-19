@@ -181,7 +181,7 @@
                                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Simulasi Rincian Pembayaran Transaksi</h3>
                             </div>
                             <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold self-start sm:self-auto">
-                                Mode Fee: EXCLUDE (Wajib Marketplace)
+                                Biaya Layanan Ditanggung Pembeli
                             </span>
                         </div>
 

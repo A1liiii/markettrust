@@ -128,7 +128,7 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
     }
 
     /**
-     * Halaman review checkout menampilkan ringkasan biaya EXCLUDE yang transparan (TC-09-01).
+     * Halaman review checkout menampilkan ringkasan harga pembeli yang bersih.
      */
     public function test_checkout_review_page_displays_accurate_fee_breakdown(): void
     {
@@ -141,11 +141,8 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Tinjauan Rincian');
-        $response->assertSee('Kesepakatan Final Marketplace');
-        $response->assertSee('Rp 100.000'); // Harga dasar
-        $response->assertSee('Rp 5.000');   // Fee tier 50k-100k (5%) = 5000
-        $response->assertSee('Rp 105.000'); // Total bayar pembeli
-        $response->assertSee('Rp 100.000'); // Penerimaan bersih penjual
+        $response->assertSee('Transaksi Escrow Aman');
+        $response->assertSee('Rp 105.000'); // Total bayar pembeli (harga dasar + fee)
     }
 
     /**
@@ -219,9 +216,9 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
     }
 
     /**
-     * Konfirmasi checkout ditolak jika penjual belum memiliki rekening payout aktif (TC-09-06).
+     * Konfirmasi checkout tetap berhasil meskipun penjual belum memiliki rekening payout aktif.
      */
-    public function test_checkout_blocked_if_seller_has_no_active_payout_account(): void
+    public function test_checkout_succeeds_even_if_seller_has_no_active_payout_account(): void
     {
         $seller = User::factory()->create(); // Payout tidak di-attach
         $buyer = User::factory()->create();
@@ -234,10 +231,9 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
             'expected_price' => 100000.00,
         ]);
 
-        $response->assertSessionHas('warning', 'Penjual belum melengkapi rekening/tujuan pencairan (payout) yang aktif. Pembayaran belum dapat diproses.');
-        $this->assertDatabaseMissing('transactions', [
-            'listing_id' => $listing->listing_id,
-        ]);
+        $transaction = Transaction::where('listing_id', $listing->listing_id)->first();
+        $this->assertNotNull($transaction, 'Transaksi harus tetap terbentuk.');
+        $response->assertRedirect(route('transactions.show', $transaction));
     }
 
     /**

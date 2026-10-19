@@ -187,11 +187,16 @@
                         Katalog produk digital terstruktur per kategori dan varian. Harga transparan dihitung langsung dari penawaran seller ditambah fee platform yang jelas.
                     </p>
                 </div>
-                <div class="pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                    <a href="{{ route('marketplace.index') }}" class="glass-btn-primary text-xs py-1.5 px-3.5 shadow-xs flex items-center gap-1.5 font-semibold">
-                        <span>Jelajahi Marketplace &rarr;</span>
-                    </a>
-                    <span class="text-xs font-semibold text-slate-500">
+                <div class="pt-4 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary text-xs py-1.5 px-3">
+                            Jelajahi &rarr;
+                        </a>
+                        <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary text-xs py-1.5 px-3 shadow-xs inline-flex items-center font-semibold" data-cy="btn-ingin-berjualan">
+                            <span>Ingin berjualan?</span>
+                        </a>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-500 shrink-0">
                         {{ $activeListingsCount }} Listing Aktif
                     </span>
                 </div>

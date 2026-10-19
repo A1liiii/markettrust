@@ -21,7 +21,7 @@ class MarketplaceController extends Controller
     public function index(MarketplaceSearchRequest $request): View
     {
         $validated = $request->validated();
-        $listings = $this->marketplaceService->searchListings($validated, 12);
+        $listings = $this->marketplaceService->searchListings($validated, 8);
 
         // Ambil pohon kategori -> produk -> varian aktif untuk dropdown filter
         $categories = ProductCategory::query()
