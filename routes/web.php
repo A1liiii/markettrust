@@ -13,6 +13,7 @@ use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceCheckoutController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
 use App\Http\Controllers\TransactionController;
@@ -81,8 +82,15 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     // Checkout Marketplace & Detail Transaksi Kesepakatan
     Route::get('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'review'])->name('marketplace.checkout.review');
     Route::post('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'confirm'])->name('marketplace.checkout.confirm');
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
+    Route::post('/transactions/{transaction}/payment-token', [PaymentController::class, 'createSnapToken'])->name('transactions.payment-token');
+    Route::post('/transactions/{transaction}/sync-payment', [PaymentController::class, 'syncStatus'])->name('transactions.sync-payment');
 });
+
+// Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
+Route::post('/api/midtrans/notification', [PaymentController::class, 'handleNotification'])->name('midtrans.notification');
+Route::post('/payments/midtrans/notification', [PaymentController::class, 'handleNotification']);
 
 // Area Khusus Administrator
 Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('admin.')->group(function () {

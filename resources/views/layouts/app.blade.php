@@ -51,6 +51,10 @@
                         <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('marketplace.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Marketplace</a>
                         <a href="{{ route('forum.index') }}" class="hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">Forum</a>
                         @auth
+                            <a href="{{ route('transactions.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1.5 {{ request()->routeIs('transactions.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}" data-cy="nav-transactions">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                <span>Transaksi</span>
+                            </a>
                             @if (auth()->user()->hasListings())
                                 <a href="{{ route('seller.listings.index') }}" class="hover:text-indigo-600 transition flex items-center gap-1 {{ request()->routeIs('seller.listings.*') ? 'text-indigo-600 font-semibold' : 'text-slate-600' }}">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
@@ -116,10 +120,12 @@
                 <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-xl text-sm font-semibold text-indigo-600 bg-indigo-50/80 transition">
                     Buka Panel Admin (Control Panel)
                 </a>
-            @else
                 <a href="{{ route('marketplace.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('marketplace.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Marketplace</a>
                 <a href="{{ route('forum.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 transition {{ request()->routeIs('forum.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : 'text-slate-700' }}">Forum</a>
                 @auth
+                    <a href="{{ route('transactions.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('transactions.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}" data-cy="nav-transactions-mobile">
+                        Transaksi Saya
+                    </a>
                     @if (auth()->user()->hasListings())
                         <a href="{{ route('seller.listings.index') }}" class="block px-3 py-2 rounded-xl text-sm font-medium hover:bg-white/80 hover:text-indigo-600 text-slate-700 transition {{ request()->routeIs('seller.listings.*') ? 'bg-indigo-50/80 text-indigo-600 font-semibold' : '' }}">
                             Listing
@@ -217,5 +223,6 @@
         }
     });
     </script>
+    @stack('scripts')
 </body>
 </html>
