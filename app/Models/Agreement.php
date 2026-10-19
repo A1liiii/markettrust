@@ -102,4 +102,13 @@ class Agreement extends Model
     {
         return $this->hasMany(Transaction::class, 'agreement_id', 'agreement_id');
     }
+
+    public function deliveryMethodLabel(): string
+    {
+        return match ($this->delivery_method) {
+            'INSTANT' => 'Pengiriman Otomatis (Instan)',
+            'DIRECT_CHAT' => 'Melalui Chat Transaksi',
+            default => $this->delivery_method ?: '-',
+        };
+    }
 }

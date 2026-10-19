@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'active_account' => EnsureAccountIsActive::class,
             'admin' => EnsureUserIsAdmin::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'api/midtrans/notification',
+            'payments/midtrans/notification',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
