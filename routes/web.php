@@ -13,6 +13,7 @@ use App\Http\Controllers\Forum\ForumPostController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceCheckoutController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
@@ -86,6 +87,11 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::post('/transactions/{transaction}/payment-token', [PaymentController::class, 'createSnapToken'])->name('transactions.payment-token');
     Route::post('/transactions/{transaction}/sync-payment', [PaymentController::class, 'syncStatus'])->name('transactions.sync-payment');
+
+    // Pusat Notifikasi Pengguna & Integrasi Event
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::match(['get', 'post'], '/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
 });
 
 // Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
