@@ -62,6 +62,12 @@
                         </svg>
                         <span>Ubah Foto & Password</span>
                     </a>
+                    <a href="{{ route('seller.payout-accounts.index') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4 shadow-sm" data-cy="btn-profile-payout-accounts">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <span>Rekening Payout</span>
+                    </a>
                     <a href="{{ route('home') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4">
                         <span>Kembali ke Beranda</span>
                     </a>
@@ -245,6 +251,21 @@
                     <div class="p-3 rounded-xl bg-white/60 border border-white/80">
                         <strong class="text-slate-800 block mb-0.5">Pencatatan Payout & Refund Simulatif</strong>
                         Pencairan dana ke seller (Payout) atau pengembalian dana ke buyer (Refund) dilakukan secara simulatif melalui pencatatan sistem setelah konfirmasi barang atau keputusan komplain.
+                    </div>
+                    <div class="p-3 rounded-xl bg-white/60 border border-white/80 flex items-center justify-between">
+                        <div>
+                            <strong class="text-slate-800 block mb-0.5">Tujuan Payout Seller</strong>
+                            @if ($user->activePayoutAccount)
+                                <span class="text-xs text-emerald-700 font-medium">
+                                    {{ $user->activePayoutAccount->destination_provider ?? $user->activePayoutAccount->destination_type->value }}: {{ $user->activePayoutAccount->masked_destination_number }}
+                                </span>
+                            @else
+                                <span class="text-xs text-amber-700 font-medium">Belum diatur (Payout tertahan)</span>
+                            @endif
+                        </div>
+                        <a href="{{ route('seller.payout-accounts.index') }}" class="text-xs font-semibold text-indigo-600 hover:underline">
+                            Kelola &rarr;
+                        </a>
                     </div>
                 </div>
             </div>

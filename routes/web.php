@@ -17,6 +17,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
+use App\Http\Controllers\Seller\SellerPayoutAccountController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -141,6 +142,25 @@ Route::middleware(['auth', 'active_account'])
         Route::get('/{listing}/preview', [ListingController::class, 'preview'])->name('preview');
         Route::patch('/{listing}/toggle-status', [ListingController::class, 'toggleStatus'])->name('toggle-status');
     });
+
+// Modul Seller: Pengaturan Rekening Payout
+Route::middleware(['auth', 'active_account'])
+    ->prefix('seller/payout-accounts')
+    ->name('seller.payout-accounts.')
+    ->group(function () {
+        Route::get('/', [SellerPayoutAccountController::class, 'index'])->name('index');
+        Route::get('/create', [SellerPayoutAccountController::class, 'create'])->name('create');
+        Route::post('/', [SellerPayoutAccountController::class, 'store'])->name('store');
+        Route::get('/{payoutAccount}/edit', [SellerPayoutAccountController::class, 'edit'])->name('edit');
+        Route::put('/{payoutAccount}', [SellerPayoutAccountController::class, 'update'])->name('update');
+        Route::patch('/{payoutAccount}/activate', [SellerPayoutAccountController::class, 'activate'])->name('activate');
+        Route::delete('/{payoutAccount}', [SellerPayoutAccountController::class, 'destroy'])->name('destroy');
+    });
+
+// Alias rute profil untuk akses cepat ke rekening payout
+Route::middleware(['auth', 'active_account'])->group(function () {
+    Route::get('/profile/payout-accounts', [SellerPayoutAccountController::class, 'index'])->name('profile.payout-accounts');
+});
 
 // Pengelolaan Forum Post oleh pengguna aktif
 Route::middleware(['auth', 'active_account'])->group(function () {
