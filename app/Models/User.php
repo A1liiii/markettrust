@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -272,5 +273,15 @@ class User extends Authenticatable
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'actor_id', 'user_id');
+    }
+
+    public function payoutAccounts(): HasMany
+    {
+        return $this->hasMany(SellerPayoutAccount::class, 'seller_id', 'user_id');
+    }
+
+    public function activePayoutAccount(): HasOne
+    {
+        return $this->hasOne(SellerPayoutAccount::class, 'seller_id', 'user_id')->where('is_active', true);
     }
 }

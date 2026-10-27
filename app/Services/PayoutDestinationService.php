@@ -14,7 +14,13 @@ class PayoutDestinationService implements PayoutDestinationServiceInterface
      */
     public function getDestinationForUser(User $user): ?PayoutDestinationDTO
     {
-        // For MVP, if user has seller account details or settlements recorded
+        // 1. Prioritaskan rekening payout seller aktif dari tabel seller_payout_accounts
+        $activeAccount = $user->activePayoutAccount ?? $user->payoutAccounts()->where('is_active', true)->first();
+        if ($activeAccount) {
+            return $activeAccount->toDTO();
+        }
+
+        // 2. Fallback untuk kompatibilitas data settlement terdahulu jika ada
         $latestSettlement = $user->sellerAgreements()
             ->whereHas('transactions.settlement')
             ->with('transactions.settlement')
