@@ -464,4 +464,137 @@ class MidtransPaymentWorkflowTest extends TestCase
         $transaction->refresh();
         $this->assertEquals(TransactionStatus::PAID, $transaction->status);
     }
+
+    public function test_settlement_sets_delivery_due_at_to_exactly_one_hour_from_paid_at_regardless_of_agreement_delivery_minutes(): void
+    {
+        $verifiedAt = now()->startOfSecond();
+        $this->travelTo($verifiedAt);
+
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $transaction = $this->createTransaction($buyer, $seller, [], [
+            'delivery_within_minutes' => 15,
+        ]);
+
+        $orderId = 'TRX-'.$transaction->transaction_id.'-'.time();
+        $grossAmount = '105000.00';
+        $statusCode = '200';
+
+        $payment = Payment::create([
+            'transaction_id' => $transaction->transaction_id,
+            'gateway_order_id' => $orderId,
+            'amount' => 105000.00,
+            'status' => 'PENDING',
+            'gateway_status' => 'pending',
+        ]);
+
+        $signature = hash('sha512', $orderId.$statusCode.$grossAmount.$this->testServerKey);
+
+        $payload = [
+            'order_id' => $orderId,
+            'status_code' => $statusCode,
+            'gross_amount' => $grossAmount,
+            'signature_key' => $signature,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'qris',
+            'transaction_id' => 'midtrans-gateway-tx-1001',
+        ];
+
+        $response = $this->postJson(route('midtrans.notification'), $payload);
+        $response->assertStatus(200)->assertJson(['status' => 'success']);
+
+        $payment->refresh();
+        $transaction->refresh();
+
+        $this->assertNotNull($payment->paid_at);
+        $this->assertNotNull($transaction->delivery_due_at);
+        $this->assertTrue($payment->paid_at->equalTo($verifiedAt));
+        $this->assertTrue($transaction->delivery_due_at->equalTo($verifiedAt->copy()->addHour()));
+        $this->assertSame(3600, (int) $payment->paid_at->diffInSeconds($transaction->delivery_due_at, false));
+    }
+
+    public function test_repeated_callback_and_sync_do_not_shift_paid_at_or_delivery_deadline(): void
+    {
+        $initialPaidAt = now()->startOfSecond();
+        $this->travelTo($initialPaidAt);
+
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $transaction = $this->createTransaction($buyer, $seller, [], [
+            'delivery_within_minutes' => 1440,
+        ]);
+
+        $orderId = 'TRX-'.$transaction->transaction_id.'-'.time();
+        $grossAmount = '105000.00';
+        $statusCode = '200';
+        $signature = hash('sha512', $orderId.$statusCode.$grossAmount.$this->testServerKey);
+
+        $payment = Payment::create([
+            'transaction_id' => $transaction->transaction_id,
+            'gateway_order_id' => $orderId,
+            'amount' => 105000.00,
+            'status' => 'PENDING',
+        ]);
+
+        $payload = [
+            'order_id' => $orderId,
+            'status_code' => $statusCode,
+            'gross_amount' => $grossAmount,
+            'signature_key' => $signature,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'bank_transfer',
+            'transaction_id' => 'midtrans-gateway-tx-2002',
+        ];
+
+        // 1. Callback pertama pada t0
+        $this->postJson(route('midtrans.notification'), $payload)
+            ->assertStatus(200)
+            ->assertJson(['status' => 'success']);
+
+        $payment->refresh();
+        $transaction->refresh();
+        $expectedDeadline = $initialPaidAt->copy()->addHour();
+
+        $this->assertTrue($payment->paid_at->equalTo($initialPaidAt));
+        $this->assertTrue($transaction->delivery_due_at->equalTo($expectedDeadline));
+
+        // 2. Majukan waktu +20 menit lalu kirim callback duplikat
+        $this->travel(20)->minutes();
+
+        $this->postJson(route('midtrans.notification'), $payload)
+            ->assertStatus(200)
+            ->assertJson(['status' => 'already_paid']);
+
+        $payment->refresh();
+        $transaction->refresh();
+        $this->assertTrue($payment->paid_at->equalTo($initialPaidAt));
+        $this->assertTrue($transaction->delivery_due_at->equalTo($expectedDeadline));
+
+        // 3. Majukan waktu +10 menit lagi lalu panggil sync-payment
+        $this->travel(10)->minutes();
+
+        $this->actingAs($buyer)->postJson(route('transactions.sync-payment', $transaction))
+            ->assertStatus(200)
+            ->assertJson(['status' => 'already_paid']);
+
+        $payment->refresh();
+        $transaction->refresh();
+        $this->assertTrue($payment->paid_at->equalTo($initialPaidAt));
+        $this->assertTrue($transaction->delivery_due_at->equalTo($expectedDeadline));
+
+        // 4. Transaksi beralih ke DELIVERED, lalu callback settlement terlambat datang lagi +15 menit kemudian
+        $transaction->update(['status' => TransactionStatus::DELIVERED]);
+        $this->travel(15)->minutes();
+
+        $this->postJson(route('midtrans.notification'), $payload)
+            ->assertStatus(200)
+            ->assertJson(['status' => 'already_paid']);
+
+        $payment->refresh();
+        $transaction->refresh();
+        $this->assertEquals(TransactionStatus::DELIVERED, $transaction->status);
+        $this->assertTrue($payment->paid_at->equalTo($initialPaidAt));
+        $this->assertTrue($transaction->delivery_due_at->equalTo($expectedDeadline));
+        $this->assertEquals(1, TransactionStatusHistory::where('transaction_id', $transaction->transaction_id)->count());
+    }
 }
