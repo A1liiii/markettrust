@@ -194,8 +194,8 @@ class MidtransPaymentService implements PaymentServiceInterface
             throw new DomainException("Data transaksi untuk pembayaran #{$payment->payment_id} tidak ditemukan.");
         }
 
-        // Idempotency check: jika sudah PAID, jangan lakukan duplikasi status/riwayat
-        if ($payment->status === 'PAID' && $transaction->status === TransactionStatus::PAID) {
+        // Idempotency check: jika sudah PAID, jangan lakukan duplikasi status/riwayat atau menggeser paid_at/deadline
+        if ($payment->status === 'PAID' && $transaction->status !== TransactionStatus::WAITING_PAYMENT) {
             return [
                 'status' => 'already_paid',
                 'message' => 'Pembayaran telah diproses sebelumnya.',
@@ -211,31 +211,51 @@ class MidtransPaymentService implements PaymentServiceInterface
             || ($transactionStatus === 'capture' && ($fraudStatus === 'accept' || empty($fraudStatus)));
 
         if ($isSettled) {
-            DB::transaction(function () use ($payment, $transaction, $payload, $paymentType, $gatewayTxId, $transactionStatus) {
-                $now = now();
+            $alreadyPaid = false;
 
-                $payment->update([
+            DB::transaction(function () use ($payment, $transaction, $payload, $paymentType, $gatewayTxId, $transactionStatus, &$alreadyPaid) {
+                $lockedPayment = Payment::whereKey($payment->payment_id)->lockForUpdate()->first() ?? $payment;
+                $lockedTransaction = Transaction::whereKey($transaction->transaction_id)->lockForUpdate()->first() ?? $transaction;
+
+                if ($lockedPayment->status === 'PAID' && $lockedTransaction->status !== TransactionStatus::WAITING_PAYMENT) {
+                    $alreadyPaid = true;
+
+                    return;
+                }
+
+                $now = now();
+                $paidAt = $lockedPayment->paid_at ? $lockedPayment->paid_at->copy() : $now->copy();
+
+                $lockedPayment->update([
                     'status' => 'PAID',
-                    'paid_at' => $now,
+                    'paid_at' => $paidAt,
                     'payment_channel' => $paymentType,
-                    'gateway_transaction_id' => $gatewayTxId ?: $payment->gateway_transaction_id,
+                    'gateway_transaction_id' => $gatewayTxId ?: $lockedPayment->gateway_transaction_id,
                     'gateway_status' => $transactionStatus,
                     'latest_payload' => $payload,
                     'last_notification_at' => $now,
                 ]);
 
-                $deliveryMinutes = (int) ($transaction->agreement?->delivery_within_minutes ?? 1440);
-                $transaction->delivery_due_at = $now->copy()->addMinutes($deliveryMinutes);
-                $transaction->save();
+                $lockedTransaction->delivery_due_at = $lockedTransaction->delivery_due_at
+                    ? $lockedTransaction->delivery_due_at->copy()
+                    : $paidAt->copy()->addHour();
+                $lockedTransaction->save();
 
                 $channelUpper = strtoupper($paymentType);
                 $this->transactionService->transitionStatus(
-                    $transaction,
+                    $lockedTransaction,
                     TransactionStatus::PAID,
                     null,
                     "Dana escrow berhasil diamankan via Midtrans ({$channelUpper})"
                 );
             });
+
+            if ($alreadyPaid) {
+                return [
+                    'status' => 'already_paid',
+                    'message' => 'Pembayaran telah diproses sebelumnya.',
+                ];
+            }
 
             return [
                 'status' => 'success',
@@ -329,7 +349,7 @@ class MidtransPaymentService implements PaymentServiceInterface
             ];
         }
 
-        if ($payment->status === 'PAID' && $transaction->status === TransactionStatus::PAID) {
+        if ($payment->status === 'PAID' && $transaction->status !== TransactionStatus::WAITING_PAYMENT) {
             return [
                 'status' => 'already_paid',
                 'message' => 'Pembayaran telah diverifikasi sebelumnya.',
