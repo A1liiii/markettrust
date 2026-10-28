@@ -255,13 +255,13 @@
                 <input type="file"
                        id="global-dm-file-input"
                        class="hidden"
-                       accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.webp,.mp4,.webm,.zip">
+                       accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
 
                 <div class="flex items-end gap-1.5">
                     <button type="button"
                             id="global-dm-attach-btn"
                             class="p-2 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition shrink-0 cursor-pointer shadow-2xs"
-                            title="Lampirkan File / Media (maks 15MB)">
+                            title="Lampirkan Gambar atau PDF (Maks. 5 MB)">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                         </svg>
@@ -863,8 +863,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.addEventListener('change', function() {
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                if (file.size > 15 * 1024 * 1024) {
-                    alert('Ukuran file maksimal adalah 15MB.');
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file maksimal adalah 5 MB.');
                     clearAttachment();
                     return;
                 }

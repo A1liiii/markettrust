@@ -274,14 +274,14 @@
                    name="attachment"
                    id="attachment-input"
                    class="hidden"
-                   accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.zip">
+                   accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf">
 
             <div class="flex items-end gap-2">
                 <!-- Attach Document Button -->
                 <button type="button"
                         id="attach-file-btn"
                         class="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-400 hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition shrink-0 cursor-pointer"
-                        title="Lampirkan Dokumen (PDF, Word, Excel, Gambar, ZIP maks 5MB)">
+                        title="Lampirkan Gambar atau PDF (Maks. 5 MB)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                     </svg>
@@ -378,6 +378,11 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file lampiran maksimal 5 MB.');
+                    clearAttachment();
+                    return;
+                }
                 previewName.textContent = file.name;
                 const sizeKB = (file.size / 1024).toFixed(0);
                 previewSize.textContent = sizeKB > 1024 ? `(${(sizeKB / 1024).toFixed(1)} MB)` : `(${sizeKB} KB)`;

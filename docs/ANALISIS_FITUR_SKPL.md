@@ -180,7 +180,7 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Masalah Saat Ini**:
   - Validasi `attachment` di `SendMessageRequest.php` menggunakan `'max:15360'` (15 MB) dan mengizinkan `'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,mp4,webm,zip'`.
 - **Perbaikan Sesuai SKPL**:
-  - [ ] Sesuai `KNF-04` dan `UC-08` Alternate Flow c, lampiran DM dibatasi hanya berupa **gambar (`jpg,jpeg,png,webp`) atau `pdf` dengan ukuran maksimal 5 MB (`max:5120`)**.
+  - [x] Sesuai `KNF-04` dan `UC-08` Alternate Flow c, lampiran DM dibatasi hanya berupa **gambar (`jpg,jpeg,png,webp`) atau `pdf` dengan ukuran maksimal 5 MB (`max:5120`)**.
 
 ---
 
