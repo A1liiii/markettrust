@@ -24,6 +24,12 @@ class TransactionController extends Controller
         $role = (string) $request->query('role', 'all');
         $status = $request->query('status');
 
+        try {
+            $this->paymentService->evaluateOverduePaymentsForUser($user);
+        } catch (Throwable) {
+            // Jangan gagalkan render daftar transaksi apabila gateway eksternal terkendala
+        }
+
         $query = Transaction::query()
             ->whereHas('agreement', function ($q) use ($user, $role): void {
                 if ($role === 'buyer') {
@@ -73,10 +79,10 @@ class TransactionController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat lembar kesepakatan transaksi ini.');
         }
 
-        // Auto-sinkronisasi status dengan gateway jika masih WAITING_PAYMENT dan telah memiliki order pembayaran
-        if ($transaction->status === TransactionStatus::WAITING_PAYMENT && $transaction->payment?->gateway_order_id) {
+        // Evaluasi otomatis (lazy evaluation) batas waktu pembayaran & sinkronisasi gateway jika masih WAITING_PAYMENT
+        if ($transaction->status === TransactionStatus::WAITING_PAYMENT) {
             try {
-                $this->paymentService->syncPaymentStatus($transaction);
+                $this->paymentService->evaluateLazyPaymentDeadline($transaction);
                 $transaction->refresh();
             } catch (Throwable) {
                 // Jangan gagalkan render jika gateway eksternal sedang mengalami kendala
