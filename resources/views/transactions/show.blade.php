@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     });
                     const syncData = await syncRes.json();
-                    if (syncData.status === 'success' || syncData.status === 'already_paid') {
+                    if (['success', 'already_paid', 'paid', 'expired', 'cancelled', 'held_for_reconciliation'].includes(syncData.status)) {
                         window.location.reload();
                         return true;
                     }
@@ -638,8 +638,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 const data = await response.json();
 
-                if (data.status === 'success' || data.status === 'already_paid') {
-                    syncText.textContent = 'Terverifikasi!';
+                if (['success', 'already_paid', 'paid', 'expired', 'cancelled', 'held_for_reconciliation'].includes(data.status)) {
+                    syncText.textContent = 'Diperbarui!';
                     window.location.reload();
                 } else if (data.status === 'pending') {
                     alert('Pembayaran belum terdeteksi selesai di Midtrans. Jika menggunakan simulator/VA, pastikan Anda telah menekan tombol Bayar di simulator.');
@@ -657,6 +657,61 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+});
+</script>
+@endpush
+@endif
+
+@if ($transaction->status->value === 'WAITING_PAYMENT')
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const syncUrl = '{{ route('transactions.sync-payment', $transaction) }}';
+    const csrfToken = '{{ csrf_token() }}';
+    const initialRemainingMs = {{ $transaction->payment_due_at ? max(0, $transaction->payment_due_at->getTimestampMs() - now()->getTimestampMs()) : 'null' }};
+    let isReconciling = false;
+
+    async function autoReconcilePayment() {
+        if (isReconciling) return;
+        isReconciling = true;
+
+        try {
+            const response = await fetch(syncUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (['success', 'already_paid', 'paid', 'expired', 'cancelled', 'held_for_reconciliation'].includes(data.status)) {
+                    window.location.reload();
+                    return;
+                }
+            }
+        } catch (err) {
+            // Abaikan gangguan jaringan sementara pada auto-reconcile background
+        } finally {
+            isReconciling = false;
+        }
+    }
+
+    if (initialRemainingMs !== null) {
+        if (initialRemainingMs <= 0) {
+            autoReconcilePayment();
+        } else {
+            setTimeout(function () {
+                autoReconcilePayment();
+            }, initialRemainingMs + 500);
+        }
+    }
+
+    setInterval(function () {
+        autoReconcilePayment();
+    }, 20000);
 });
 </script>
 @endpush

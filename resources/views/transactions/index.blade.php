@@ -162,7 +162,12 @@
                         <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                             <div class="text-xs text-slate-500">
                                 @if ($tx->status === \App\Enums\TransactionStatus::WAITING_PAYMENT)
-                                    <span class="text-amber-700 font-semibold flex items-center gap-1.5">
+                                    <span
+                                        class="text-amber-700 font-semibold flex items-center gap-1.5"
+                                        data-waiting-payment-item
+                                        data-sync-url="{{ route('transactions.sync-payment', $tx) }}"
+                                        data-remaining-ms="{{ $tx->payment_due_at ? max(0, $tx->payment_due_at->getTimestampMs() - now()->getTimestampMs()) : '' }}"
+                                    >
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
@@ -233,3 +238,68 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const waitingItems = Array.from(document.querySelectorAll('[data-waiting-payment-item]'));
+    if (waitingItems.length === 0) return;
+
+    const csrfToken = '{{ csrf_token() }}';
+    let isChecking = false;
+
+    async function reconcileWaitingItems() {
+        if (isChecking) return;
+        isChecking = true;
+
+        try {
+            for (const item of waitingItems) {
+                const syncUrl = item.getAttribute('data-sync-url');
+                if (!syncUrl) continue;
+
+                const res = await fetch(syncUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (['success', 'already_paid', 'paid', 'expired', 'cancelled', 'held_for_reconciliation'].includes(data.status)) {
+                        window.location.reload();
+                        return;
+                    }
+                }
+            }
+        } catch (err) {
+            // Abaikan kendala jaringan sementara
+        } finally {
+            isChecking = false;
+        }
+    }
+
+    waitingItems.forEach(function (item) {
+        const rawMs = item.getAttribute('data-remaining-ms');
+        if (rawMs === null || rawMs === '') return;
+
+        const remainingMs = parseInt(rawMs, 10);
+        if (isNaN(remainingMs)) return;
+
+        if (remainingMs <= 0) {
+            reconcileWaitingItems();
+        } else {
+            setTimeout(function () {
+                reconcileWaitingItems();
+            }, remainingMs + 500);
+        }
+    });
+
+    setInterval(function () {
+        reconcileWaitingItems();
+    }, 25000);
+});
+</script>
+@endpush
