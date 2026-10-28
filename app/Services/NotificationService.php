@@ -220,4 +220,18 @@ class NotificationService implements NotificationServiceInterface
 
         return $this->notify($buyerId, $transactionId, NotificationEventType::REFUND_PROCESSED, $message, null, true);
     }
+
+    /**
+     * Notifikasi penyerahan hasil pesanan oleh penjual kepada pembeli.
+     */
+    public function notifyItemDelivered(
+        int $buyerId,
+        int $transactionId,
+        string $itemTitle
+    ): ?Notification {
+        $shortTitle = mb_substr($itemTitle, 0, 40);
+        $message = "Penjual telah menyerahkan hasil transaksi #{$transactionId} ('{$shortTitle}'). Silakan periksa dan konfirmasi penerimaan dalam 1 jam.";
+
+        return $this->notify($buyerId, $transactionId, NotificationEventType::ITEM_DELIVERED, $message, null, true);
+    }
 }

@@ -17,6 +17,7 @@ enum NotificationEventType: string
     case TRANSACTION_KEEP = 'TRANSACTION_KEEP';
     case PAYOUT_READY = 'PAYOUT_READY';
     case REFUND_PROCESSED = 'REFUND_PROCESSED';
+    case ITEM_DELIVERED = 'ITEM_DELIVERED';
 
     /**
      * Dapatkan label ramah pengguna dalam Bahasa Indonesia.
@@ -37,6 +38,7 @@ enum NotificationEventType: string
             self::TRANSACTION_KEEP => 'Keputusan KEEP',
             self::PAYOUT_READY => 'Siap Payout Penjual',
             self::REFUND_PROCESSED => 'Refund Diproses',
+            self::ITEM_DELIVERED => 'Pesanan Diserahkan',
         };
     }
 
@@ -46,7 +48,7 @@ enum NotificationEventType: string
     public function badgeClass(): string
     {
         return match ($this) {
-            self::AGREEMENT_PROPOSED, self::AGREEMENT_REVISED => 'bg-indigo-100 text-indigo-700 border-indigo-200',
+            self::AGREEMENT_PROPOSED, self::AGREEMENT_REVISED, self::ITEM_DELIVERED => 'bg-indigo-100 text-indigo-700 border-indigo-200',
             self::TRANSACTION_CREATED => 'bg-sky-100 text-sky-700 border-sky-200',
             self::PAYMENT_SUCCESS, self::PAYOUT_READY => 'bg-emerald-100 text-emerald-800 border-emerald-200',
             self::SELLER_DELIVERY_WARNING, self::BUYER_GRACE_WARNING, self::COMPLAINT_DEADLINE_WARNING => 'bg-amber-100 text-amber-800 border-amber-200',
@@ -73,7 +75,8 @@ enum NotificationEventType: string
             self::DISPUTE_DECIDED,
             self::TRANSACTION_CANCELLED,
             self::TRANSACTION_KEEP,
-            self::TRANSACTION_CREATED => true,
+            self::TRANSACTION_CREATED,
+            self::ITEM_DELIVERED => true,
             default => false,
         };
     }

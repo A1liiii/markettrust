@@ -19,6 +19,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
 use App\Http\Controllers\Seller\SellerPayoutAccountController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionDeliveryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -88,6 +89,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::post('/transactions/{transaction}/payment-token', [PaymentController::class, 'createSnapToken'])->name('transactions.payment-token');
     Route::post('/transactions/{transaction}/sync-payment', [PaymentController::class, 'syncStatus'])->name('transactions.sync-payment');
+    Route::post('/transactions/{transaction}/deliver', [TransactionDeliveryController::class, 'store'])->name('transactions.deliver');
+    Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
+    Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
 
     // Pusat Notifikasi Pengguna & Integrasi Event
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');

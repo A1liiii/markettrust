@@ -123,4 +123,13 @@ interface NotificationServiceInterface
         int $transactionId,
         string $itemTitle
     ): ?Notification;
+
+    /**
+     * Notifikasi penyerahan hasil pesanan oleh penjual kepada pembeli.
+     */
+    public function notifyItemDelivered(
+        int $buyerId,
+        int $transactionId,
+        string $itemTitle
+    ): ?Notification;
 }
