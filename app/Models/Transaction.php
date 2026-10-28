@@ -102,4 +102,33 @@ class Transaction extends Model
     {
         return $this->hasMany(Notification::class, 'transaction_id', 'transaction_id');
     }
+
+    public function deadlineEvents(): HasMany
+    {
+        return $this->hasMany(TransactionDeadlineEvent::class, 'transaction_id', 'transaction_id');
+    }
+
+    public function isDeliveryOverdue(): bool
+    {
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        return $statusStr === 'PAID'
+            && $this->delivery_due_at !== null
+            && now()->greaterThan($this->delivery_due_at)
+            && $this->delivered_at === null;
+    }
+
+    public function hasDeliveryExtension(): bool
+    {
+        return $this->deadlineEvents()
+            ->where('event_type', 'DELIVERY_EXTENSION')
+            ->exists();
+    }
+
+    public function isFlaggedForAdmin(): bool
+    {
+        return $this->deadlineEvents()
+            ->where('is_flagged_for_admin', true)
+            ->exists();
+    }
 }

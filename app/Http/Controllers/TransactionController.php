@@ -91,6 +91,8 @@ class TransactionController extends Controller
             'listing',
             'payment',
             'statusHistories.changedBy',
+            'evidenceFiles',
+            'deadlineEvents',
         ]);
 
         return view('transactions.show', [
