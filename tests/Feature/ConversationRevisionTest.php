@@ -145,12 +145,12 @@ class ConversationRevisionTest extends TestCase
         $service = app(ConversationService::class);
         $conversation = $service->startFromPost($userB, $post);
 
-        $dummyZip = UploadedFile::fake()->create('arsip_dokumen.zip', 500, 'application/zip');
+        $dummyFile = UploadedFile::fake()->create('screenshot.png', 500, 'image/png');
 
         $response = $this->actingAs($userB)->post(
             route('conversations.messages.send', $conversation->conversation_id),
             [
-                'attachment' => $dummyZip,
+                'attachment' => $dummyFile,
             ]
         );
 
@@ -158,7 +158,7 @@ class ConversationRevisionTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'conversation_id' => $conversation->conversation_id,
-            'attachment_name' => 'arsip_dokumen.zip',
+            'attachment_name' => 'screenshot.png',
             'content' => null,
         ]);
     }
@@ -194,7 +194,7 @@ class ConversationRevisionTest extends TestCase
     }
 
     /**
-     * Kebutuhan Tambahan: File tidak valid (executable / oversize > 5MB) ditolak validasi.
+     * Kebutuhan Tambahan: File tidak valid (format terlarang / oversize > 5MB) ditolak validasi.
      */
     public function test_invalid_attachment_type_or_oversize_is_rejected(): void
     {
@@ -215,13 +215,79 @@ class ConversationRevisionTest extends TestCase
         );
         $resExe->assertSessionHasErrors(['attachment']);
 
-        // File terlalu besar (> 15MB)
-        $oversizedFile = UploadedFile::fake()->create('big_file.pdf', 20000, 'application/pdf');
+        // Format yang sebelumnya diizinkan namun kini dilarang: zip, docx, txt, mp4
+        $disallowedFiles = [
+            UploadedFile::fake()->create('arsip.zip', 200, 'application/zip'),
+            UploadedFile::fake()->create('dokumen.docx', 200, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
+            UploadedFile::fake()->create('catatan.txt', 50, 'text/plain'),
+            UploadedFile::fake()->create('video.mp4', 1000, 'video/mp4'),
+        ];
+
+        foreach ($disallowedFiles as $file) {
+            $res = $this->actingAs($userB)->post(
+                route('conversations.messages.send', $conversation->conversation_id),
+                ['attachment' => $file]
+            );
+            $res->assertSessionHasErrors(['attachment']);
+        }
+
+        // File terlalu besar di atas batas maksimal 5 MB (> 5120 KB)
+        $oversizedFile = UploadedFile::fake()->create('big_file.pdf', 5121, 'application/pdf');
         $resBig = $this->actingAs($userB)->post(
             route('conversations.messages.send', $conversation->conversation_id),
             ['attachment' => $oversizedFile]
         );
         $resBig->assertSessionHasErrors(['attachment']);
+
+        // File tepat pada batas maksimum 5 MB (5120 KB) harus diterima
+        $boundaryFile = UploadedFile::fake()->create('boundary_file.pdf', 5120, 'application/pdf');
+        $resBoundary = $this->actingAs($userB)->post(
+            route('conversations.messages.send', $conversation->conversation_id),
+            ['attachment' => $boundaryFile]
+        );
+        $resBoundary->assertSessionHasNoErrors();
+        $resBoundary->assertRedirect(route('conversations.show', $conversation->conversation_id));
+    }
+
+    /**
+     * Kebutuhan Tambahan: Semua format sah (jpg, jpeg, png, webp, pdf) <= 5 MB diterima.
+     */
+    public function test_all_allowed_attachment_formats_are_accepted(): void
+    {
+        Storage::fake('local');
+
+        $userA = User::factory()->create(['username' => 'allowed_a']);
+        $userB = User::factory()->create(['username' => 'allowed_b']);
+        $post = $this->createForumPost($userA);
+
+        $service = app(ConversationService::class);
+        $conversation = $service->startFromPost($userB, $post);
+
+        $allowedFiles = [
+            'foto.jpg' => UploadedFile::fake()->create('foto.jpg', 1024, 'image/jpeg'),
+            'foto.jpeg' => UploadedFile::fake()->create('foto.jpeg', 1024, 'image/jpeg'),
+            'foto.png' => UploadedFile::fake()->create('foto.png', 1024, 'image/png'),
+            'foto.webp' => UploadedFile::fake()->create('foto.webp', 1024, 'image/webp'),
+            'dokumen.pdf' => UploadedFile::fake()->create('dokumen.pdf', 1024, 'application/pdf'),
+        ];
+
+        foreach ($allowedFiles as $filename => $file) {
+            $res = $this->actingAs($userB)->post(
+                route('conversations.messages.send', $conversation->conversation_id),
+                [
+                    'content' => "Mengunggah {$filename}",
+                    'attachment' => $file,
+                ]
+            );
+
+            $res->assertSessionHasNoErrors();
+            $res->assertRedirect(route('conversations.show', $conversation->conversation_id));
+
+            $this->assertDatabaseHas('messages', [
+                'conversation_id' => $conversation->conversation_id,
+                'attachment_name' => $filename,
+            ]);
+        }
     }
 
     /**

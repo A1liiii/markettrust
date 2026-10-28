@@ -24,7 +24,7 @@ class SendMessageRequest extends FormRequest
     {
         return [
             'content' => ['nullable', 'string', 'max:5000', 'required_without:attachment'],
-            'attachment' => ['nullable', 'file', 'max:15360', 'mimes:pdf,doc,docx,xls,xlsx,txt,jpg,jpeg,png,webp,mp4,webm,zip'],
+            'attachment' => ['nullable', 'file', 'max:5120', 'mimes:jpg,jpeg,png,webp,pdf'],
         ];
     }
 
@@ -38,8 +38,9 @@ class SendMessageRequest extends FormRequest
         return [
             'content.required_without' => 'Isi pesan tidak boleh kosong jika tidak melampirkan file.',
             'content.max' => 'Pesan maksimal 5.000 karakter.',
+            'attachment.file' => 'Berkas lampiran harus berupa file yang valid.',
             'attachment.max' => 'Ukuran file lampiran maksimal 5 MB.',
-            'attachment.mimes' => 'Format file lampiran harus berupa PDF, Word, Excel, Teks, Gambar (JPG/PNG), atau ZIP.',
+            'attachment.mimes' => 'Format file lampiran harus berupa gambar (JPG, JPEG, PNG, WEBP) atau PDF.',
         ];
     }
 }
