@@ -18,6 +18,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
 use App\Http\Controllers\Seller\SellerPayoutAccountController;
+use App\Http\Controllers\TransactionConfirmationController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionDeliveryController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +91,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/transactions/{transaction}/payment-token', [PaymentController::class, 'createSnapToken'])->name('transactions.payment-token');
     Route::post('/transactions/{transaction}/sync-payment', [PaymentController::class, 'syncStatus'])->name('transactions.sync-payment');
     Route::post('/transactions/{transaction}/deliver', [TransactionDeliveryController::class, 'store'])->name('transactions.deliver');
+    Route::post('/transactions/{transaction}/confirm', [TransactionConfirmationController::class, 'confirm'])->name('transactions.confirm');
     Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
     Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
 

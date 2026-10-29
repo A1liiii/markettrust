@@ -1,8 +1,12 @@
 @php
     $txStatus = $transaction->status instanceof \App\Enums\TransactionStatus ? $transaction->status->value : (string) $transaction->status;
     $isDeliveredOrLater = in_array($txStatus, ['DELIVERED', 'CONFIRMED', 'DISPUTED', 'COMPLETED']);
+    $isDelivered = $txStatus === 'DELIVERED';
+    $isConfirmed = in_array($txStatus, ['CONFIRMED', 'COMPLETED']);
     $isPaid = $txStatus === 'PAID';
     $isOverdue = $transaction->isDeliveryOverdue();
+    $hasActiveComplaint = $transaction->hasActiveComplaint();
+    $hasGracePeriod = $transaction->hasGracePeriod();
 @endphp
 
 @if ($isPaid)
@@ -188,7 +192,7 @@
                 </div>
             </div>
 
-            @if ($txStatus === 'DELIVERED' && $transaction->confirmation_due_at)
+            @if ($isDelivered && $transaction->confirmation_due_at)
                 <div class="text-left sm:text-right shrink-0 p-2.5 rounded-xl bg-purple-50 border border-purple-200/60">
                     <span class="block text-[10px] font-bold uppercase tracking-wider text-purple-700">
                         Batas Konfirmasi Penerimaan
@@ -196,10 +200,35 @@
                     <span class="text-xs sm:text-sm font-extrabold text-purple-900" data-cy="confirmation-due-text">
                         {{ $transaction->confirmation_due_at->translatedFormat('d F Y, H:i') }} WIB
                     </span>
-                    <span class="block text-[10px] text-slate-500">(1 Jam sejak penyerahan)</span>
+                    <span class="block text-[10px] text-slate-500">
+                        {{ $hasGracePeriod ? '(Masa Tenggang 30 Menit Aktif)' : '(1 Jam sejak penyerahan)' }}
+                    </span>
                 </div>
             @endif
         </div>
+
+        <!-- Alert Khusus: Komplain Aktif atau Masa Tenggang 30 Menit -->
+        @if ($hasActiveComplaint)
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-3" data-cy="alert-active-complaint">
+                <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div>
+                    <span class="font-bold">Terdapat Komplain / Sengketa Aktif.</span>
+                    Konfirmasi penerimaan dan antrean payout ditahan hingga sengketa diselesaikan oleh Admin.
+                </div>
+            </div>
+        @elseif ($hasGracePeriod && $isDelivered)
+            <div class="p-3.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-800 text-xs flex items-center gap-3" data-cy="alert-grace-period">
+                <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <span class="font-bold">Masa Tenggang 30 Menit Aktif.</span>
+                    Batas waktu 1 jam pertama telah terlewati. Sistem memberikan tambahan waktu 30 menit sebelum transaksi dikonfirmasi otomatis.
+                </div>
+            </div>
+        @endif
 
         <!-- Catatan Hasil -->
         <div class="bg-white/80 p-4 rounded-xl border border-slate-200/80 space-y-2">
@@ -263,5 +292,71 @@
                 @endforeach
             @endif
         </div>
+
+        <!-- Aksi Konfirmasi Penerimaan bagi Buyer (UC-15) -->
+        @if ($isDelivered && $isBuyer)
+            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-white/90 border border-emerald-200 space-y-3" data-cy="buyer-confirmation-action-card">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-xs sm:text-sm font-bold text-emerald-950 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span>Konfirmasi Hasil Pesanan</span>
+                        </h3>
+                        <p class="text-[11px] text-slate-600 mt-0.5">
+                            Pastikan Anda telah memeriksa hasil atau akun yang diberikan sebelum menyetujui pelepasan dana escrow.
+                        </p>
+                    </div>
+
+                    @if ($hasActiveComplaint)
+                        <button
+                            type="button"
+                            disabled
+                            class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 font-bold text-xs cursor-not-allowed"
+                            title="Konfirmasi ditahan selama komplain aktif"
+                        >
+                            Konfirmasi Ditahan
+                        </button>
+                    @else
+                        <form
+                            action="{{ route('transactions.confirm', $transaction) }}"
+                            method="POST"
+                            onsubmit="return confirm('Apakah Anda yakin telah menerima hasil pesanan dengan baik dan ingin menyelesaikan transaksi? Tindakan ini tidak dapat dibatalkan.');"
+                        >
+                            @csrf
+                            <button
+                                type="submit"
+                                class="glass-btn-primary bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-500/20 active:scale-95 transition"
+                                data-cy="btn-confirm-delivery"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>Konfirmasi Penerimaan Pesanan</span>
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        @endif
+
+        <!-- Status Konfirmasi Telah Selesai -->
+        @if ($isConfirmed)
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between gap-3" data-cy="confirmed-status-banner">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <span class="font-bold">Pesanan Telah Dikonfirmasi.</span>
+                        Dikonfirmasi pada {{ $transaction->confirmed_at?->translatedFormat('d F Y, H:i') ?? '-' }} WIB. Dana telah dialokasikan ke antrean payout Penjual.
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0 uppercase tracking-wide">
+                    Siap Payout
+                </span>
+            </div>
+        @endif
     </div>
 @endif

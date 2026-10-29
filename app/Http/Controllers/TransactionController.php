@@ -99,6 +99,8 @@ class TransactionController extends Controller
             'statusHistories.changedBy',
             'evidenceFiles',
             'deadlineEvents',
+            'settlement',
+            'complaint',
         ]);
 
         return view('transactions.show', [
