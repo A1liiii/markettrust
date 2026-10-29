@@ -99,13 +99,21 @@ class TransactionController extends Controller
             'statusHistories.changedBy',
             'evidenceFiles',
             'deadlineEvents',
+            'cancellations.requestedBy',
+            'cancellations.reviewedBy',
+            'cancellations.keepObligation',
         ]);
+
+        $latestCancellation = $transaction->cancellations->sortByDesc('cancellation_id')->first();
+        $hasPendingCancellation = $transaction->cancellations->where('status', 'REQUESTED')->isNotEmpty();
 
         return view('transactions.show', [
             'transaction' => $transaction,
             'agreement' => $agreement,
             'isBuyer' => $user->user_id === $agreement->buyer_id,
             'isSeller' => $user->user_id === $agreement->seller_id,
+            'latestCancellation' => $latestCancellation,
+            'hasPendingCancellation' => $hasPendingCancellation,
         ]);
     }
 }

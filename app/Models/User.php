@@ -284,4 +284,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(SellerPayoutAccount::class, 'seller_id', 'user_id')->where('is_active', true);
     }
+
+    public function keepObligations(): HasMany
+    {
+        return $this->hasMany(KeepObligation::class, 'seller_id', 'user_id');
+    }
+
+    public function cancellationsRequested(): HasMany
+    {
+        return $this->hasMany(TransactionCancellation::class, 'requested_by', 'user_id');
+    }
 }
