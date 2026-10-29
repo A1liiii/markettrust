@@ -319,23 +319,117 @@
                             Konfirmasi Ditahan
                         </button>
                     @else
-                        <form
-                            action="{{ route('transactions.confirm', $transaction) }}"
-                            method="POST"
-                            onsubmit="return confirm('Apakah Anda yakin telah menerima hasil pesanan dengan baik dan ingin menyelesaikan transaksi? Tindakan ini tidak dapat dibatalkan.');"
+                        <button
+                            type="button"
+                            onclick="openConfirmDeliveryModal()"
+                            class="glass-btn-primary bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-500/20 active:scale-95 transition cursor-pointer"
+                            data-cy="btn-confirm-delivery"
                         >
-                            @csrf
-                            <button
-                                type="submit"
-                                class="glass-btn-primary bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md shadow-emerald-500/20 active:scale-95 transition"
-                                data-cy="btn-confirm-delivery"
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Konfirmasi Penerimaan Pesanan</span>
+                        </button>
+
+                        <!-- Modal Dialog Konfirmasi Penerimaan Pesanan (In-Page Modal) -->
+                        <div
+                            id="confirm-delivery-modal"
+                            class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
+                            onclick="closeConfirmDeliveryModal()"
+                            data-cy="confirm-delivery-modal"
+                        >
+                            <div
+                                class="p-6 max-w-md w-full bg-white shadow-2xl rounded-2xl border border-slate-100 relative text-left animate-in fade-in zoom-in-95 duration-150"
+                                onclick="event.stopPropagation()"
                             >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                <span>Konfirmasi Penerimaan Pesanan</span>
-                            </button>
-                        </form>
+                                <!-- Tombol Close Silang Pojok Kanan Atas -->
+                                <button
+                                    type="button"
+                                    onclick="closeConfirmDeliveryModal()"
+                                    class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                                    title="Tutup dialog"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+
+                                <!-- Header Modal dengan Ikon Biru/Indigo MarketTrust -->
+                                <div class="flex items-center gap-3.5 mb-4">
+                                    <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100 shadow-xs">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-900">Konfirmasi Penerimaan Pesanan</h3>
+                                        <p class="text-xs text-slate-500">Pelepasan dana escrow ke Penjual</p>
+                                    </div>
+                                </div>
+
+                                <!-- Konten Teks Konfirmasi -->
+                                <div class="space-y-3 mb-6">
+                                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                        Apakah Anda yakin telah menerima hasil pesanan dengan baik dan ingin menyelesaikan transaksi? Tindakan ini <strong>tidak dapat dibatalkan</strong>.
+                                    </p>
+                                    <div class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 text-[11px] text-indigo-900 flex items-start gap-2">
+                                        <svg class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span>Dana escrow akan dialokasikan ke antrean payout Penjual dan Anda tidak dapat lagi mengajukan komplain atas pesanan ini.</span>
+                                    </div>
+                                </div>
+
+                                <!-- Tombol Aksi: Batal (Putih) & Konfirmasi (Biru MarketTrust) -->
+                                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                                    <button
+                                        type="button"
+                                        onclick="closeConfirmDeliveryModal()"
+                                        class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm shadow-xs transition active:scale-95 cursor-pointer"
+                                        data-cy="btn-modal-cancel"
+                                    >
+                                        Batal
+                                    </button>
+                                    <form action="{{ route('transactions.confirm', $transaction) }}" method="POST">
+                                        @csrf
+                                        <button
+                                            type="submit"
+                                            class="glass-btn-primary bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-indigo-500/25 active:scale-95 transition cursor-pointer"
+                                            data-cy="btn-modal-confirm-submit"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            <span>Ya, Konfirmasi Pesanan</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            function openConfirmDeliveryModal() {
+                                const modal = document.getElementById('confirm-delivery-modal');
+                                if (modal) {
+                                    modal.classList.remove('hidden');
+                                    document.body.classList.add('overflow-hidden');
+                                }
+                            }
+
+                            function closeConfirmDeliveryModal() {
+                                const modal = document.getElementById('confirm-delivery-modal');
+                                if (modal) {
+                                    modal.classList.add('hidden');
+                                    document.body.classList.remove('overflow-hidden');
+                                }
+                            }
+
+                            document.addEventListener('keydown', function(e) {
+                                if (e.key === 'Escape') {
+                                    closeConfirmDeliveryModal();
+                                }
+                            });
+                        </script>
                     @endif
                 </div>
             </div>

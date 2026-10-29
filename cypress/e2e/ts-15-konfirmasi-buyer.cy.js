@@ -139,8 +139,14 @@ describe('TS-15: Konfirmasi Buyer & Auto-Confirm (MT-A04)', { testIsolation: fal
   it('TC-15-02: Buyer mengonfirmasi penerimaan dan status beralih ke CONFIRMED (Siap Payout)', () => {
     cy.visit(`/transactions/${transactionId}`);
 
-    // Klik tombol konfirmasi (window:confirm secara otomatis bernilai true di Cypress)
+    // Klik tombol konfirmasi untuk membuka panel modal in-page
     cy.get('[data-cy="btn-confirm-delivery"]').click();
+
+    // Verifikasi modal konfirmasi terbuka
+    cy.get('[data-cy="confirm-delivery-modal"]').should('be.visible');
+
+    // Klik tombol konfirmasi biru di dalam modal
+    cy.get('[data-cy="btn-modal-confirm-submit"]').click();
 
     // Verifikasi pesan sukses
     cy.contains('Pesanan berhasil dikonfirmasi').should('be.visible');
