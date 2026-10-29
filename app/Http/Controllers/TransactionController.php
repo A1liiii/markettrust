@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Enums\TransactionStatus;
+use App\Models\KeepObligation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -96,16 +97,41 @@ class TransactionController extends Controller
             'agreement.conversation',
             'listing',
             'payment',
+            'settlement.keepDeductions.keepObligation.cancellation',
+            'complaint',
             'statusHistories.changedBy',
             'evidenceFiles',
             'deadlineEvents',
+            'cancellations.requestedBy',
+            'cancellations.reviewedBy',
+            'cancellations.keepObligation.deductions.settlement',
         ]);
+
+        $isBuyer = $user->user_id === $agreement->buyer_id;
+        $isSeller = $user->user_id === $agreement->seller_id;
+        $isAdmin = $user->isAdmin();
+
+        $latestCancellation = $transaction->cancellations->sortByDesc('cancellation_id')->first();
+        $hasPendingCancellation = $transaction->cancellations->where('status', 'REQUESTED')->isNotEmpty();
+
+        $sellerKeepObligations = ($isSeller || $isAdmin)
+            ? KeepObligation::query()
+                ->where('seller_id', $agreement->seller_id)
+                ->with(['cancellation', 'deductions.settlement'])
+                ->orderByRaw("CASE WHEN status = 'OPEN' THEN 0 ELSE 1 END")
+                ->latest('keep_obligation_id')
+                ->get()
+            : collect();
 
         return view('transactions.show', [
             'transaction' => $transaction,
             'agreement' => $agreement,
-            'isBuyer' => $user->user_id === $agreement->buyer_id,
-            'isSeller' => $user->user_id === $agreement->seller_id,
+            'isBuyer' => $isBuyer,
+            'isSeller' => $isSeller,
+            'isAdmin' => $isAdmin,
+            'latestCancellation' => $latestCancellation,
+            'hasPendingCancellation' => $hasPendingCancellation,
+            'sellerKeepObligations' => $sellerKeepObligations,
         ]);
     }
 }

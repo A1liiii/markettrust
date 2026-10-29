@@ -189,4 +189,4 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Masalah Saat Ini**:
   - Tabel finansial di `transactions/show.blade.php` belum menampilkan label mode fee (`EXCLUDE`/`INCLUDE`), belum menampilkan `seller_net` ketika dilihat oleh Buyer, dan belum membedakan informasi biaya gateway aktual (`gateway_fee_amount`) serta kewajiban `KEEP`.
 - **Perbaikan Sesuai SKPL**:
-  - [ ] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.
+  - [x] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.
