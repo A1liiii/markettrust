@@ -9,6 +9,7 @@ use App\Contracts\Services\MarketplaceServiceInterface;
 use App\Contracts\Services\NotificationServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\PayoutDestinationServiceInterface;
+use App\Contracts\Services\SettlementServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
 use App\Models\Listing;
 use App\Models\User;
@@ -20,6 +21,7 @@ use App\Services\MarketplaceService;
 use App\Services\MidtransPaymentService;
 use App\Services\NotificationService;
 use App\Services\PayoutDestinationService;
+use App\Services\SettlementService;
 use App\Services\TransactionService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AgreementServiceInterface::class, AgreementService::class);
         $this->app->bind(ConversationServiceInterface::class, ConversationService::class);
         $this->app->bind(MarketplaceServiceInterface::class, MarketplaceService::class);
+        $this->app->bind(SettlementServiceInterface::class, SettlementService::class);
     }
 
     /**

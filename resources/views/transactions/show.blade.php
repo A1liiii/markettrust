@@ -394,46 +394,8 @@
                 </div>
             </div>
 
-            <!-- Financial Table -->
-            <div class="space-y-3">
-                <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {{ $transaction->source_type->value === 'MARKETPLACE' ? 'Rincian Pembayaran' : 'Nilai Finansial Kesepakatan' }}
-                </span>
-
-                <div class="bg-white/70 rounded-xl p-4 border border-slate-200/80 space-y-2.5 text-xs sm:text-sm">
-                    <div class="flex justify-between items-center text-slate-600">
-                        <span>Harga Produk:</span>
-                        <span class="font-semibold text-slate-900" data-cy="snapshot-base-price">
-                            Rp {{ number_format($agreement->base_price, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    @if ($agreement->fee_amount > 0)
-                        <div class="flex justify-between items-center text-slate-600">
-                            <span>Biaya Layanan Platform:</span>
-                            <span class="font-semibold text-indigo-600" data-cy="snapshot-fee-amount">
-                                + Rp {{ number_format($agreement->fee_amount, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endif
-
-                    <div class="border-t border-slate-200 pt-2 flex justify-between items-center font-bold">
-                        <span class="text-slate-900">Total Pembayaran:</span>
-                        <span class="text-base font-extrabold text-indigo-700" data-cy="snapshot-buyer-total">
-                            Rp {{ number_format($agreement->buyer_total, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    @if ($isSeller)
-                        <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
-                            <span class="text-slate-600">Pencairan Hak Bersih Penjual:</span>
-                            <span class="font-bold text-emerald-600" data-cy="snapshot-seller-net">
-                                Rp {{ number_format($agreement->seller_net, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <!-- Financial Table (Separated Partial for MT-A17 & MT-A07) -->
+            @include('transactions.partials.financial-detail')
 
             <!-- Timeline / Status History -->
             @if ($transaction->statusHistories->count() > 0)
