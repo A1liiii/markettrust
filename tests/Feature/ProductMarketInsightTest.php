@@ -15,6 +15,7 @@ use App\Models\ProductVariant;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ProductMarketInsightTest extends TestCase
@@ -145,6 +146,8 @@ class ProductMarketInsightTest extends TestCase
         $this->assertEquals(3, $stats['supply']); // 2 listings + 1 WTS
         $this->assertEquals(2, $stats['active_listings_count']);
         $this->assertEquals(1, $stats['wts_count']);
+        $this->assertEquals('30d', $stats['period']);
+        $this->assertEquals('30 Hari Terakhir', $stats['period_label']);
     }
 
     /**
@@ -268,6 +271,220 @@ class ProductMarketInsightTest extends TestCase
     }
 
     /**
+     * Uji pemfilteran periode waktu (7d, 30d, 90d, all):
+     * Memastikan transaksi yang masuk hitungan hanya yang berada dalam rentang tanggal periode yang dipilih.
+     */
+    public function test_period_filtering_calculates_average_price_accurately(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $variant = $this->createVariant();
+
+        $listing = Listing::create([
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variant->variant_id,
+            'title' => 'Listing Periode',
+            'description' => 'Desc',
+            'price' => 100000,
+            'delivery_method' => 'INSTANT',
+            'estimated_delivery_value' => 10,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ]);
+
+        // Transaksi 1: 5 hari lalu (harga 100.000) -> masuk 7d, 30d, 90d, all
+        $agr1 = Agreement::create([
+            'created_by' => $buyer->user_id,
+            'buyer_id' => $buyer->user_id,
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variant->variant_id,
+            'item_title' => 'Item 1',
+            'item_description' => 'Desc',
+            'quantity' => 1,
+            'base_price' => 100000,
+            'fee_amount' => 5000,
+            'fee_type' => 'EXCLUDE',
+            'buyer_total' => 105000,
+            'seller_net' => 100000,
+            'delivery_method' => 'INSTANT',
+            'delivery_within_minutes' => 30,
+            'status' => AgreementStatus::FINALIZED,
+            'created_at' => now()->subDays(5),
+            'updated_at' => now()->subDays(5),
+        ]);
+        $tx1 = Transaction::create([
+            'agreement_id' => $agr1->agreement_id,
+            'source_type' => TransactionSourceType::MARKETPLACE,
+            'listing_id' => $listing->listing_id,
+            'status' => TransactionStatus::COMPLETED,
+            'payment_due_at' => now()->subDays(5),
+        ]);
+        DB::table('transactions')->where('transaction_id', $tx1->transaction_id)->update([
+            'created_at' => now()->subDays(5),
+            'updated_at' => now()->subDays(5),
+        ]);
+
+        // Transaksi 2: 20 hari lalu (harga 200.000) -> tidak masuk 7d, masuk 30d, 90d, all
+        $agr2 = Agreement::create([
+            'created_by' => $buyer->user_id,
+            'buyer_id' => $buyer->user_id,
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variant->variant_id,
+            'item_title' => 'Item 2',
+            'item_description' => 'Desc',
+            'quantity' => 1,
+            'base_price' => 200000,
+            'fee_amount' => 8000,
+            'fee_type' => 'EXCLUDE',
+            'buyer_total' => 208000,
+            'seller_net' => 200000,
+            'delivery_method' => 'INSTANT',
+            'delivery_within_minutes' => 30,
+            'status' => AgreementStatus::FINALIZED,
+        ]);
+        $tx2 = Transaction::create([
+            'agreement_id' => $agr2->agreement_id,
+            'source_type' => TransactionSourceType::MARKETPLACE,
+            'listing_id' => $listing->listing_id,
+            'status' => TransactionStatus::COMPLETED,
+            'payment_due_at' => now()->subDays(20),
+        ]);
+        DB::table('transactions')->where('transaction_id', $tx2->transaction_id)->update([
+            'created_at' => now()->subDays(20),
+            'updated_at' => now()->subDays(20),
+        ]);
+
+        // Transaksi 3: 60 hari lalu (harga 300.000) -> tidak masuk 7d & 30d, masuk 90d & all
+        $agr3 = Agreement::create([
+            'created_by' => $buyer->user_id,
+            'buyer_id' => $buyer->user_id,
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variant->variant_id,
+            'item_title' => 'Item 3',
+            'item_description' => 'Desc',
+            'quantity' => 1,
+            'base_price' => 300000,
+            'fee_amount' => 10000,
+            'fee_type' => 'EXCLUDE',
+            'buyer_total' => 310000,
+            'seller_net' => 300000,
+            'delivery_method' => 'INSTANT',
+            'delivery_within_minutes' => 30,
+            'status' => AgreementStatus::FINALIZED,
+        ]);
+        $tx3 = Transaction::create([
+            'agreement_id' => $agr3->agreement_id,
+            'source_type' => TransactionSourceType::MARKETPLACE,
+            'listing_id' => $listing->listing_id,
+            'status' => TransactionStatus::COMPLETED,
+            'payment_due_at' => now()->subDays(60),
+        ]);
+        DB::table('transactions')->where('transaction_id', $tx3->transaction_id)->update([
+            'created_at' => now()->subDays(60),
+            'updated_at' => now()->subDays(60),
+        ]);
+
+        // 1. Uji Periode 7 Hari: hanya transaksi 1
+        $stats7d = $this->marketplaceService->getProductMarketStats($variant->variant_id, '7d');
+        $this->assertEquals(1, $stats7d['sample_count']);
+        $this->assertEquals(100000.00, $stats7d['avg_price']);
+        $this->assertEquals('7d', $stats7d['period']);
+        $this->assertEquals('7 Hari Terakhir', $stats7d['period_label']);
+
+        // 2. Uji Periode 30 Hari: transaksi 1 dan 2 (rata-rata 150.000)
+        $stats30d = $this->marketplaceService->getProductMarketStats($variant->variant_id, '30d');
+        $this->assertEquals(2, $stats30d['sample_count']);
+        $this->assertEquals(150000.00, $stats30d['avg_price']);
+        $this->assertEquals('30d', $stats30d['period']);
+        $this->assertEquals('30 Hari Terakhir', $stats30d['period_label']);
+
+        // 3. Uji Periode 90 Hari: transaksi 1, 2, dan 3 (rata-rata 200.000)
+        $stats90d = $this->marketplaceService->getProductMarketStats($variant->variant_id, '90d');
+        $this->assertEquals(3, $stats90d['sample_count']);
+        $this->assertEquals(200000.00, $stats90d['avg_price']);
+        $this->assertEquals('90d', $stats90d['period']);
+        $this->assertEquals('90 Hari Terakhir', $stats90d['period_label']);
+
+        // 4. Uji Periode Semua Waktu (all)
+        $statsAll = $this->marketplaceService->getProductMarketStats($variant->variant_id, 'all');
+        $this->assertEquals(3, $statsAll['sample_count']);
+        $this->assertEquals(200000.00, $statsAll['avg_price']);
+        $this->assertEquals('all', $statsAll['period']);
+        $this->assertEquals('Semua Waktu', $statsAll['period_label']);
+    }
+
+    /**
+     * Parameter periode yang tidak valid atau kosong otomatis fallback ke default 30d.
+     */
+    public function test_fallback_to_default_30_days_on_invalid_period_param(): void
+    {
+        $variant = $this->createVariant();
+
+        $statsInvalid = $this->marketplaceService->getProductMarketStats($variant->variant_id, 'sembarang');
+        $this->assertEquals('30d', $statsInvalid['period']);
+        $this->assertEquals('30 Hari Terakhir', $statsInvalid['period_label']);
+        $this->assertEquals(30, $statsInvalid['period_days']);
+
+        $statsNull = $this->marketplaceService->getProductMarketStats($variant->variant_id, null);
+        $this->assertEquals('30d', $statsNull['period']);
+        $this->assertEquals('30 Hari Terakhir', $statsNull['period_label']);
+    }
+
+    /**
+     * Memastikan varian lain terisolasi dan tidak ikut tercampur.
+     */
+    public function test_variant_isolation_in_market_stats(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $variantA = $this->createVariant();
+        $variantB = $this->createVariant();
+
+        $listingA = Listing::create([
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variantA->variant_id,
+            'title' => 'Item Variant A',
+            'description' => 'Desc',
+            'price' => 50000,
+            'delivery_method' => 'INSTANT',
+            'estimated_delivery_value' => 10,
+            'estimated_delivery_unit' => 'MINUTE',
+            'status' => 'ACTIVE',
+        ]);
+
+        $agrA = Agreement::create([
+            'created_by' => $buyer->user_id,
+            'buyer_id' => $buyer->user_id,
+            'seller_id' => $seller->user_id,
+            'variant_id' => $variantA->variant_id,
+            'item_title' => 'Item Variant A',
+            'item_description' => 'Desc',
+            'quantity' => 1,
+            'base_price' => 50000,
+            'fee_amount' => 2000,
+            'fee_type' => 'EXCLUDE',
+            'buyer_total' => 52000,
+            'seller_net' => 50000,
+            'delivery_method' => 'INSTANT',
+            'delivery_within_minutes' => 30,
+            'status' => AgreementStatus::FINALIZED,
+        ]);
+        Transaction::create([
+            'agreement_id' => $agrA->agreement_id,
+            'source_type' => TransactionSourceType::MARKETPLACE,
+            'listing_id' => $listingA->listing_id,
+            'status' => TransactionStatus::COMPLETED,
+            'payment_due_at' => now()->addHour(),
+        ]);
+
+        // Cek statistik untuk Variant B (harus tetap kosong)
+        $statsB = $this->marketplaceService->getProductMarketStats($variantB->variant_id);
+        $this->assertEquals(0, $statsB['sample_count']);
+        $this->assertFalse($statsB['has_price_data']);
+        $this->assertNull($statsB['avg_price']);
+    }
+
+    /**
      * Jika belum ada transaksi yang selesai, nilai avg_price adalah null.
      */
     public function test_average_price_is_null_when_no_completed_transactions_exist(): void
@@ -282,7 +499,7 @@ class ProductMarketInsightTest extends TestCase
     }
 
     /**
-     * Halaman detail listing menampilkan badge statistik pasar secara akurat (UC05).
+     * Halaman detail listing menampilkan widget informasi pasar, filter periode, dan label eksplisit (UC05).
      */
     public function test_market_stats_displayed_on_listing_detail_page(): void
     {
@@ -300,12 +517,28 @@ class ProductMarketInsightTest extends TestCase
             'status' => 'ACTIVE',
         ]);
 
+        // 1. Akses default tanpa parameter (30d)
         $response = $this->get('/marketplace/'.$listing->listing_id);
 
         $response->assertOk();
         $response->assertSee('Informasi Pasar Produk');
         $response->assertSee('Demand (Permintaan)');
         $response->assertSee('Supply (Penawaran)');
+        $response->assertSee('Periode: 30 Hari Terakhir');
+        $response->assertSee('7 Hari');
+        $response->assertSee('30 Hari');
+        $response->assertSee('90 Hari');
+        $response->assertSee('Semua');
         $response->assertSee('Data harga belum tersedia');
+
+        // 2. Akses dengan filter periode 7d
+        $response7d = $this->get('/marketplace/'.$listing->listing_id.'?period=7d');
+        $response7d->assertOk();
+        $response7d->assertSee('Periode: 7 Hari Terakhir');
+
+        // 3. Akses dengan parameter tidak valid (harus fallback aman ke 30d)
+        $responseInvalid = $this->get('/marketplace/'.$listing->listing_id.'?period=invalid123');
+        $responseInvalid->assertOk();
+        $responseInvalid->assertSee('Periode: 30 Hari Terakhir');
     }
 }
