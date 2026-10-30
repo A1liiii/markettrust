@@ -171,6 +171,27 @@
             <div id="global-dm-context-price" class="text-[10px] font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg shrink-0"></div>
         </div>
 
+        <!-- Agreement Ribbon (Jika percakapan memiliki kesepakatan transaksi) -->
+        <div id="global-dm-agreement-ribbon" class="hidden mx-2.5 mt-1.5 p-2 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/50 to-white border border-indigo-200/80 shadow-2xs items-center justify-between gap-2 shrink-0">
+            <div class="flex items-center gap-2 min-w-0">
+                <div class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span id="global-dm-agreement-status" class="font-bold text-[8px] uppercase px-1 py-0.2 rounded bg-indigo-100 text-indigo-800 inline-block">DRAFT</span>
+                        <span id="global-dm-agreement-rev" class="font-mono text-[8px] text-slate-500">Rev #1</span>
+                    </div>
+                    <h4 id="global-dm-agreement-title" class="text-[10px] font-semibold text-slate-800 truncate"></h4>
+                </div>
+            </div>
+            <a id="global-dm-agreement-action-link" href="#" class="glass-btn-primary text-[9px] py-1 px-2 rounded-lg font-bold shrink-0">
+                Buka Kesepakatan
+            </a>
+        </div>
+
         <!-- Chat Stream (Message Bubbles) -->
         <div id="global-dm-thread-messages" class="dm-chat-scroll flex-1 p-3 overflow-y-auto space-y-2.5 min-h-0 bg-slate-50/40">
             <!-- Thread Loading -->
@@ -620,6 +641,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 threadContext.classList.add('flex');
             } else {
                 threadContext.classList.add('hidden');
+            }
+
+            // Agreement Ribbon
+            const agreementRibbon = document.getElementById('global-dm-agreement-ribbon');
+            const agreementStatus = document.getElementById('global-dm-agreement-status');
+            const agreementRev = document.getElementById('global-dm-agreement-rev');
+            const agreementTitle = document.getElementById('global-dm-agreement-title');
+            const agreementAction = document.getElementById('global-dm-agreement-action-link');
+
+            if (agreementRibbon) {
+                if (data.agreement) {
+                    agreementStatus.textContent = data.agreement.status;
+                    agreementRev.textContent = `Rev #${data.agreement.revision_no}`;
+                    agreementTitle.textContent = data.agreement.item_title;
+                    if (data.agreement.status === 'FINALIZED' && data.agreement.transaction_id) {
+                        agreementAction.href = `/transactions/${data.agreement.transaction_id}`;
+                        agreementAction.textContent = 'Buka Transaksi';
+                    } else {
+                        agreementAction.href = data.full_url;
+                        agreementAction.textContent = 'Buka Kesepakatan';
+                    }
+                    agreementRibbon.classList.remove('hidden');
+                    agreementRibbon.classList.add('flex');
+                } else {
+                    agreementRibbon.classList.add('hidden');
+                    agreementRibbon.classList.remove('flex');
+                }
             }
 
             // Render Messages
