@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\ForumPost;
 use App\Models\Listing;
 use App\Models\Message;
+use App\Models\ProductVariant;
 use App\Services\ConversationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -160,6 +161,7 @@ class ConversationController extends Controller
                 'participantOne',
                 'participantTwo',
                 'post',
+                'agreement.transaction',
                 'messages' => function ($query) {
                     $query->with('sender')->orderBy('sent_at', 'asc');
                 },
@@ -181,6 +183,18 @@ class ConversationController extends Controller
                     'category_code' => $post->category_code,
                     'price_offer' => $post->price_offer ? number_format($post->price_offer, 0, ',', '.') : null,
                 ],
+                'agreement' => $conversation->agreement ? [
+                    'agreement_id' => $conversation->agreement->agreement_id,
+                    'status' => $conversation->agreement->status->value ?? (string) $conversation->agreement->status,
+                    'revision_no' => $conversation->agreement->revision_no,
+                    'item_title' => $conversation->agreement->item_title,
+                    'base_price' => (float) $conversation->agreement->base_price,
+                    'buyer_total' => (float) $conversation->agreement->buyer_total,
+                    'seller_net' => (float) $conversation->agreement->seller_net,
+                    'fee_amount' => (float) $conversation->agreement->fee_amount,
+                    'fee_type' => $conversation->agreement->fee_type->value ?? (string) $conversation->agreement->fee_type,
+                    'transaction_id' => $conversation->agreement->transaction?->transaction_id,
+                ] : null,
                 'messages' => $messagesData,
                 'full_url' => route('conversations.show', $conversation->conversation_id),
                 'send_url' => route('conversations.messages.send', $conversation->conversation_id),
@@ -210,7 +224,12 @@ class ConversationController extends Controller
             'participantTwo',
             'listing',
             'post',
-            'agreement',
+            'agreement.variant.product.category',
+            'agreement.transaction',
+            'agreement.creator',
+            'agreement.buyer',
+            'agreement.seller',
+            'agreement.rejectedByUser',
             'messages' => function ($query) {
                 $query->with('sender')->orderBy('sent_at', 'asc');
             },
@@ -234,6 +253,20 @@ class ConversationController extends Controller
                     'title' => $conversation->listing?->title ?? $conversation->post?->title ?? ($conversation->agreement ? 'Agreement #'.$conversation->agreement->agreement_id : 'Percakapan Pribadi'),
                     'price' => $conversation->listing ? 'Rp '.number_format($conversation->listing->price, 0, ',', '.') : ($conversation->post?->price_offer ? 'Rp '.number_format($conversation->post->price_offer, 0, ',', '.') : null),
                 ],
+                'agreement' => $conversation->agreement ? [
+                    'agreement_id' => $conversation->agreement->agreement_id,
+                    'status' => $conversation->agreement->status->value ?? (string) $conversation->agreement->status,
+                    'revision_no' => $conversation->agreement->revision_no,
+                    'item_title' => $conversation->agreement->item_title,
+                    'base_price' => (float) $conversation->agreement->base_price,
+                    'buyer_total' => (float) $conversation->agreement->buyer_total,
+                    'seller_net' => (float) $conversation->agreement->seller_net,
+                    'fee_amount' => (float) $conversation->agreement->fee_amount,
+                    'fee_type' => $conversation->agreement->fee_type->value ?? (string) $conversation->agreement->fee_type,
+                    'buyer_id' => $conversation->agreement->buyer_id,
+                    'seller_id' => $conversation->agreement->seller_id,
+                    'transaction_id' => $conversation->agreement->transaction?->transaction_id,
+                ] : null,
                 'messages' => $messagesData,
                 'full_url' => route('conversations.show', $conversation->conversation_id),
                 'send_url' => route('conversations.messages.send', $conversation->conversation_id),
@@ -241,9 +274,16 @@ class ConversationController extends Controller
             ]);
         }
 
+        $availableVariants = ProductVariant::with(['product.category'])
+            ->where('is_active', true)
+            ->whereHas('product', fn ($q) => $q->where('is_active', true))
+            ->orderBy('variant_name', 'asc')
+            ->get();
+
         return view('conversations.show', [
             'conversation' => $conversation,
             'otherUser' => $otherUser,
+            'availableVariants' => $availableVariants,
         ]);
     }
 
