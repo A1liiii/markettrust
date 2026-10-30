@@ -265,8 +265,9 @@ class ListingController extends Controller
 
         $listing->load(['seller', 'variant.product.category']);
 
+        $period = (string) $request->query('period', '30d');
         $marketStats = app(MarketplaceServiceInterface::class)
-            ->getProductMarketStats($listing->variant_id);
+            ->getProductMarketStats($listing->variant_id, $period);
 
         return view('marketplace.show', [
             'listing' => $listing,
