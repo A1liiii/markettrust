@@ -234,6 +234,21 @@
                 </span>
             </div>
 
+            <!-- Error Alert Banner -->
+            <div id="global-dm-error-alert" class="hidden mb-1.5 items-center justify-between px-2.5 py-1.5 bg-rose-50/95 border border-rose-200/90 rounded-xl text-xs text-rose-800 shadow-2xs">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="global-dm-error-message" class="font-medium text-[11px] leading-tight break-words"></span>
+                </div>
+                <button type="button" id="global-dm-dismiss-error-btn" class="p-0.5 text-rose-400 hover:text-rose-600 transition ml-1 rounded hover:bg-rose-100 shrink-0" title="Tutup peringatan">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
             <!-- Attachment Badge Pill -->
             <div id="global-dm-attachment-badge" class="hidden mb-1.5 items-center justify-between px-2.5 py-1 bg-indigo-50/90 border border-indigo-200/80 rounded-xl text-xs text-indigo-700 shadow-2xs">
                 <div class="flex items-center gap-1.5 truncate">
@@ -331,6 +346,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const attachName = document.getElementById('global-dm-attachment-name');
     const attachSize = document.getElementById('global-dm-attachment-size');
     const removeAttachBtn = document.getElementById('global-dm-remove-attachment-btn');
+    const drawerErrorAlert = document.getElementById('global-dm-error-alert');
+    const drawerErrorMessage = document.getElementById('global-dm-error-message');
+    const drawerDismissErrorBtn = document.getElementById('global-dm-dismiss-error-btn');
     const templateBtn = document.getElementById('global-dm-template-btn');
     const templateMenu = document.getElementById('global-dm-template-menu');
 
@@ -343,6 +361,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastMessageId = 0;
     let syncTimer = null;
     let isSubmitting = false;
+
+    // Helper functions for drawer in-page error alert
+    function showDrawerError(msg) {
+        if (drawerErrorMessage && drawerErrorAlert) {
+            drawerErrorMessage.textContent = msg;
+            drawerErrorAlert.classList.remove('hidden');
+            drawerErrorAlert.classList.add('flex');
+        }
+    }
+
+    function hideDrawerError() {
+        if (drawerErrorAlert) {
+            drawerErrorAlert.classList.add('hidden');
+            drawerErrorAlert.classList.remove('flex');
+        }
+    }
+
+    if (drawerDismissErrorBtn) {
+        drawerDismissErrorBtn.addEventListener('click', hideDrawerError);
+    }
 
     // Checkmark templates: Single tick (✓) for sent, Double tick (✓✓) for read
     const singleTickHtml = `
@@ -547,6 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
         threadContext.classList.remove('flex');
         messageList.innerHTML = '';
         activeConversationId = convId;
+        hideDrawerError();
 
         try {
             const res = await fetch(`/conversations/${convId}`, {
@@ -798,13 +837,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!res.ok) {
                     const err = await res.json();
-                    alert(err.message || 'Gagal mengirim pesan.');
+                    showDrawerError(err.message || 'Gagal mengirim pesan.');
                     return;
                 }
 
                 const data = await res.json();
                 textarea.value = '';
                 clearAttachment();
+                hideDrawerError();
 
                 if (data.message) {
                     appendMessage(data.message);
@@ -812,7 +852,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
             } catch (e) {
-                alert('Terjadi kesalahan koneksi.');
+                showDrawerError('Terjadi kesalahan koneksi saat mengirim pesan.');
             } finally {
                 isSubmitting = false;
                 submitBtn.disabled = false;
@@ -861,10 +901,20 @@ document.addEventListener('DOMContentLoaded', function() {
         attachBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', function() {
+            hideDrawerError();
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
+                const extension = file.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+
+                if (!allowedExtensions.includes(extension)) {
+                    showDrawerError('Format file harus berupa gambar (JPG, JPEG, PNG, WEBP) atau PDF.');
+                    clearAttachment();
+                    return;
+                }
+
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file maksimal adalah 5 MB.');
+                    showDrawerError('Ukuran file maksimal adalah 5 MB.');
                     clearAttachment();
                     return;
                 }
@@ -878,7 +928,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (removeAttachBtn) {
-            removeAttachBtn.addEventListener('click', clearAttachment);
+            removeAttachBtn.addEventListener('click', function() {
+                clearAttachment();
+                hideDrawerError();
+            });
         }
     }
 
