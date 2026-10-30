@@ -108,6 +108,31 @@ class Transaction extends Model
         return $this->hasMany(TransactionDeadlineEvent::class, 'transaction_id', 'transaction_id');
     }
 
+    public function cancellations(): HasMany
+    {
+        return $this->hasMany(TransactionCancellation::class, 'transaction_id', 'transaction_id');
+    }
+
+    public function latestCancellation(): HasOne
+    {
+        return $this->hasOne(TransactionCancellation::class, 'transaction_id', 'transaction_id')->latestOfMany('cancellation_id');
+    }
+
+    public function pendingCancellation(): HasOne
+    {
+        return $this->hasOne(TransactionCancellation::class, 'transaction_id', 'transaction_id')
+            ->ofMany(['cancellation_id' => 'max'], function ($query) {
+                $query->where('status', TransactionCancellation::STATUS_REQUESTED);
+            });
+    }
+
+    public function hasPendingCancellation(): bool
+    {
+        return $this->cancellations()
+            ->where('status', TransactionCancellation::STATUS_REQUESTED)
+            ->exists();
+    }
+
     public function isDeliveryOverdue(): bool
     {
         $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;

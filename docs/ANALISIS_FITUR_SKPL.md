@@ -62,14 +62,14 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 6. `UC-27`, `UC-28`, & `UC-28B` (`KF-08`, `KF-09`, `KF-10`) — Pembatalan Transaksi (Pre/Post-Payment) & Kewajiban KEEP Seller
 - **Kondisi Saat Ini**:
-  - Tabel `transaction_cancellations` dan `keep_obligations` sudah ada di migrasi [`2026_10_13_021737_add_transaction_workflow_schema.php`](../database/migrations/2026_10_13_021737_add_transaction_workflow_schema.php), tetapi belum ada Model, Service, Controller, Route, dan UI.
-- **Yang Harus Diselesaikan**:
-  - [ ] Membuat model `App\Models\TransactionCancellation` dan `App\Models\KeepObligation`.
-  - [ ] **`UC-27` (Ajukan Pembatalan — Buyer/Seller)**:
+  - Model `TransactionCancellation` dan `KeepObligation`, `CancellationService`, `TransactionCancellationController`, `AdminCancellationController`, routes pembatalan, modal UI transaksi, serta panel review Admin telah selesai diimplementasikan penuh dan terverifikasi 14/14 test feature lulus.
+- **Yang Telah Diselesaikan**:
+  - [x] Membuat model `App\Models\TransactionCancellation` dan `App\Models\KeepObligation`.
+  - [x] **`UC-27` (Ajukan Pembatalan — Buyer/Seller)**:
     - Hanya diizinkan sebelum penyerahan resmi (`DELIVERED`).
     - **Sebelum Pembayaran (`WAITING_PAYMENT`)**: Rekonsiliasi status gateway terlebih dahulu; jika dipastikan belum bayar, simpan `transaction_cancellations` (`stage = BEFORE_PAYMENT`, `status = APPROVED`), ubah transaksi menjadi `CANCELLED`, tutup akses pembayaran, dan catat pihak pembatal (alasan opsional, tidak otomatis melabeli `PROBLEMATIC`).
     - **Setelah Pembayaran Sebelum Penyerahan (`PAID`)**: Wajib mengisi alasan; simpan `transaction_cancellations` (`stage = AFTER_PAYMENT_BEFORE_DELIVERY`, `status = REQUESTED`) dan kirim ke antrean Admin (`UC-28`).
-  - [ ] **`UC-28` & `UC-28B` (Tinjau Pembatalan Post-Payment & Hitung KEEP — Admin)**:
+  - [x] **`UC-28` & `UC-28B` (Tinjau Pembatalan Post-Payment & Hitung KEEP — Admin)**:
     - Halaman/panel Admin untuk memeriksa permintaan `AFTER_PAYMENT_BEFORE_DELIVERY` berstatus `REQUESTED`, menentukan `responsible_party` (`BUYER`, `SELLER`, `PLATFORM`, `UNDETERMINED`) dan `decision_note`.
     - Jika **Ditolak (`REJECTED`)**: transaksi melanjutkan tahap `PAID`.
     - Jika **Disetujui (`APPROVED`)**: siapkan proses refund (`UC-20`) tanpa langsung menandai `REFUNDED`.

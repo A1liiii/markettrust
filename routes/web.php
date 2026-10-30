@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminModuleController;
 use App\Http\Controllers\Admin\CatalogController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
 use App\Http\Controllers\Seller\SellerPayoutAccountController;
+use App\Http\Controllers\TransactionCancellationController;
 use App\Http\Controllers\TransactionConfirmationController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionDeliveryController;
@@ -99,6 +101,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/transactions/{transaction}/confirm', [TransactionConfirmationController::class, 'confirm'])->name('transactions.confirm');
     Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
     Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
+    Route::post('/transactions/{transaction}/cancel', [TransactionCancellationController::class, 'store'])->name('transactions.cancel');
 
     // Pusat Notifikasi Pengguna & Integrasi Event
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -135,6 +138,7 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
 
     // Modul Lanjutan Administrator
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
+    Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
     Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
     Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
     Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');

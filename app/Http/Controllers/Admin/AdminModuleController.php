@@ -3,20 +3,54 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\KeepObligation;
+use App\Models\Transaction;
+use App\Models\TransactionCancellation;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdminModuleController extends Controller
 {
     /**
-     * Tampilkan halaman placeholder modul Transaksi & Escrow.
+     * Tampilkan halaman pengawasan Transaksi & Escrow, peninjauan pembatalan, dan kewajiban KEEP.
      */
-    public function transactions(): View
+    public function transactions(Request $request): View
     {
-        return view('admin.placeholder', [
-            'moduleKey' => 'transactions',
-            'title' => 'Pengawasan Transaksi & Escrow',
-            'description' => 'Monitoring status escrow, persetujuan pembatalan transaksi, dan pencatatan kewajiban KEEP seller.',
-            'icon' => 'banknotes',
+        $pendingCancellations = TransactionCancellation::query()
+            ->where('status', TransactionCancellation::STATUS_REQUESTED)
+            ->with([
+                'transaction.agreement.buyer',
+                'transaction.agreement.seller',
+                'transaction.payment',
+                'requestedBy',
+            ])
+            ->latest('cancellation_id')
+            ->get();
+
+        $keepObligations = KeepObligation::query()
+            ->with([
+                'seller',
+                'cancellation.transaction.agreement',
+            ])
+            ->latest('keep_obligation_id')
+            ->paginate(15, ['*'], 'keeps_page')
+            ->withQueryString();
+
+        $transactions = Transaction::query()
+            ->with([
+                'agreement.buyer',
+                'agreement.seller',
+                'payment',
+                'latestCancellation.keepObligation',
+            ])
+            ->latest('transaction_id')
+            ->paginate(15, ['*'], 'tx_page')
+            ->withQueryString();
+
+        return view('admin.transactions.index', [
+            'pendingCancellations' => $pendingCancellations,
+            'keepObligations' => $keepObligations,
+            'transactions' => $transactions,
         ]);
     }
 
