@@ -294,6 +294,18 @@
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 
+        <!-- Catatan Perpanjangan & Penyesuaian Tenggat (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.deadline-events')
+
+        <!-- Informasi Komplain & Mediasi Sengketa (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.complaint-detail')
+
+        <!-- Rincian Settlement Payout & Refund (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.settlement-detail')
+
+        <!-- Catatan Pembatalan & Pertanggungjawaban KEEP (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.cancellation-detail')
+
         <!-- Immutable Agreement Snapshot Details Panel -->
         <div class="glass-panel p-6 sm:p-8 space-y-6 border border-white/90 shadow-md">
             <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">
@@ -412,9 +424,14 @@
                                 <span class="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 shrink-0"></span>
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span class="font-bold text-slate-800 text-[11px]">
-                                            {{ \App\Enums\TransactionStatus::tryFrom($history->to_status)?->label() ?? $history->to_status }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="font-bold text-slate-800 text-[11px]">
+                                                {{ \App\Enums\TransactionStatus::tryFrom($history->to_status)?->label() ?? $history->to_status }}
+                                            </span>
+                                            <span class="text-[9px] px-1.5 py-0.2 rounded font-semibold {{ $history->changed_by ? 'bg-indigo-50 text-indigo-700' : 'bg-purple-50 text-purple-700' }}">
+                                                {{ $history->changedBy ? '@' . $history->changedBy->username : 'Sistem Otomatis' }}
+                                            </span>
+                                        </div>
                                         <span class="text-[10px] text-slate-400">
                                             {{ $history->changed_at?->diffForHumans() }}
                                         </span>

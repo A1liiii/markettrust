@@ -1,6 +1,6 @@
 @php
     $txStatus = $transaction->status instanceof \App\Enums\TransactionStatus ? $transaction->status->value : (string) $transaction->status;
-    $isDeliveredOrLater = in_array($txStatus, ['DELIVERED', 'CONFIRMED', 'DISPUTED', 'COMPLETED']);
+    $isDeliveredOrLater = in_array($txStatus, ['DELIVERED', 'CONFIRMED', 'DISPUTED', 'COMPLETED', 'CANCELLED', 'REFUNDED']) || $transaction->delivered_at !== null;
     $isDelivered = $txStatus === 'DELIVERED';
     $isConfirmed = in_array($txStatus, ['CONFIRMED', 'COMPLETED']);
     $isPaid = $txStatus === 'PAID';
@@ -335,21 +335,48 @@
             </div>
         @endif
 
-        <!-- Status Konfirmasi Telah Selesai -->
+        <!-- Status Konfirmasi Telah Selesai (Manual vs Auto-Confirm) -->
         @if ($isConfirmed)
-            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center justify-between gap-3" data-cy="confirmed-status-banner">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+            @php
+                $confirmHistory = $transaction->statusHistories->first(fn ($h) => $h->to_status === 'CONFIRMED');
+                $isAutoConfirmed = $confirmHistory ? ($confirmHistory->changed_by === null) : $transaction->deadlineEvents->contains('event_type', 'AUTO_CONFIRMED');
+            @endphp
+            <div class="p-4 rounded-xl {{ $isAutoConfirmed ? 'bg-purple-50/90 border border-purple-200 text-purple-950' : 'bg-emerald-50/90 border border-emerald-200 text-emerald-950' }} text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs" data-cy="confirmed-status-banner">
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg {{ $isAutoConfirmed ? 'bg-purple-600 text-white' : 'bg-emerald-600 text-white' }} flex items-center justify-center font-bold shrink-0 mt-0.5">
+                        @if ($isAutoConfirmed)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        @else
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        @endif
+                    </div>
                     <div>
-                        <span class="font-bold">Pesanan Telah Dikonfirmasi.</span>
-                        Dikonfirmasi pada {{ $transaction->confirmed_at?->translatedFormat('d F Y, H:i') ?? '-' }} WIB. Dana telah dialokasikan ke antrean payout Penjual.
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-sm">
+                                {{ $isAutoConfirmed ? 'Pesanan Dikonfirmasi Otomatis oleh Sistem (Auto-Confirm)' : 'Pesanan Dikonfirmasi Manual oleh Pembeli' }}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black border uppercase tracking-wider {{ $isAutoConfirmed ? 'bg-purple-100 text-purple-800 border-purple-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300' }}" data-cy="confirmation-type-badge">
+                                {{ $isAutoConfirmed ? 'Sistem' : 'Manual' }}
+                            </span>
+                        </div>
+                        <p class="text-[11px] {{ $isAutoConfirmed ? 'text-purple-800/80' : 'text-emerald-800/80' }} mt-1 leading-relaxed">
+                            @if ($isAutoConfirmed)
+                                Dikonfirmasi otomatis setelah batas waktu konfirmasi dan masa tenggang 30 menit berakhir tanpa ada sanggahan atau komplain. Dana dialokasikan ke antrean payout Penjual.
+                            @else
+                                Dikonfirmasi langsung oleh Pembeli (<strong>@<span>{{ $confirmHistory?->changedBy?->username ?? $agreement->buyer?->username }}</span></strong>) pada {{ $transaction->confirmed_at?->translatedFormat('d F Y, H:i') ?? '-' }} WIB.
+                            @endif
+                        </p>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0 uppercase tracking-wide">
-                    Siap Payout
-                </span>
+                <div class="shrink-0 flex items-center gap-2 self-end sm:self-center">
+                    <span class="px-3 py-1 rounded-lg {{ $isAutoConfirmed ? 'bg-purple-200/70 text-purple-900' : 'bg-emerald-200/70 text-emerald-900' }} font-extrabold text-[10px] uppercase tracking-wider">
+                        Siap Payout
+                    </span>
+                </div>
             </div>
         @endif
     </div>

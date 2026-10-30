@@ -8,6 +8,7 @@ use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
 use App\Enums\NotificationEventType;
 use App\Enums\TransactionStatus;
+use App\Models\AuditLog;
 use App\Models\KeepObligation;
 use App\Models\Transaction;
 use App\Models\TransactionCancellation;
@@ -173,6 +174,20 @@ class CancellationService implements CancellationServiceInterface
                     'responsible_party' => null,
                 ]);
 
+                AuditLog::create([
+                    'actor_id' => $admin->user_id,
+                    'action' => 'TRANSACTION_CANCEL_REJECTED',
+                    'entity_type' => 'transaction_cancellation',
+                    'entity_id' => $cancellation->cancellation_id,
+                    'old_value' => ['status' => TransactionCancellation::STATUS_REQUESTED],
+                    'new_value' => [
+                        'status' => TransactionCancellation::STATUS_REJECTED,
+                        'decision_note' => $decisionNote,
+                        'transaction_id' => $transaction->transaction_id,
+                    ],
+                    'created_at' => now(),
+                ]);
+
                 // Notifikasi ke pemohon bahwa pengajuan ditolak
                 $this->notificationService->notify(
                     (int) $cancellation->requested_by,
@@ -203,6 +218,21 @@ class CancellationService implements CancellationServiceInterface
                 'reviewed_by' => $admin->user_id,
                 'decision_note' => $decisionNote,
                 'reviewed_at' => now(),
+            ]);
+
+            AuditLog::create([
+                'actor_id' => $admin->user_id,
+                'action' => 'TRANSACTION_CANCEL_APPROVED',
+                'entity_type' => 'transaction_cancellation',
+                'entity_id' => $cancellation->cancellation_id,
+                'old_value' => ['status' => TransactionCancellation::STATUS_REQUESTED],
+                'new_value' => [
+                    'status' => TransactionCancellation::STATUS_APPROVED,
+                    'responsible_party' => $partyUpper,
+                    'decision_note' => $decisionNote,
+                    'transaction_id' => $transaction->transaction_id,
+                ],
+                'created_at' => now(),
             ]);
 
             // Transaksi berstatus CANCELLED untuk menyiapkan proses pengembalian dana (refund)
