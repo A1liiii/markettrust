@@ -13,3 +13,6 @@ Schedule::command('transactions:check-payment-deadlines')->everyMinute();
 
 // Scheduler pemantauan batas waktu penyerahan transaksi (UC-14B)
 Schedule::command('transactions:check-delivery-deadlines')->everyMinute();
+
+// Scheduler konfirmasi otomatis & masa tenggang pembeli (UC-15B)
+Schedule::command('transactions:check-confirmation-deadlines')->everyMinute();

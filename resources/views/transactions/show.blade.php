@@ -288,6 +288,9 @@
             </div>
         @endif
 
+        <!-- Cancellation Status & Action Modal (Pra-Bayar & Pasca-Bayar) -->
+        @include('transactions.partials.cancellation-modal')
+
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 

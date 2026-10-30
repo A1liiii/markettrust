@@ -20,9 +20,12 @@ interface MarketplaceServiceInterface
      * Hitung statistik informasi pasar produk (UC05) untuk varian tertentu:
      * - Demand: Jumlah postingan WTB aktif
      * - Supply: Jumlah listing aktif + postingan WTS aktif
-     * - Average Price: Rata-rata base_price transaksi selesai (COMPLETED)
+     * - Average Price: Rata-rata base_price transaksi selesai (COMPLETED) pada periode waktu tertentu
      * - Sample Count: Jumlah transaksi selesai yang menjadi sampel
      * - Has Price Data: Status apakah data harga tersedia
+     * - Period: Periode waktu yang digunakan (7d, 30d, 90d, all)
+     * - Period Label: Label teks periode ramah pengguna
+     * - Period Days: Jumlah hari pada periode atau null jika all
      *
      * @return array{
      *     demand: int,
@@ -31,10 +34,13 @@ interface MarketplaceServiceInterface
      *     wts_count: int,
      *     avg_price: ?float,
      *     sample_count: int,
-     *     has_price_data: bool
+     *     has_price_data: bool,
+     *     period: string,
+     *     period_label: string,
+     *     period_days: ?int
      * }
      */
-    public function getProductMarketStats(int $variantId): array;
+    public function getProductMarketStats(int $variantId, ?string $period = '30d'): array;
 
     /**
      * Periksa apakah seller memiliki tujuan payout aktif (bank, e-wallet, atau QRIS)
