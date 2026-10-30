@@ -21,6 +21,7 @@ class Payment extends Model
         'gateway_transaction_id',
         'payment_channel',
         'amount',
+        'gateway_fee_amount',
         'status',
         'gateway_status',
         'latest_payload',
@@ -33,11 +34,17 @@ class Payment extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'gateway_fee_amount' => 'decimal:2',
             'latest_payload' => 'array',
             'last_notification_at' => 'datetime',
             'paid_at' => 'datetime',
             'expires_at' => 'datetime',
         ];
+    }
+
+    public function hasVerifiedGatewayFee(): bool
+    {
+        return $this->gateway_fee_amount !== null;
     }
 
     public function transaction(): BelongsTo

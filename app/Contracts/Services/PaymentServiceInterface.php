@@ -28,4 +28,33 @@ interface PaymentServiceInterface
      * @return array{status: string, message: string}
      */
     public function syncPaymentStatus(Transaction $transaction): array;
+
+    /**
+     * Reconcile the current gateway payment state before cancellation or expiry (MT-A06 & UC-13C).
+     *
+     * @return array{
+     *     state: 'unpaid'|'paid'|'held_for_reconciliation'|'uncertain',
+     *     can_cancel_or_expire: bool,
+     *     gateway_status: string|null,
+     *     message: string
+     * }
+     */
+    public function reconcileGatewayStatus(Transaction $transaction): array;
+
+    /**
+     * Expire an overdue WAITING_PAYMENT transaction after reconciling with the payment gateway (UC-13C).
+     *
+     * @return array{status: string, message: string}
+     */
+    public function expireOverduePayment(Transaction $transaction): array;
+
+    /**
+     * Lazily evaluate payment deadline and gateway state when a single transaction is accessed.
+     */
+    public function evaluateLazyPaymentDeadline(Transaction $transaction): Transaction;
+
+    /**
+     * Lazily evaluate overdue WAITING_PAYMENT transactions for a user (or globally for Admin).
+     */
+    public function evaluateOverduePaymentsForUser(?User $user = null, int $limit = 10): int;
 }

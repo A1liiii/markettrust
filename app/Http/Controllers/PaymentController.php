@@ -80,10 +80,20 @@ class PaymentController extends Controller
     }
 
     /**
-     * Manually sync or query payment status directly from Midtrans API.
+     * Manually or automatically sync/reconcile payment status and deadline from Midtrans API.
      */
     public function syncStatus(Request $request, Transaction $transaction): JsonResponse
     {
+        $user = $request->user();
+        $agreement = $transaction->agreement;
+
+        if (! $agreement || (! $user->isAdmin() && (int) $user->user_id !== (int) $agreement->buyer_id && (int) $user->user_id !== (int) $agreement->seller_id)) {
+            return response()->json([
+                'status' => 'forbidden',
+                'message' => 'Anda tidak memiliki hak akses untuk memeriksa status transaksi ini.',
+            ], 403);
+        }
+
         try {
             $result = $this->paymentService->syncPaymentStatus($transaction);
 
