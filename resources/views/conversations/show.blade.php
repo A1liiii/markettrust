@@ -416,6 +416,21 @@
             </span>
         </div>
 
+        <!-- Attachment Error Alert Banner -->
+        <div id="attachment-error-alert" class="hidden mb-2 items-center justify-between px-3.5 py-2 bg-rose-50 border border-rose-200/90 rounded-xl text-xs text-rose-700 shadow-2xs transition-all">
+            <div class="flex items-center gap-2 min-w-0">
+                <svg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span id="attachment-error-message" class="font-medium truncate sm:whitespace-normal"></span>
+            </div>
+            <button type="button" id="dismiss-attachment-error-btn" class="p-1 text-rose-400 hover:text-rose-600 transition ml-2 rounded hover:bg-rose-100 shrink-0" title="Tutup peringatan">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
         <!-- Attachment Selected Preview Badge -->
         <div id="attachment-preview-badge" class="hidden mb-2 items-center justify-between px-3 py-1.5 bg-indigo-50 border border-indigo-200/80 rounded-xl text-xs text-indigo-700">
             <div class="flex items-center gap-2 truncate">
@@ -500,11 +515,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewName = document.getElementById('attachment-preview-name');
     const previewSize = document.getElementById('attachment-preview-size');
     const removeAttachmentBtn = document.getElementById('remove-attachment-btn');
+    const errorAlert = document.getElementById('attachment-error-alert');
+    const errorMessage = document.getElementById('attachment-error-message');
+    const dismissErrorBtn = document.getElementById('dismiss-attachment-error-btn');
     const templateDropdownBtn = document.getElementById('template-dropdown-btn');
     const templateMenu = document.getElementById('template-menu');
     const syncUrl = @json(route('conversations.sync', $conversation->conversation_id));
 
     let isSubmitting = false;
+
+    // Helper functions for error alert
+    function showAttachmentError(msg) {
+        if (errorMessage && errorAlert) {
+            errorMessage.textContent = msg;
+            errorAlert.classList.remove('hidden');
+            errorAlert.classList.add('flex');
+        }
+    }
+
+    function hideAttachmentError() {
+        if (errorAlert) {
+            errorAlert.classList.add('hidden');
+            errorAlert.classList.remove('flex');
+        }
+    }
+
+    if (dismissErrorBtn) {
+        dismissErrorBtn.addEventListener('click', hideAttachmentError);
+    }
 
     // Scroll to bottom helper
     function scrollToBottom() {
@@ -546,10 +584,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         fileInput.addEventListener('change', function() {
+            hideAttachmentError();
             if (this.files && this.files[0]) {
                 const file = this.files[0];
+                const extension = file.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+
+                if (!allowedExtensions.includes(extension)) {
+                    showAttachmentError('Format file lampiran harus berupa gambar (JPG, JPEG, PNG, WEBP) atau PDF.');
+                    clearAttachment();
+                    return;
+                }
+
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file lampiran maksimal 5 MB.');
+                    showAttachmentError('Ukuran file lampiran maksimal 5 MB.');
                     clearAttachment();
                     return;
                 }
@@ -566,6 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (removeAttachmentBtn) {
             removeAttachmentBtn.addEventListener('click', function() {
                 clearAttachment();
+                hideAttachmentError();
             });
         }
     }
