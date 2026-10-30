@@ -7,6 +7,7 @@ use App\Enums\TransactionStatus;
 use App\Models\KeepObligation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Throwable;
 
@@ -90,7 +91,7 @@ class TransactionController extends Controller
             }
         }
 
-        $transaction->load([
+        $relations = [
             'agreement.buyer',
             'agreement.seller',
             'agreement.variant.product.category',
@@ -98,6 +99,7 @@ class TransactionController extends Controller
             'listing',
             'payment',
             'settlement.keepDeductions.keepObligation.cancellation',
+            'settlement.evidenceFiles',
             'complaint',
             'statusHistories.changedBy',
             'evidenceFiles',
@@ -105,7 +107,13 @@ class TransactionController extends Controller
             'cancellations.requestedBy',
             'cancellations.reviewedBy',
             'cancellations.keepObligation.deductions.settlement',
-        ]);
+        ];
+
+        if (Schema::hasTable('settlement_attempts')) {
+            $relations[] = 'settlement.attempts';
+        }
+
+        $transaction->load($relations);
 
         $isBuyer = $user->user_id === $agreement->buyer_id;
         $isSeller = $user->user_id === $agreement->seller_id;
@@ -117,7 +125,7 @@ class TransactionController extends Controller
         $sellerKeepObligations = ($isSeller || $isAdmin)
             ? KeepObligation::query()
                 ->where('seller_id', $agreement->seller_id)
-                ->with(['cancellation', 'deductions.settlement'])
+                ->with(['cancellation.transaction', 'deductions.settlement'])
                 ->orderByRaw("CASE WHEN status = 'OPEN' THEN 0 ELSE 1 END")
                 ->latest('keep_obligation_id')
                 ->get()

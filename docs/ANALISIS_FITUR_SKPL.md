@@ -83,16 +83,16 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Kondisi Saat Ini**:
   - Tabel `settlements` dan `keep_deductions` sudah ada, tetapi halaman `/admin/transactions` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) masih *placeholder*.
 - **Yang Harus Diselesaikan**:
-  - [ ] Membuat model `App\Models\KeepDeduction` dan halaman operasional `/admin/transactions`.
-  - [ ] **`UC-19` (Catat Payout Simulatif — Admin)**:
+  - [x] Membuat model `App\Models\KeepDeduction` dan halaman operasional `/admin/transactions`.
+  - [x] **`UC-19` (Catat Payout Simulatif — Admin)**:
     - Memeriksa kelayakan (status `CONFIRMED` atau keputusan komplain `PAYOUT`, tanpa komplain aktif), mengambil tujuan payout aktif Seller (`UC-26`) dan menyalinnya ke `settlements` (menahan proses jika tujuan Seller belum lengkap).
     - Menampilkan `gross_amount` (dari `seller_net` snapshot) dan daftar `keep_obligations` berstatus `OPEN` milik Seller dari transaksi asal lain.
     - Menghitung potongan KEEP maksimal sebesar `gross_amount` (`amount = gross_amount - keep_deducted_amount`, tidak boleh negatif; jika sisa KEEP melebihi payout, potong sampai Rp0 dan sisa kewajiban dibawa ke payout berikutnya).
     - Admin mengisi referensi, catatan, dan bukti simulasi (`evidence_files.settlement_id`); setelah dipastikan berhasil, simpan `keep_deductions`, kurangi `remaining_amount` pada `keep_obligations` (ubah ke `SETTLED` jika lunas), tandai `settlements` = `COMPLETED` dan `transactions` = `COMPLETED` secara atomik.
-  - [ ] **`UC-29` & `UC-29B` (Tangani Payout Gagal & Percobaan Ulang — Admin)**:
+  - [x] **`UC-29` & `UC-29B` (Tangani Payout Gagal & Percobaan Ulang — Admin)**:
     - Mencatat percobaan payout yang gagal atau belum pasti (`FAILED` / `UNKNOWN`) pada `settlement_attempts` (beserta penyebab, referensi, waktu, dan tindak lanjut) tanpa memotong KEEP final atau menandai transaksi selesai, dan tanpa membuat KEEP baru.
     - Alur perbaikan tujuan oleh Seller (`UC-26`), validasi Admin, pengumuman sistem jika gangguan berdampak luas, serta pengulangan payout pada settlement yang sama.
-  - [ ] **`UC-20` (Catat Refund Simulatif — Admin)**:
+  - [x] **`UC-20` (Catat Refund Simulatif — Admin)**:
     - Untuk transaksi dengan keputusan `REFUND` (dari komplain `UC-18` atau pembatalan `UC-28`), menampilkan nominal serta tujuan refund Buyer (untuk kesalahan Seller, KEEP menjadi kewajiban Seller dan **tidak memotong refund Buyer**).
     - Admin mengisi metode, referensi, dan bukti refund simulatif $\rightarrow$ menyimpan `settlements` (`settlement_type = REFUND`, `status = COMPLETED`) dan mengubah transaksi menjadi `REFUNDED`.
 

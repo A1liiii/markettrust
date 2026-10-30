@@ -48,4 +48,3 @@ interface CancellationServiceInterface
      */
     public function getApprovedRefundDecision(Transaction|int $transaction): ?TransactionCancellation;
 }
-

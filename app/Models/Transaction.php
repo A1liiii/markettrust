@@ -115,7 +115,8 @@ class Transaction extends Model
 
     public function latestCancellation(): HasOne
     {
-        return $this->hasOne(TransactionCancellation::class, 'transaction_id', 'transaction_id')->latestOfMany('cancellation_id');
+        return $this->hasOne(TransactionCancellation::class, 'transaction_id', 'transaction_id')
+            ->latestOfMany('cancellation_id');
     }
 
     public function pendingCancellation(): HasOne
@@ -131,6 +132,90 @@ class Transaction extends Model
         return $this->cancellations()
             ->where('status', TransactionCancellation::STATUS_REQUESTED)
             ->exists();
+    }
+
+    public function approvedPostPaymentCancellation(): ?TransactionCancellation
+    {
+        if ($this->relationLoaded('cancellations')) {
+            return $this->cancellations
+                ->sortByDesc('cancellation_id')
+                ->first(fn (TransactionCancellation $c) => $c->status === TransactionCancellation::STATUS_APPROVED
+                    && $c->stage === TransactionCancellation::STAGE_AFTER_PAYMENT_BEFORE_DELIVERY);
+        }
+
+        return $this->cancellations()
+            ->where('status', TransactionCancellation::STATUS_APPROVED)
+            ->where('stage', TransactionCancellation::STAGE_AFTER_PAYMENT_BEFORE_DELIVERY)
+            ->latest('cancellation_id')
+            ->first();
+    }
+
+    public function hasActiveComplaint(): bool
+    {
+        $complaint = $this->relationLoaded('complaint')
+            ? $this->complaint
+            : $this->complaint()->first();
+
+        if ($complaint !== null) {
+            return in_array(strtoupper((string) $complaint->status), ['OPEN', 'REVIEWING'], true);
+        }
+
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        return $statusStr === 'DISPUTED';
+    }
+
+    public function isEligibleForPayout(): bool
+    {
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        if (in_array($statusStr, ['COMPLETED', 'REFUNDED', 'CANCELLED', 'WAITING_PAYMENT'], true)) {
+            return false;
+        }
+
+        if ($this->hasActiveComplaint()) {
+            return false;
+        }
+
+        $settlement = $this->relationLoaded('settlement') ? $this->settlement : $this->settlement()->first();
+        if ($settlement && $settlement->status === Settlement::STATUS_COMPLETED) {
+            return false;
+        }
+
+        if ($statusStr === 'CONFIRMED') {
+            return true;
+        }
+
+        $complaint = $this->relationLoaded('complaint') ? $this->complaint : $this->complaint()->first();
+
+        return $complaint !== null
+            && strtoupper((string) $complaint->status) === 'RESOLVED'
+            && strtoupper((string) $complaint->decision) === 'PAYOUT';
+    }
+
+    public function isEligibleForRefund(): bool
+    {
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        if (in_array($statusStr, ['COMPLETED', 'REFUNDED', 'WAITING_PAYMENT'], true)) {
+            return false;
+        }
+
+        if ($this->hasActiveComplaint()) {
+            return false;
+        }
+
+        $settlement = $this->relationLoaded('settlement') ? $this->settlement : $this->settlement()->first();
+        if ($settlement && $settlement->status === Settlement::STATUS_COMPLETED) {
+            return false;
+        }
+
+        $complaint = $this->relationLoaded('complaint') ? $this->complaint : $this->complaint()->first();
+        if ($complaint && strtoupper((string) $complaint->status) === 'RESOLVED' && strtoupper((string) $complaint->decision) === 'REFUND') {
+            return true;
+        }
+
+        return $this->approvedPostPaymentCancellation() !== null;
     }
 
     public function isDeliveryOverdue(): bool
@@ -154,18 +239,6 @@ class Transaction extends Model
     {
         return $this->deadlineEvents()
             ->where('is_flagged_for_admin', true)
-            ->exists();
-    }
-
-    public function hasActiveComplaint(): bool
-    {
-        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
-        if ($statusStr === 'DISPUTED') {
-            return true;
-        }
-
-        return $this->complaint()
-            ->whereIn('status', ['OPEN', 'REVIEWING'])
             ->exists();
     }
 

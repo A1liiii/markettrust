@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminModuleController;
+use App\Http\Controllers\Admin\AdminSettlementController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\AgreementController;
 use App\Http\Controllers\Auth\AuthController;
@@ -107,6 +108,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::match(['get', 'post'], '/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+
+    // Ledger Kewajiban KEEP Seller (Hanya dapat diakses oleh Seller pemilik atau Admin)
+    Route::get('/sellers/{seller}/keep-ledger', [AdminSettlementController::class, 'sellerKeepLedger'])->name('sellers.keep-ledger');
 });
 
 // Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
@@ -139,6 +143,10 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
     // Modul Lanjutan Administrator
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
     Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
+    Route::post('/transactions/{transaction}/settlement/payout', [AdminSettlementController::class, 'recordPayout'])->name('settlements.payout');
+    Route::post('/transactions/{transaction}/settlement/sync-destination', [AdminSettlementController::class, 'syncDestination'])->name('settlements.sync-destination');
+    Route::post('/transactions/{transaction}/settlement/refund', [AdminSettlementController::class, 'recordRefund'])->name('settlements.refund');
+    Route::post('/settlements/announce-disruption', [AdminSettlementController::class, 'announceDisruption'])->name('settlements.announce-disruption');
     Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
     Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
     Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');

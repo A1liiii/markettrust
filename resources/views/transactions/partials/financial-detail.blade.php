@@ -33,6 +33,9 @@
             && $c->keepObligation === null);
 
     $settlement = $transaction->settlement;
+    $latestAttempt = $settlement?->relationLoaded('attempts')
+        ? $settlement->attempts->first()
+        : null;
 
     $otherSellerKeepObligations = $canViewSellerBreakdown
         ? ($sellerKeepObligations ?? collect())->filter(
@@ -62,9 +65,16 @@
                     Rp {{ number_format((float) $agreement->buyer_total, 0, ',', '.') }}
                 </span>
             </div>
+
+            @if ($settlement && strtoupper((string) $settlement->settlement_type) === 'REFUND' && $settlement->status === 'COMPLETED')
+                <div class="border-t border-slate-200 pt-2 flex justify-between font-bold text-emerald-700" data-cy="buyer-refund-completed">
+                    <span>Refund Diterima ({{ $settlement->reference_no }}):</span>
+                    <span>Rp {{ number_format((float) $settlement->amount, 0, ',', '.') }}</span>
+                </div>
+            @endif
         </div>
     @else
-        {{-- Tampilan Ringkas Seller & Admin: 1 kartu bersih untuk fee platform, gateway, dan KEEP --}}
+        {{-- Tampilan Ringkas Seller & Admin: 1 kartu bersih untuk fee platform, gateway, KEEP & Settlement --}}
         <div class="bg-white/70 rounded-xl p-4 border border-slate-200/80 space-y-2.5 text-xs sm:text-sm" data-cy="financial-platform-card">
             <div class="flex justify-between items-center text-slate-600">
                 <span>Harga Dasar Produk:</span>
@@ -191,6 +201,22 @@
                                     <span class="text-indigo-700" data-cy="settlement-refund-amount">
                                         Rp {{ number_format($finalSettlementAmount, 0, ',', '.') }}
                                     </span>
+                                </div>
+                            @endif
+
+                            @if ($latestAttempt && in_array($latestAttempt->status, ['FAILED', 'UNKNOWN'], true))
+                                <div class="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-xs space-y-1" data-cy="settlement-attempt-warning">
+                                    <div class="font-bold text-rose-800">
+                                        Percobaan Payout #{{ $latestAttempt->attempt_no }} ({{ $latestAttempt->status }}): {{ $latestAttempt->failure_reason }}
+                                    </div>
+                                    <div class="text-[11px] text-slate-600">
+                                        Tindak lanjut: {{ $latestAttempt->follow_up_action }}
+                                    </div>
+                                    @if ($latestAttempt->requires_destination_update && ($isSeller ?? false))
+                                        <a href="{{ route('seller.payout-accounts.index') }}" class="inline-block font-bold text-indigo-600 hover:underline pt-0.5" data-cy="link-fix-payout-account">
+                                            Perbarui Rekening Payout Anda &rarr;
+                                        </a>
+                                    @endif
                                 </div>
                             @endif
                         </div>
