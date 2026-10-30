@@ -62,14 +62,14 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 6. `UC-27`, `UC-28`, & `UC-28B` (`KF-08`, `KF-09`, `KF-10`) — Pembatalan Transaksi (Pre/Post-Payment) & Kewajiban KEEP Seller
 - **Kondisi Saat Ini**:
-  - Tabel `transaction_cancellations` dan `keep_obligations` sudah ada di migrasi [`2026_10_13_021737_add_transaction_workflow_schema.php`](../database/migrations/2026_10_13_021737_add_transaction_workflow_schema.php), tetapi belum ada Model, Service, Controller, Route, dan UI.
-- **Yang Harus Diselesaikan**:
-  - [ ] Membuat model `App\Models\TransactionCancellation` dan `App\Models\KeepObligation`.
-  - [ ] **`UC-27` (Ajukan Pembatalan — Buyer/Seller)**:
+  - Model `TransactionCancellation` dan `KeepObligation`, `CancellationService`, `TransactionCancellationController`, `AdminCancellationController`, routes pembatalan, modal UI transaksi, serta panel review Admin telah selesai diimplementasikan penuh dan terverifikasi 14/14 test feature lulus.
+- **Yang Telah Diselesaikan**:
+  - [x] Membuat model `App\Models\TransactionCancellation` dan `App\Models\KeepObligation`.
+  - [x] **`UC-27` (Ajukan Pembatalan — Buyer/Seller)**:
     - Hanya diizinkan sebelum penyerahan resmi (`DELIVERED`).
     - **Sebelum Pembayaran (`WAITING_PAYMENT`)**: Rekonsiliasi status gateway terlebih dahulu; jika dipastikan belum bayar, simpan `transaction_cancellations` (`stage = BEFORE_PAYMENT`, `status = APPROVED`), ubah transaksi menjadi `CANCELLED`, tutup akses pembayaran, dan catat pihak pembatal (alasan opsional, tidak otomatis melabeli `PROBLEMATIC`).
     - **Setelah Pembayaran Sebelum Penyerahan (`PAID`)**: Wajib mengisi alasan; simpan `transaction_cancellations` (`stage = AFTER_PAYMENT_BEFORE_DELIVERY`, `status = REQUESTED`) dan kirim ke antrean Admin (`UC-28`).
-  - [ ] **`UC-28` & `UC-28B` (Tinjau Pembatalan Post-Payment & Hitung KEEP — Admin)**:
+  - [x] **`UC-28` & `UC-28B` (Tinjau Pembatalan Post-Payment & Hitung KEEP — Admin)**:
     - Halaman/panel Admin untuk memeriksa permintaan `AFTER_PAYMENT_BEFORE_DELIVERY` berstatus `REQUESTED`, menentukan `responsible_party` (`BUYER`, `SELLER`, `PLATFORM`, `UNDETERMINED`) dan `decision_note`.
     - Jika **Ditolak (`REJECTED`)**: transaksi melanjutkan tahap `PAID`.
     - Jika **Disetujui (`APPROVED`)**: siapkan proses refund (`UC-20`) tanpa langsung menandai `REFUNDED`.
@@ -149,9 +149,9 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 5. `UC-05` (`KF-11`) — Informasi Periode & Minimum Sampel pada Statistik Pasar Produk
 - **Kondisi Saat Ini**:
-  - Widget Informasi Pasar di [`MarketplaceService.php`](../app/Services/MarketplaceService.php) dan [`resources/views/marketplace/show.blade.php`](../resources/views/marketplace/show.blade.php) sudah menghitung *Demand* (WTB aktif), *Supply* (Listing + WTS aktif), dan rata-rata harga dasar transaksi `COMPLETED` per varian.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menambahkan filter periode waktu perhitungan serta keterangan eksplisit periode yang digunakan pada UI sesuai `UC-05` langkah 3 & 4.
+  - Widget Informasi Pasar di [`MarketplaceService.php`](../app/Services/MarketplaceService.php) dan [`resources/views/marketplace/show.blade.php`](../resources/views/marketplace/show.blade.php) telah dilengkapi dengan filter periode waktu (7 hari, 30 hari, 90 hari, semua waktu), keterangan eksplisit periode aktif pada antarmuka, fallback guard parameter tidak valid, dan transparansi jumlah sampel transaksi selesai per varian.
+- **Yang Telah Dilengkapi**:
+  - [x] Menambahkan filter periode waktu perhitungan serta keterangan eksplisit periode yang digunakan pada UI sesuai `UC-05` langkah 3 & 4.
 
 ---
 
@@ -189,4 +189,4 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Masalah Saat Ini**:
   - Tabel finansial di `transactions/show.blade.php` belum menampilkan label mode fee (`EXCLUDE`/`INCLUDE`), belum menampilkan `seller_net` ketika dilihat oleh Buyer, dan belum membedakan informasi biaya gateway aktual (`gateway_fee_amount`) serta kewajiban `KEEP`.
 - **Perbaikan Sesuai SKPL**:
-  - [ ] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.
+  - [x] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.

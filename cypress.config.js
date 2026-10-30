@@ -1,5 +1,6 @@
 import { defineConfig } from "cypress";
 import { execSync } from "child_process";
+import fs from "fs";
 
 export default defineConfig({
   e2e: {
@@ -13,8 +14,16 @@ export default defineConfig({
       on('task', {
         execPhp(code) {
           try {
-            const escaped = code.replace(/"/g, '\\"');
-            const output = execSync(`php artisan tinker --execute "${escaped}"`).toString();
+            const tempFile = 'storage/framework/cypress_task.php';
+            const phpCode = `<?php
+require __DIR__ . '/../../vendor/autoload.php';
+$app = require __DIR__ . '/../../bootstrap/app.php';
+$app->make(\\Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
+
+${code}
+`;
+            fs.writeFileSync(tempFile, phpCode);
+            const output = execSync('php storage/framework/cypress_task.php').toString();
             return output;
           } catch (err) {
             return err.message;

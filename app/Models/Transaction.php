@@ -122,8 +122,9 @@ class Transaction extends Model
     public function pendingCancellation(): HasOne
     {
         return $this->hasOne(TransactionCancellation::class, 'transaction_id', 'transaction_id')
-            ->where('status', TransactionCancellation::STATUS_REQUESTED)
-            ->latestOfMany('cancellation_id');
+            ->ofMany(['cancellation_id' => 'max'], function ($query) {
+                $query->where('status', TransactionCancellation::STATUS_REQUESTED);
+            });
     }
 
     public function hasPendingCancellation(): bool
@@ -155,11 +156,13 @@ class Transaction extends Model
             ? $this->complaint
             : $this->complaint()->first();
 
-        if (! $complaint) {
-            return false;
+        if ($complaint !== null) {
+            return in_array(strtoupper((string) $complaint->status), ['OPEN', 'REVIEWING'], true);
         }
 
-        return in_array(strtoupper((string) $complaint->status), ['OPEN', 'REVIEWING'], true);
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        return $statusStr === 'DISPUTED';
     }
 
     public function isEligibleForPayout(): bool
@@ -237,5 +240,22 @@ class Transaction extends Model
         return $this->deadlineEvents()
             ->where('is_flagged_for_admin', true)
             ->exists();
+    }
+
+    public function hasGracePeriod(): bool
+    {
+        return $this->deadlineEvents()
+            ->where('event_type', 'BUYER_GRACE_PERIOD')
+            ->exists();
+    }
+
+    public function isConfirmationOverdue(): bool
+    {
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+
+        return $statusStr === 'DELIVERED'
+            && $this->confirmation_due_at !== null
+            && now()->greaterThan($this->confirmation_due_at)
+            && $this->confirmed_at === null;
     }
 }

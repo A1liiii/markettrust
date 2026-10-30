@@ -200,6 +200,7 @@ class SellerDeliveryWorkflowTest extends TestCase
         $seller = User::factory()->create(['account_status' => 'ACTIVE']);
         $transaction = $this->createTransaction($buyer, $seller, [
             'status' => TransactionStatus::WAITING_PAYMENT,
+            'payment_due_at' => now()->addHour(),
         ]);
 
         $response = $this->actingAs($seller)->post(route('transactions.deliver', $transaction), [

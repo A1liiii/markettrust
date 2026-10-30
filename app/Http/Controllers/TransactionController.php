@@ -100,10 +100,13 @@ class TransactionController extends Controller
             'payment',
             'settlement.keepDeductions.keepObligation.cancellation',
             'settlement.evidenceFiles',
-            'cancellations.keepObligation.deductions.settlement',
+            'complaint',
             'statusHistories.changedBy',
             'evidenceFiles',
             'deadlineEvents',
+            'cancellations.requestedBy',
+            'cancellations.reviewedBy',
+            'cancellations.keepObligation.deductions.settlement',
         ];
 
         if (Schema::hasTable('settlement_attempts')) {
@@ -116,11 +119,15 @@ class TransactionController extends Controller
         $isSeller = $user->user_id === $agreement->seller_id;
         $isAdmin = $user->isAdmin();
 
+        $latestCancellation = $transaction->cancellations->sortByDesc('cancellation_id')->first();
+        $hasPendingCancellation = $transaction->cancellations->where('status', 'REQUESTED')->isNotEmpty();
+
         $sellerKeepObligations = ($isSeller || $isAdmin)
             ? KeepObligation::query()
                 ->where('seller_id', $agreement->seller_id)
                 ->with(['cancellation.transaction', 'deductions.settlement'])
-                ->orderByDesc('keep_obligation_id')
+                ->orderByRaw("CASE WHEN status = 'OPEN' THEN 0 ELSE 1 END")
+                ->latest('keep_obligation_id')
                 ->get()
             : collect();
 
@@ -130,8 +137,8 @@ class TransactionController extends Controller
             'isBuyer' => $isBuyer,
             'isSeller' => $isSeller,
             'isAdmin' => $isAdmin,
-            'latestCancellation' => $transaction->cancellations->sortByDesc('cancellation_id')->first(),
-            'hasPendingCancellation' => $transaction->cancellations->contains('status', 'REQUESTED'),
+            'latestCancellation' => $latestCancellation,
+            'hasPendingCancellation' => $hasPendingCancellation,
             'sellerKeepObligations' => $sellerKeepObligations,
         ]);
     }

@@ -288,6 +288,9 @@
             </div>
         @endif
 
+        <!-- Cancellation Status & Action Modal (Pra-Bayar & Pasca-Bayar) -->
+        @include('transactions.partials.cancellation-modal')
+
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 
@@ -394,7 +397,7 @@
                 </div>
             </div>
 
-            <!-- Financial Table (Separated Partial for MT-A17 & MT-A07) -->
+            <!-- Financial Details Section (Platform Fee, Actual Gateway Fee & KEEP Separation) -->
             @include('transactions.partials.financial-detail')
 
             <!-- Timeline / Status History -->
