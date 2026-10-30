@@ -25,10 +25,13 @@ class Settlement extends Model
         'destination_holder',
         'destination_qris_image_url',
         'amount',
+        'gross_amount',
+        'keep_deducted_amount',
         'status',
         'recorded_by',
         'reference_no',
         'note',
+        'payout_due_at',
         'completed_at',
     ];
 
@@ -36,6 +39,9 @@ class Settlement extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'gross_amount' => 'decimal:2',
+            'keep_deducted_amount' => 'decimal:2',
+            'payout_due_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
     }
