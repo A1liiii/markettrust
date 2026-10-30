@@ -141,9 +141,9 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 ### 4. `UC-23` (`KF-11`) — Detail Riwayat Poin Legitimasi & Catatan Pembatalan/KEEP pada Profil
 - **Kondisi Saat Ini**:
   - Halaman profil ([`resources/views/profile/show.blade.php`](../resources/views/profile/show.blade.php)) sudah menampilkan angka `reputation_points` dan badge `UNREVIEWED` / `LEGIT` / `PROBLEMATIC`.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menampilkan daftar/riwayat `reputation_events` yang membentuk total poin beserta penjelasan makna indikatornya, serta menampilkan catatan pembatalan/KEEP hanya sesuai kewenangan dan hasil tinjauan tanpa membocorkan bukti privat (`UC-23` langkah 2–4).
-  - [ ] Menyediakan route profil publik pengguna lain (saat ini `/profile` hanya menampilkan profil pengguna yang sedang login sendiri) agar Buyer/Seller dapat melihat profil dan poin legitimasi lawan transaksinya.
+- **Yang Telah Dilengkapi**:
+  - [x] Menampilkan daftar/riwayat `reputation_events` yang membentuk total poin beserta penjelasan makna indikatornya, serta menampilkan catatan pembatalan/KEEP hanya sesuai kewenangan dan hasil tinjauan tanpa membocorkan bukti privat (`UC-23` langkah 2–4).
+  - [x] Menyediakan route profil publik pengguna lain (`/profile/{user?}`) agar Buyer/Seller dapat melihat profil dan poin legitimasi lawan transaksinya.
 
 ---
 

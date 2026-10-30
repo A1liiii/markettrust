@@ -59,7 +59,9 @@
                         @endif
                         <div>
                             <div class="flex items-center gap-2">
-                                <span class="font-bold text-slate-900 text-sm">@<span>{{ $post->author->username }}</span></span>
+                                <a href="{{ route('profile.show', $post->author_id) }}" class="font-bold text-slate-900 hover:text-indigo-600 hover:underline transition text-sm">
+                                    @<span>{{ $post->author->username }}</span>
+                                </a>
                                 <span class="glass-badge {{ $post->author->account_status === 'ACTIVE' ? 'glass-badge-success' : 'glass-badge-danger' }} text-[10px] py-0 px-1.5">
                                     {{ $post->author->account_status }}
                                 </span>
