@@ -149,9 +149,9 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 5. `UC-05` (`KF-11`) — Informasi Periode & Minimum Sampel pada Statistik Pasar Produk
 - **Kondisi Saat Ini**:
-  - Widget Informasi Pasar di [`MarketplaceService.php`](../app/Services/MarketplaceService.php) dan [`resources/views/marketplace/show.blade.php`](../resources/views/marketplace/show.blade.php) sudah menghitung *Demand* (WTB aktif), *Supply* (Listing + WTS aktif), dan rata-rata harga dasar transaksi `COMPLETED` per varian.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menambahkan filter periode waktu perhitungan serta keterangan eksplisit periode yang digunakan pada UI sesuai `UC-05` langkah 3 & 4.
+  - Widget Informasi Pasar di [`MarketplaceService.php`](../app/Services/MarketplaceService.php) dan [`resources/views/marketplace/show.blade.php`](../resources/views/marketplace/show.blade.php) telah dilengkapi dengan filter periode waktu (7 hari, 30 hari, 90 hari, semua waktu), keterangan eksplisit periode aktif pada antarmuka, fallback guard parameter tidak valid, dan transparansi jumlah sampel transaksi selesai per varian.
+- **Yang Telah Dilengkapi**:
+  - [x] Menambahkan filter periode waktu perhitungan serta keterangan eksplisit periode yang digunakan pada UI sesuai `UC-05` langkah 3 & 4.
 
 ---
 

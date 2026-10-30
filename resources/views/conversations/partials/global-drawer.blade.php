@@ -171,6 +171,27 @@
             <div id="global-dm-context-price" class="text-[10px] font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg shrink-0"></div>
         </div>
 
+        <!-- Agreement Ribbon (Jika percakapan memiliki kesepakatan transaksi) -->
+        <div id="global-dm-agreement-ribbon" class="hidden mx-2.5 mt-1.5 p-2 rounded-2xl bg-gradient-to-r from-indigo-50/90 via-purple-50/50 to-white border border-indigo-200/80 shadow-2xs items-center justify-between gap-2 shrink-0">
+            <div class="flex items-center gap-2 min-w-0">
+                <div class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span id="global-dm-agreement-status" class="font-bold text-[8px] uppercase px-1 py-0.2 rounded bg-indigo-100 text-indigo-800 inline-block">DRAFT</span>
+                        <span id="global-dm-agreement-rev" class="font-mono text-[8px] text-slate-500">Rev #1</span>
+                    </div>
+                    <h4 id="global-dm-agreement-title" class="text-[10px] font-semibold text-slate-800 truncate"></h4>
+                </div>
+            </div>
+            <a id="global-dm-agreement-action-link" href="#" class="glass-btn-primary text-[9px] py-1 px-2 rounded-lg font-bold shrink-0">
+                Buka Kesepakatan
+            </a>
+        </div>
+
         <!-- Chat Stream (Message Bubbles) -->
         <div id="global-dm-thread-messages" class="dm-chat-scroll flex-1 p-3 overflow-y-auto space-y-2.5 min-h-0 bg-slate-50/40">
             <!-- Thread Loading -->
@@ -232,6 +253,21 @@
                 <span class="text-[9px] text-slate-400">
                     <kbd class="px-1 py-0.2 rounded bg-slate-100 border border-slate-200 text-[9px] font-mono text-slate-500">Enter</kbd> kirim
                 </span>
+            </div>
+
+            <!-- Error Alert Banner -->
+            <div id="global-dm-error-alert" class="hidden mb-1.5 items-center justify-between px-2.5 py-1.5 bg-rose-50/95 border border-rose-200/90 rounded-xl text-xs text-rose-800 shadow-2xs">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="global-dm-error-message" class="font-medium text-[11px] leading-tight break-words"></span>
+                </div>
+                <button type="button" id="global-dm-dismiss-error-btn" class="p-0.5 text-rose-400 hover:text-rose-600 transition ml-1 rounded hover:bg-rose-100 shrink-0" title="Tutup peringatan">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
 
             <!-- Attachment Badge Pill -->
@@ -331,6 +367,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const attachName = document.getElementById('global-dm-attachment-name');
     const attachSize = document.getElementById('global-dm-attachment-size');
     const removeAttachBtn = document.getElementById('global-dm-remove-attachment-btn');
+    const drawerErrorAlert = document.getElementById('global-dm-error-alert');
+    const drawerErrorMessage = document.getElementById('global-dm-error-message');
+    const drawerDismissErrorBtn = document.getElementById('global-dm-dismiss-error-btn');
     const templateBtn = document.getElementById('global-dm-template-btn');
     const templateMenu = document.getElementById('global-dm-template-menu');
 
@@ -343,6 +382,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastMessageId = 0;
     let syncTimer = null;
     let isSubmitting = false;
+
+    // Helper functions for drawer in-page error alert
+    function showDrawerError(msg) {
+        if (drawerErrorMessage && drawerErrorAlert) {
+            drawerErrorMessage.textContent = msg;
+            drawerErrorAlert.classList.remove('hidden');
+            drawerErrorAlert.classList.add('flex');
+        }
+    }
+
+    function hideDrawerError() {
+        if (drawerErrorAlert) {
+            drawerErrorAlert.classList.add('hidden');
+            drawerErrorAlert.classList.remove('flex');
+        }
+    }
+
+    if (drawerDismissErrorBtn) {
+        drawerDismissErrorBtn.addEventListener('click', hideDrawerError);
+    }
 
     // Checkmark templates: Single tick (✓) for sent, Double tick (✓✓) for read
     const singleTickHtml = `
@@ -547,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
         threadContext.classList.remove('flex');
         messageList.innerHTML = '';
         activeConversationId = convId;
+        hideDrawerError();
 
         try {
             const res = await fetch(`/conversations/${convId}`, {
@@ -581,6 +641,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 threadContext.classList.add('flex');
             } else {
                 threadContext.classList.add('hidden');
+            }
+
+            // Agreement Ribbon
+            const agreementRibbon = document.getElementById('global-dm-agreement-ribbon');
+            const agreementStatus = document.getElementById('global-dm-agreement-status');
+            const agreementRev = document.getElementById('global-dm-agreement-rev');
+            const agreementTitle = document.getElementById('global-dm-agreement-title');
+            const agreementAction = document.getElementById('global-dm-agreement-action-link');
+
+            if (agreementRibbon) {
+                if (data.agreement) {
+                    agreementStatus.textContent = data.agreement.status;
+                    agreementRev.textContent = `Rev #${data.agreement.revision_no}`;
+                    agreementTitle.textContent = data.agreement.item_title;
+                    if (data.agreement.status === 'FINALIZED' && data.agreement.transaction_id) {
+                        agreementAction.href = `/transactions/${data.agreement.transaction_id}`;
+                        agreementAction.textContent = 'Buka Transaksi';
+                    } else {
+                        agreementAction.href = data.full_url;
+                        agreementAction.textContent = 'Buka Kesepakatan';
+                    }
+                    agreementRibbon.classList.remove('hidden');
+                    agreementRibbon.classList.add('flex');
+                } else {
+                    agreementRibbon.classList.add('hidden');
+                    agreementRibbon.classList.remove('flex');
+                }
             }
 
             // Render Messages
@@ -798,13 +885,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!res.ok) {
                     const err = await res.json();
-                    alert(err.message || 'Gagal mengirim pesan.');
+                    showDrawerError(err.message || 'Gagal mengirim pesan.');
                     return;
                 }
 
                 const data = await res.json();
                 textarea.value = '';
                 clearAttachment();
+                hideDrawerError();
 
                 if (data.message) {
                     appendMessage(data.message);
@@ -812,7 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
             } catch (e) {
-                alert('Terjadi kesalahan koneksi.');
+                showDrawerError('Terjadi kesalahan koneksi saat mengirim pesan.');
             } finally {
                 isSubmitting = false;
                 submitBtn.disabled = false;
@@ -861,10 +949,20 @@ document.addEventListener('DOMContentLoaded', function() {
         attachBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', function() {
+            hideDrawerError();
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
+                const extension = file.name.split('.').pop().toLowerCase();
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+
+                if (!allowedExtensions.includes(extension)) {
+                    showDrawerError('Format file harus berupa gambar (JPG, JPEG, PNG, WEBP) atau PDF.');
+                    clearAttachment();
+                    return;
+                }
+
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('Ukuran file maksimal adalah 5 MB.');
+                    showDrawerError('Ukuran file maksimal adalah 5 MB.');
                     clearAttachment();
                     return;
                 }
@@ -878,7 +976,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         if (removeAttachBtn) {
-            removeAttachBtn.addEventListener('click', clearAttachment);
+            removeAttachBtn.addEventListener('click', function() {
+                clearAttachment();
+                hideDrawerError();
+            });
         }
     }
 

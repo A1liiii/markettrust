@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminModuleController;
 use App\Http\Controllers\Admin\CatalogController;
+use App\Http\Controllers\AgreementController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\ConversationController;
@@ -82,6 +83,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->name('conversations.messages.send');
     Route::get('/conversations/{conversation}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])->name('conversations.messages.attachment');
     Route::get('/conversations/{conversation}/sync', [ConversationController::class, 'sync'])->name('conversations.sync');
+    Route::post('/conversations/{conversation}/agreement', [AgreementController::class, 'store'])->name('conversations.agreement.store');
+    Route::put('/conversations/{conversation}/agreement', [AgreementController::class, 'update'])->name('conversations.agreement.update');
+    Route::post('/conversations/{conversation}/agreement/accept', [AgreementController::class, 'accept'])->name('conversations.agreement.accept');
+    Route::post('/conversations/{conversation}/agreement/reject', [AgreementController::class, 'reject'])->name('conversations.agreement.reject');
 
     // Checkout Marketplace & Detail Transaksi Kesepakatan
     Route::get('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'review'])->name('marketplace.checkout.review');
