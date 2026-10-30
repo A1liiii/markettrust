@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AccountReportController;
 use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminModuleController;
+use App\Http\Controllers\Admin\AdminUserModerationController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\AgreementController;
 use App\Http\Controllers\Auth\AuthController;
@@ -69,7 +71,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Manajemen Profil
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/{user?}', [ProfileController::class, 'show'])->whereNumber('user')->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -107,6 +109,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::match(['get', 'post'], '/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+
+    // Pelaporan Akun (UC-30)
+    Route::post('/reports/accounts', [AccountReportController::class, 'store'])->name('reports.accounts.store');
+    Route::get('/reports/accounts/{report}/evidence/{evidence}', [AccountReportController::class, 'downloadEvidence'])->name('reports.accounts.evidence');
 });
 
 // Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
@@ -136,11 +142,15 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::patch('/variants/{variant}/toggle', [CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
     });
 
-    // Modul Lanjutan Administrator
+    // Modul Lanjutan Administrator: Transaksi, Pembatalan, dan Pengguna/Moderasi
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
     Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
     Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
-    Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
+    Route::get('/users', [AdminUserModerationController::class, 'index'])->name('users.index');
+    Route::get('/users/reports/{report}', [AdminUserModerationController::class, 'show'])->name('users.reports.show');
+    Route::post('/users/reports/{report}/review', [AdminUserModerationController::class, 'review'])->name('users.reports.review');
+    Route::post('/users/reports/{report}/dismiss', [AdminUserModerationController::class, 'dismiss'])->name('users.reports.dismiss');
+    Route::post('/users/reports/{report}/resolve', [AdminUserModerationController::class, 'resolve'])->name('users.reports.resolve');
     Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');
 });
 

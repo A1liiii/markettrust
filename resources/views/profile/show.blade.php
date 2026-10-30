@@ -56,18 +56,32 @@
                 </p>
 
                 <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                    <a href="{{ route('profile.edit') }}" class="glass-btn-primary text-xs sm:text-sm py-2 px-4 shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                        </svg>
-                        <span>Ubah Foto & Password</span>
-                    </a>
-                    <a href="{{ route('seller.payout-accounts.index') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4 shadow-sm" data-cy="btn-profile-payout-accounts">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
-                        <span>Rekening Payout</span>
-                    </a>
+                    @if (auth()->check() && (int) auth()->id() !== (int) $user->user_id)
+                        <button
+                            type="button"
+                            onclick="openAccountReportModal({{ $user->user_id }}, '{{ addslashes($user->username) }}')"
+                            class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+                            data-cy="btn-report-account"
+                        >
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <span>Laporkan Akun</span>
+                        </button>
+                    @else
+                        <a href="{{ route('profile.edit') }}" class="glass-btn-primary text-xs sm:text-sm py-2 px-4 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                            <span>Ubah Foto & Password</span>
+                        </a>
+                        <a href="{{ route('seller.payout-accounts.index') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4 shadow-sm" data-cy="btn-profile-payout-accounts">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                            <span>Rekening Payout</span>
+                        </a>
+                    @endif
                     <a href="{{ route('home') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4">
                         <span>Kembali ke Beranda</span>
                     </a>
@@ -272,4 +286,6 @@
         </div>
     </div>
 </div>
+
+@include('account-reports.partials.report-modal')
 @endsection

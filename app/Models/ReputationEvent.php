@@ -14,7 +14,14 @@ class ReputationEvent extends Model
 
     protected $primaryKey = 'reputation_event_id';
 
+    public const EVENT_ADMIN_MODERATION = 'ADMIN_MODERATION';
+
     public $timestamps = false;
+
+    public static function generateReportEventKey(int|string $reportId): string
+    {
+        return "account_report:{$reportId}:resolution";
+    }
 
     protected $fillable = [
         'user_id',

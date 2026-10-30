@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\AccountModerationServiceInterface;
 use App\Contracts\Services\AgreementServiceInterface;
 use App\Contracts\Services\CancellationServiceInterface;
 use App\Contracts\Services\ConversationServiceInterface;
@@ -11,11 +12,14 @@ use App\Contracts\Services\NotificationServiceInterface;
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Contracts\Services\PayoutDestinationServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
+use App\Models\AccountReport;
 use App\Models\Listing;
 use App\Models\TransactionCancellation;
 use App\Models\User;
+use App\Policies\AccountReportPolicy;
 use App\Policies\ListingPolicy;
 use App\Policies\TransactionCancellationPolicy;
+use App\Services\AccountModerationService;
 use App\Services\AgreementService;
 use App\Services\CancellationService;
 use App\Services\ConversationService;
@@ -44,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AgreementServiceInterface::class, AgreementService::class);
         $this->app->bind(ConversationServiceInterface::class, ConversationService::class);
         $this->app->bind(MarketplaceServiceInterface::class, MarketplaceService::class);
+        $this->app->bind(AccountModerationServiceInterface::class, AccountModerationService::class);
     }
 
     /**
@@ -53,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Listing::class, ListingPolicy::class);
         Gate::policy(TransactionCancellation::class, TransactionCancellationPolicy::class);
+        Gate::policy(AccountReport::class, AccountReportPolicy::class);
 
         Gate::define('manage-catalog', function (User $user): bool {
             return $user->isAdmin() && $user->isActive();

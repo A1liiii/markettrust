@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,12 +13,21 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile information.
+     * Display the user's profile information (own or other user's public profile).
      */
-    public function show(Request $request): View
+    public function show(Request $request, ?User $user = null): View
     {
+        $targetUser = $user;
+
+        if (! $targetUser && $request->filled('user')) {
+            $targetUser = User::find($request->input('user'));
+        }
+
+        $targetUser = $targetUser ?? $request->user();
+
         return view('profile.show', [
-            'user' => $request->user(),
+            'user' => $targetUser,
+            'isOwnProfile' => (int) $request->user()?->user_id === (int) $targetUser->user_id,
         ]);
     }
 

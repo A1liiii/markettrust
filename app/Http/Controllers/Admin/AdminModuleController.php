@@ -68,16 +68,11 @@ class AdminModuleController extends Controller
     }
 
     /**
-     * Tampilkan halaman placeholder modul Pengguna & Akun.
+     * Tampilkan halaman antrean moderasi laporan akun dan manajemen pengguna (UC-24).
      */
-    public function users(): View
+    public function users(Request $request): View
     {
-        return view('admin.placeholder', [
-            'moduleKey' => 'users',
-            'title' => 'Manajemen Pengguna & Reputasi',
-            'description' => 'Kelola direktori pengguna, tinjauan reputasi (LEGIT / CAUTION), dan penangguhan akun bermasalah.',
-            'icon' => 'users',
-        ]);
+        return app(AdminUserModerationController::class)->index($request);
     }
 
     /**
