@@ -65,4 +65,9 @@ class Settlement extends Model
     {
         return $this->hasMany(EvidenceFile::class, 'settlement_id', 'settlement_id');
     }
+
+    public function keepDeductions(): HasMany
+    {
+        return $this->hasMany(KeepDeduction::class, 'settlement_id', 'settlement_id');
+    }
 }
