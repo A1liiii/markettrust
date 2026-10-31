@@ -1,9 +1,14 @@
 <?php
 
+use App\Http\Controllers\AccountReportController;
+use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDisputeController;
 use App\Http\Controllers\Admin\AdminModuleController;
+use App\Http\Controllers\Admin\AdminSettlementController;
+use App\Http\Controllers\Admin\AdminUserModerationController;
 use App\Http\Controllers\Admin\CatalogController;
+use App\Http\Controllers\AgreementController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\ComplaintController;
@@ -20,6 +25,8 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Seller\ListingController;
 use App\Http\Controllers\Seller\SellerPayoutAccountController;
+use App\Http\Controllers\TransactionCancellationController;
+use App\Http\Controllers\TransactionConfirmationController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionDeliveryController;
 use Illuminate\Support\Facades\Route;
@@ -67,7 +74,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Manajemen Profil
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/{user?}', [ProfileController::class, 'show'])->whereNumber('user')->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -83,6 +90,10 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'sendMessage'])->name('conversations.messages.send');
     Route::get('/conversations/{conversation}/messages/{message}/attachment', [ConversationController::class, 'downloadAttachment'])->name('conversations.messages.attachment');
     Route::get('/conversations/{conversation}/sync', [ConversationController::class, 'sync'])->name('conversations.sync');
+    Route::post('/conversations/{conversation}/agreement', [AgreementController::class, 'store'])->name('conversations.agreement.store');
+    Route::put('/conversations/{conversation}/agreement', [AgreementController::class, 'update'])->name('conversations.agreement.update');
+    Route::post('/conversations/{conversation}/agreement/accept', [AgreementController::class, 'accept'])->name('conversations.agreement.accept');
+    Route::post('/conversations/{conversation}/agreement/reject', [AgreementController::class, 'reject'])->name('conversations.agreement.reject');
 
     // Checkout Marketplace & Detail Transaksi Kesepakatan
     Route::get('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'review'])->name('marketplace.checkout.review');
@@ -92,16 +103,25 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/transactions/{transaction}/payment-token', [PaymentController::class, 'createSnapToken'])->name('transactions.payment-token');
     Route::post('/transactions/{transaction}/sync-payment', [PaymentController::class, 'syncStatus'])->name('transactions.sync-payment');
     Route::post('/transactions/{transaction}/deliver', [TransactionDeliveryController::class, 'store'])->name('transactions.deliver');
+    Route::post('/transactions/{transaction}/confirm', [TransactionConfirmationController::class, 'confirm'])->name('transactions.confirm');
     Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
     Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
     Route::post('/transactions/{transaction}/complaints', [ComplaintController::class, 'store'])->name('transactions.complaints.store');
     Route::post('/transactions/{transaction}/complaints/{complaint}/respond', [ComplaintController::class, 'respond'])->name('transactions.complaints.respond');
     Route::get('/transactions/{transaction}/complaints/evidence/{evidence}', [ComplaintController::class, 'downloadEvidence'])->name('transactions.complaints.evidence');
+    Route::post('/transactions/{transaction}/cancel', [TransactionCancellationController::class, 'store'])->name('transactions.cancel');
 
     // Pusat Notifikasi Pengguna & Integrasi Event
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::match(['get', 'post'], '/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+
+    // Pelaporan Akun (UC-30)
+    Route::post('/reports/accounts', [AccountReportController::class, 'store'])->name('reports.accounts.store');
+    Route::get('/reports/accounts/{report}/evidence/{evidence}', [AccountReportController::class, 'downloadEvidence'])->name('reports.accounts.evidence');
+
+    // Ledger Kewajiban KEEP Seller (Hanya dapat diakses oleh Seller pemilik atau Admin)
+    Route::get('/sellers/{seller}/keep-ledger', [AdminSettlementController::class, 'sellerKeepLedger'])->name('sellers.keep-ledger');
 });
 
 // Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
@@ -131,15 +151,26 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::patch('/variants/{variant}/toggle', [CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
     });
 
-    // Modul Lanjutan Administrator
+    // Modul Lanjutan Administrator: Transaksi, Pembatalan, Sengketa, dan Pengguna/Moderasi
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
+    Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
+    Route::post('/transactions/{transaction}/settlement/payout', [AdminSettlementController::class, 'recordPayout'])->name('settlements.payout');
+    Route::post('/transactions/{transaction}/settlement/sync-destination', [AdminSettlementController::class, 'syncDestination'])->name('settlements.sync-destination');
+    Route::post('/transactions/{transaction}/settlement/refund', [AdminSettlementController::class, 'recordRefund'])->name('settlements.refund');
+    Route::post('/settlements/announce-disruption', [AdminSettlementController::class, 'announceDisruption'])->name('settlements.announce-disruption');
+
     Route::prefix('disputes')->name('disputes.')->group(function () {
         Route::get('/', [AdminDisputeController::class, 'index'])->name('index');
         Route::get('/{complaint}', [AdminDisputeController::class, 'show'])->name('show');
         Route::post('/{complaint}/request-evidence', [AdminDisputeController::class, 'requestEvidence'])->name('request-evidence');
         Route::post('/{complaint}/decide', [AdminDisputeController::class, 'decide'])->name('decide');
     });
-    Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
+
+    Route::get('/users', [AdminUserModerationController::class, 'index'])->name('users.index');
+    Route::get('/users/reports/{report}', [AdminUserModerationController::class, 'show'])->name('users.reports.show');
+    Route::post('/users/reports/{report}/review', [AdminUserModerationController::class, 'review'])->name('users.reports.review');
+    Route::post('/users/reports/{report}/dismiss', [AdminUserModerationController::class, 'dismiss'])->name('users.reports.dismiss');
+    Route::post('/users/reports/{report}/resolve', [AdminUserModerationController::class, 'resolve'])->name('users.reports.resolve');
     Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');
 });
 

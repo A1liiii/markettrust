@@ -40,4 +40,14 @@ interface TransactionServiceInterface
         string $reason,
         ?User $actor = null
     ): TransactionDeadlineEvent;
+
+    /**
+     * Manual confirmation of delivery by Buyer.
+     */
+    public function confirmOrder(Transaction $transaction, User $buyer): Transaction;
+
+    /**
+     * Automatic system confirmation after grace period expiry.
+     */
+    public function autoConfirmOrder(Transaction $transaction): Transaction;
 }

@@ -165,13 +165,15 @@ class UserTransactionNavigationTest extends TestCase
         $seller = User::factory()->create();
         $transaction = $this->createTransaction($buyer, $seller);
 
-        // Buyer view
+        // Buyer view: hanya menampilkan Harga Produk & Total Pembayaran (buyer_total) tanpa rincian fee/seller_net
         $responseBuyer = $this->actingAs($buyer)->get(route('transactions.show', $transaction));
         $responseBuyer->assertStatus(200);
+        $responseBuyer->assertSee('Harga Produk:');
         $responseBuyer->assertSee('Total Pembayaran:');
         $responseBuyer->assertDontSee('Pencairan Hak Bersih Penjual:');
+        $responseBuyer->assertDontSee('Biaya Layanan Platform:');
 
-        // Seller view
+        // Seller view: menampilkan rincian lengkap termasuk Pencairan Hak Bersih Penjual
         $responseSeller = $this->actingAs($seller)->get(route('transactions.show', $transaction));
         $responseSeller->assertStatus(200);
         $responseSeller->assertSee('Pencairan Hak Bersih Penjual:');

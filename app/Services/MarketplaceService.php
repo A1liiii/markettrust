@@ -94,11 +94,37 @@ class MarketplaceService implements MarketplaceServiceInterface
      *     wts_count: int,
      *     avg_price: ?float,
      *     sample_count: int,
-     *     has_price_data: bool
+     *     has_price_data: bool,
+     *     period: string,
+     *     period_label: string,
+     *     period_days: ?int
      * }
      */
-    public function getProductMarketStats(int $variantId): array
+    public function getProductMarketStats(int $variantId, ?string $period = '30d'): array
     {
+        $normalizedPeriod = match (strtolower(trim((string) $period))) {
+            '7d' => '7d',
+            '90d' => '90d',
+            'all' => 'all',
+            default => '30d',
+        };
+
+        $periodLabel = match ($normalizedPeriod) {
+            '7d' => '7 Hari Terakhir',
+            '90d' => '90 Hari Terakhir',
+            'all' => 'Semua Waktu',
+            default => '30 Hari Terakhir',
+        };
+
+        $periodDays = match ($normalizedPeriod) {
+            '7d' => 7,
+            '90d' => 90,
+            'all' => null,
+            default => 30,
+        };
+
+        $startDate = $periodDays !== null ? now()->subDays($periodDays) : null;
+
         // Demand: jumlah WTB aktif pada varian yang sama
         $demand = ForumPost::query()
             ->where('variant_id', $variantId)
@@ -121,11 +147,17 @@ class MarketplaceService implements MarketplaceServiceInterface
 
         $supply = $activeListingsCount + $wtsCount;
 
-        // Rata-rata harga dari transaksi yang telah selesai (COMPLETED)
-        $txStats = DB::table('transactions')
+        // Rata-rata harga dari transaksi yang telah selesai (COMPLETED) pada periode yang dipilih
+        $txQuery = DB::table('transactions')
             ->join('agreements', 'transactions.agreement_id', '=', 'agreements.agreement_id')
             ->where('transactions.status', 'COMPLETED')
-            ->where('agreements.variant_id', $variantId)
+            ->where('agreements.variant_id', $variantId);
+
+        if ($startDate !== null) {
+            $txQuery->where('transactions.created_at', '>=', $startDate);
+        }
+
+        $txStats = $txQuery
             ->selectRaw('COUNT(transactions.transaction_id) as sample_count, AVG(agreements.base_price) as avg_price')
             ->first();
 
@@ -140,6 +172,9 @@ class MarketplaceService implements MarketplaceServiceInterface
             'avg_price' => $avgPrice,
             'sample_count' => $sampleCount,
             'has_price_data' => $sampleCount > 0,
+            'period' => $normalizedPeriod,
+            'period_label' => $periodLabel,
+            'period_days' => $periodDays,
         ];
     }
 

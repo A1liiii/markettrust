@@ -136,9 +136,9 @@
 
                 <!-- Product Market Insights Widget -->
                 <div class="glass-card p-6 sm:p-8 space-y-6 border border-white/80 shadow-sm relative overflow-hidden" id="widget-informasi-pasar" data-cy="widget-informasi-pasar">
-                    <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200/60 gap-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-600 flex items-center justify-center font-bold border border-violet-500/20 shadow-2xs">
+                            <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-600 flex items-center justify-center font-bold border border-violet-500/20 shadow-2xs shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
@@ -152,9 +152,34 @@
                                 </p>
                             </div>
                         </div>
-                        <span class="glass-badge glass-badge-neutral text-[10px]">
-                            Data Nyata Sistem
-                        </span>
+
+                        <!-- Period Filters & Active Indicator -->
+                        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                            <span class="glass-badge glass-badge-primary text-[10px]" data-cy="market-stat-period-label">
+                                Periode: {{ $marketStats['period_label'] }}
+                            </span>
+
+                            @php
+                                $currentPeriod = $marketStats['period'] ?? '30d';
+                                $periodOptions = [
+                                    '7d' => '7 Hari',
+                                    '30d' => '30 Hari',
+                                    '90d' => '90 Hari',
+                                    'all' => 'Semua',
+                                ];
+                                $currentRoute = ($isPreview ?? false) ? 'seller.listings.preview' : 'marketplace.show';
+                            @endphp
+
+                            <div class="inline-flex items-center gap-0.5 bg-slate-100/80 p-0.5 rounded-xl border border-slate-200/70 text-xs">
+                                @foreach ($periodOptions as $key => $title)
+                                    <a href="{{ route($currentRoute, array_merge(['listing' => $listing->listing_id], request()->except('period'), ['period' => $key])) }}"
+                                       class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition {{ $currentPeriod === $key ? 'bg-white text-indigo-700 shadow-2xs' : 'text-slate-500 hover:text-slate-900' }}"
+                                       data-cy="market-stat-filter-{{ $key }}">
+                                        {{ $title }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 3 Core Market Indicators Grid -->
@@ -201,14 +226,14 @@
                                     Rp {{ number_format($marketStats['avg_price'], 0, ',', '.') }}
                                 </div>
                                 <p class="text-[11px] text-emerald-700 font-medium mt-1 leading-tight" data-cy="market-stat-sample-count">
-                                    ✓ Berdasarkan {{ $marketStats['sample_count'] }} transaksi selesai
+                                    ✓ Berdasarkan {{ $marketStats['sample_count'] }} transaksi selesai ({{ $marketStats['period_label'] }})
                                 </p>
                             @else
                                 <div class="text-xs font-bold text-amber-700 mt-1.5" data-cy="market-stat-no-price">
                                     Data harga belum tersedia
                                 </div>
                                 <p class="text-[11px] text-slate-400 mt-1 leading-tight">
-                                    Belum ada transaksi selesai pada varian ini.
+                                    Belum ada transaksi selesai pada varian ini dalam {{ strtolower($marketStats['period_label']) }}.
                                 </p>
                             @endif
                         </div>
@@ -323,7 +348,9 @@
                         @endif
                         <div class="flex-1 min-w-0">
                             <h3 class="font-bold text-slate-900 text-sm truncate">
-                                @<span>{{ $listing->seller?->username }}</span>
+                                <a href="{{ route('profile.show', $listing->seller_id) }}" class="hover:text-indigo-600 transition" data-cy="link-seller-profile">
+                                    @<span>{{ $listing->seller?->username }}</span>
+                                </a>
                             </h3>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase {{ $listing->seller?->reputation_status === 'LEGIT' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600' }}">
@@ -354,6 +381,10 @@
                     <div class="text-[11px] text-slate-400 text-center">
                         Bergabung sejak {{ $listing->seller?->created_at?->translatedFormat('F Y') ?? '-' }}
                     </div>
+
+                    <a href="{{ route('profile.show', $listing->seller_id) }}" class="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline pt-2 border-t border-slate-100" data-cy="btn-view-seller-profile">
+                        Lihat Profil & Riwayat Legitimasi &rarr;
+                    </a>
                 </div>
 
             </div>
@@ -383,6 +414,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+    }
+
     const contactBtn = document.getElementById('btn-contact-seller');
     if (contactBtn) {
         contactBtn.addEventListener('click', async function (e) {

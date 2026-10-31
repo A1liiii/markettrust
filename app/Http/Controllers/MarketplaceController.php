@@ -60,7 +60,8 @@ class MarketplaceController extends Controller
 
         $listing->load(['seller', 'variant.product.category']);
 
-        $marketStats = $this->marketplaceService->getProductMarketStats($listing->variant_id);
+        $period = (string) $request->query('period', '30d');
+        $marketStats = $this->marketplaceService->getProductMarketStats($listing->variant_id, $period);
 
         return view('marketplace.show', [
             'listing' => $listing,
