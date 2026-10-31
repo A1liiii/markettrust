@@ -128,7 +128,7 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
     }
 
     /**
-     * Halaman review checkout menampilkan ringkasan harga pembeli yang bersih.
+     * Halaman review checkout menampilkan transparansi rincian harga lengkap (MT-A15).
      */
     public function test_checkout_review_page_displays_accurate_fee_breakdown(): void
     {
@@ -142,7 +142,38 @@ class MarketplaceCheckoutWorkflowTest extends TestCase
         $response->assertOk();
         $response->assertSee('Tinjauan Rincian');
         $response->assertSee('Transaksi Escrow Aman');
-        $response->assertSee('Rp 105.000'); // Total bayar pembeli (harga dasar + fee)
+
+        // Transparansi komponen harga (AC #1 & #3 MT-A15)
+        $response->assertSee('Harga Dasar Produk:');
+        $response->assertSee('Rp 100.000'); // Harga dasar (basePrice)
+        $response->assertSee('Mode Fee: EXCLUDE (Ditanggung Pembeli)');
+        $response->assertSee('Biaya Layanan Platform (Marketplace):');
+        $response->assertSee('+ Rp 5.000'); // Biaya platform (feeAmount)
+        $response->assertSee('Total Pembayaran Pembeli:');
+        $response->assertSee('Rp 105.000'); // Total bayar pembeli (buyerTotal)
+        $response->assertSee('Hak Penerimaan Bersih Penjual (Net):');
+
+        // Indikator rekening payout aktif (AC #4)
+        $response->assertSee('Tujuan Pencairan Penjual Siap:');
+        $response->assertDontSee('alert-seller-payout-missing');
+    }
+
+    /**
+     * Halaman review checkout menampilkan peringatan transparan saat penjual belum mengatur rekening payout (AC #4).
+     */
+    public function test_checkout_review_page_displays_warning_when_seller_has_no_active_payout(): void
+    {
+        $seller = User::factory()->create(); // Tanpa rekening payout
+        $buyer = User::factory()->create();
+        $listing = $this->createListing($seller, ['price' => 50000.00]);
+
+        $response = $this->actingAs($buyer)->get(route('marketplace.checkout.review', $listing));
+
+        $response->assertOk();
+        $response->assertSee('Catatan Escrow & Tujuan Pencairan:', false);
+        $response->assertSee('Penjual belum mendaftarkan rekening payout aktif');
+        $response->assertSee('100% aman tersimpan di rekening bersama MarketTrust', false);
+        $response->assertSee('data-cy="alert-seller-payout-missing"', false);
     }
 
     /**
