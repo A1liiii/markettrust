@@ -57,39 +57,91 @@
                         </div>
                     </div>
                     <div class="text-left sm:text-right shrink-0">
-                        <span class="block text-[10px] uppercase font-bold text-slate-400">Total Harga</span>
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Harga Item</span>
                         <span class="text-xl font-black text-slate-900" data-cy="checkout-base-price">
-                            Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
+                            Rp {{ number_format($feeCalculation->basePrice, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
             </div>
 
             <!-- Financial Calculation Table -->
-            <div class="space-y-4">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Rincian Pembayaran Transaksi
-                </h3>
+            <div class="space-y-4" data-cy="checkout-financial-table">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Rincian Pembayaran Transaksi
+                    </h3>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200/80 text-[11px] font-bold text-indigo-700 shadow-2xs w-fit" data-cy="checkout-fee-type-badge">
+                        <span>Mode Fee: EXCLUDE (Ditanggung Pembeli)</span>
+                    </span>
+                </div>
 
-                <div class="bg-white/50 rounded-2xl p-5 border border-slate-200/60 space-y-3 text-sm">
+                <div class="bg-white/50 rounded-2xl p-5 border border-slate-200/60 space-y-3.5 text-sm">
+                    <!-- Harga Dasar Produk -->
                     <div class="flex justify-between items-center text-slate-600">
-                        <span>Harga Produk:</span>
-                        <span class="font-semibold text-slate-900">
+                        <div>
+                            <span class="font-medium text-slate-800">Harga Dasar Produk:</span>
+                            <span class="block text-[11px] text-slate-400">Harga penawaran resmi dari penjual</span>
+                        </div>
+                        <span class="font-semibold text-slate-900" data-cy="checkout-item-base-price">
+                            Rp {{ number_format($feeCalculation->basePrice, 0, ',', '.') }}
+                        </span>
+                    </div>
+
+                    <!-- Biaya Layanan Platform -->
+                    <div class="flex justify-between items-center text-slate-600">
+                        <div>
+                            <span class="font-medium text-slate-800">Biaya Layanan Platform (Marketplace):</span>
+                            <span class="block text-[11px] text-slate-400">Sesuai tabel fee berjenjang SKPL (dibebankan ke Pembeli)</span>
+                        </div>
+                        <span class="font-semibold text-indigo-600" data-cy="checkout-fee-amount">
+                            + Rp {{ number_format($feeCalculation->feeAmount, 0, ',', '.') }}
+                        </span>
+                    </div>
+
+                    <!-- Total Pembayaran Pembeli -->
+                    <div class="border-t border-slate-200/80 pt-3 flex justify-between items-center">
+                        <div>
+                            <span class="block text-xs font-bold text-slate-900">Total Pembayaran Pembeli:</span>
+                            <span class="text-[10px] text-slate-500">Ditahan aman di rekening bersama (escrow) MarketTrust</span>
+                        </div>
+                        <span class="text-xl sm:text-2xl font-black text-indigo-700" data-cy="checkout-buyer-total">
                             Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
                         </span>
                     </div>
 
-                    <div class="border-t border-slate-200/80 pt-3 flex justify-between items-center">
-                        <div>
-                            <span class="block text-xs font-bold text-slate-900">Total Pembayaran:</span>
-                            <span class="text-[10px] text-slate-500">Ditahan aman di rekening bersama MarketTrust</span>
-                        </div>
-                        <span class="text-xl sm:text-2xl font-black text-slate-900 text-indigo-700" data-cy="checkout-buyer-total">
-                            Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
+                    <!-- Estimasi Hak Penerimaan Bersih Penjual -->
+                    <div class="border-t border-dashed border-slate-200 pt-2.5 flex justify-between items-center text-xs text-slate-500">
+                        <span>Hak Penerimaan Bersih Penjual (Net):</span>
+                        <span class="font-semibold text-emerald-700" data-cy="checkout-seller-net">
+                            Rp {{ number_format($feeCalculation->sellerNet, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
             </div>
+
+            <!-- Catatan Status Rekening Payout Penjual (TC-09-06 & UC-26) -->
+            @if ($hasSellerPayout)
+                <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 flex items-start gap-3 text-xs text-emerald-900 leading-relaxed" data-cy="seller-payout-ready">
+                    <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <strong class="font-bold block text-emerald-950 mb-0.5">Tujuan Pencairan Penjual Siap:</strong>
+                        <span>Penjual telah memiliki rekening payout aktif terverifikasi. Dana escrow dapat segera dialokasikan untuk pencairan otomatis setelah Anda mengonfirmasi penerimaan pesanan.</span>
+                    </div>
+                </div>
+            @else
+                <div class="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start gap-3 text-xs text-amber-900 leading-relaxed shadow-2xs" data-cy="alert-seller-payout-missing">
+                    <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <div>
+                        <strong class="font-bold block text-amber-950 mb-0.5">Catatan Escrow & Tujuan Pencairan:</strong>
+                        <span>Penjual belum mendaftarkan rekening payout aktif. Dana Anda tetap <strong>100% aman tersimpan di rekening bersama MarketTrust</strong>, dan pencairan dana ke penjual baru dapat diproses setelah penjual melengkapi rekening payout aktifnya (sesuai ketentuan SKPL UC-26).</span>
+                    </div>
+                </div>
+            @endif
 
             <!-- Escrow Guarantees & Terms -->
             <div class="bg-indigo-50/60 rounded-2xl p-5 border border-indigo-100 space-y-2 text-xs text-indigo-900 leading-relaxed">
