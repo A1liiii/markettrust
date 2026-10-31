@@ -83,8 +83,13 @@ class TransactionDeliveryController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat atau mengunduh bukti penyerahan ini.');
         }
 
-        if ((int) $evidence->delivery_transaction_id !== (int) $transaction->transaction_id) {
-            abort(404, 'Bukti penyerahan tidak cocok dengan transaksi yang diminta.');
+        $matchesTransaction = (int) $evidence->delivery_transaction_id === (int) $transaction->transaction_id
+            || (int) ($evidence->settlement?->transaction_id ?? 0) === (int) $transaction->transaction_id
+            || (int) ($evidence->complaint?->transaction_id ?? 0) === (int) $transaction->transaction_id
+            || (int) ($evidence->complaintResponse?->complaint?->transaction_id ?? 0) === (int) $transaction->transaction_id;
+
+        if (! $matchesTransaction) {
+            abort(404, 'Bukti berkas tidak cocok dengan transaksi yang diminta.');
         }
 
         $disk = Storage::disk('public');

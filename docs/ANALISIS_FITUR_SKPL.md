@@ -131,10 +131,10 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 3. `UC-21` & `KF-10` — Kelengkapan Halaman Detail Riwayat Transaksi & Audit Log Admin
 - **Kondisi Saat Ini**:
-  - Halaman daftar & detail transaksi pengguna ([`resources/views/transactions/show.blade.php`](../resources/views/transactions/show.blade.php)) sudah menampilkan stepper, snapshot kesepakatan, dan `TransactionStatusHistory`, tetapi halaman `/admin/audit-logs` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) masih *placeholder*.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menampilkan bagian terpisah pada detail transaksi (`UC-21` langkah 3 & 4) untuk: bukti penyerahan & `result_link`, status konfirmasi manual vs otomatis, detail komplain & tanggapan, rincian settlement, perpanjangan tenggat, alasan & pihak bertanggung jawab atas pembatalan, serta rincian KEEP asal/potongan/sisa kewajiban sesuai hak akses.
-  - [ ] Mengganti placeholder `/admin/audit-logs` dengan tabel daftar jejak audit (`audit_logs`) beserta pencatatan otomatis setiap tindakan penting Admin/sistem.
+  - Halaman detail transaksi pengguna ([`resources/views/transactions/show.blade.php`](../resources/views/transactions/show.blade.php)) dan modul admin `/admin/audit-logs` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) telah dilengkapi secara menyeluruh pada task `MT-A11`.
+- **Yang Telah Dilengkapi**:
+  - [x] Menampilkan bagian terpisah pada detail transaksi (`UC-21` langkah 3 & 4) untuk: bukti penyerahan & `result_link`, status konfirmasi manual vs otomatis, detail komplain & tanggapan, rincian settlement, perpanjangan tenggat, alasan & pihak bertanggung jawab atas pembatalan, serta rincian KEEP asal/potongan/sisa kewajiban sesuai hak akses.
+  - [x] Mengganti placeholder `/admin/audit-logs` dengan tabel daftar jejak audit (`audit_logs`) beserta pencatatan otomatis setiap tindakan penting Admin/sistem.
 
 ---
 
