@@ -291,6 +291,9 @@
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 
+        <!-- Complaint & Dispute Section (Komplain Buyer, Tanggapan Seller, Resolusi Sengketa MT-A05) -->
+        @include('transactions.partials.complaint-section')
+
         <!-- Immutable Agreement Snapshot Details Panel -->
         <div class="glass-panel p-6 sm:p-8 space-y-6 border border-white/90 shadow-md">
             <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">

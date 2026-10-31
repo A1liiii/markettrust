@@ -131,4 +131,16 @@ class Transaction extends Model
             ->where('is_flagged_for_admin', true)
             ->exists();
     }
+
+    public function hasActiveComplaint(): bool
+    {
+        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+        if ($statusStr === 'DISPUTED') {
+            return true;
+        }
+
+        return $this->complaint()
+            ->whereIn('status', ['OPEN', 'REVIEWING'])
+            ->exists();
+    }
 }

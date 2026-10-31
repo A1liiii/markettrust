@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminDisputeController;
 use App\Http\Controllers\Admin\AdminModuleController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\FeePreviewController;
 use App\Http\Controllers\Forum\ForumCommentController;
@@ -92,6 +94,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/transactions/{transaction}/deliver', [TransactionDeliveryController::class, 'store'])->name('transactions.deliver');
     Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
     Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
+    Route::post('/transactions/{transaction}/complaints', [ComplaintController::class, 'store'])->name('transactions.complaints.store');
+    Route::post('/transactions/{transaction}/complaints/{complaint}/respond', [ComplaintController::class, 'respond'])->name('transactions.complaints.respond');
+    Route::get('/transactions/{transaction}/complaints/evidence/{evidence}', [ComplaintController::class, 'downloadEvidence'])->name('transactions.complaints.evidence');
 
     // Pusat Notifikasi Pengguna & Integrasi Event
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -128,7 +133,12 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
 
     // Modul Lanjutan Administrator
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
-    Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
+    Route::prefix('disputes')->name('disputes.')->group(function () {
+        Route::get('/', [AdminDisputeController::class, 'index'])->name('index');
+        Route::get('/{complaint}', [AdminDisputeController::class, 'show'])->name('show');
+        Route::post('/{complaint}/request-evidence', [AdminDisputeController::class, 'requestEvidence'])->name('request-evidence');
+        Route::post('/{complaint}/decide', [AdminDisputeController::class, 'decide'])->name('decide');
+    });
     Route::get('/users', [AdminModuleController::class, 'users'])->name('users.index');
     Route::get('/audit-logs', [AdminModuleController::class, 'auditLogs'])->name('audit-logs.index');
 });

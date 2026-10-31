@@ -63,4 +63,19 @@ class Complaint extends Model
     {
         return $this->hasMany(EvidenceFile::class, 'complaint_id', 'complaint_id');
     }
+
+    public function isOpen(): bool
+    {
+        return $this->status === 'OPEN';
+    }
+
+    public function isReviewing(): bool
+    {
+        return $this->status === 'REVIEWING';
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->status === 'RESOLVED';
+    }
 }
