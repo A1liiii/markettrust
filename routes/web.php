@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountReportController;
 use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminModuleController;
+use App\Http\Controllers\Admin\AdminSettlementController;
 use App\Http\Controllers\Admin\AdminUserModerationController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\AgreementController;
@@ -113,6 +114,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     // Pelaporan Akun (UC-30)
     Route::post('/reports/accounts', [AccountReportController::class, 'store'])->name('reports.accounts.store');
     Route::get('/reports/accounts/{report}/evidence/{evidence}', [AccountReportController::class, 'downloadEvidence'])->name('reports.accounts.evidence');
+
+    // Ledger Kewajiban KEEP Seller (Hanya dapat diakses oleh Seller pemilik atau Admin)
+    Route::get('/sellers/{seller}/keep-ledger', [AdminSettlementController::class, 'sellerKeepLedger'])->name('sellers.keep-ledger');
 });
 
 // Webhook Notifikasi Pembayaran Midtrans (Publik & Tanpa CSRF)
@@ -145,6 +149,10 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
     // Modul Lanjutan Administrator: Transaksi, Pembatalan, dan Pengguna/Moderasi
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
     Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
+    Route::post('/transactions/{transaction}/settlement/payout', [AdminSettlementController::class, 'recordPayout'])->name('settlements.payout');
+    Route::post('/transactions/{transaction}/settlement/sync-destination', [AdminSettlementController::class, 'syncDestination'])->name('settlements.sync-destination');
+    Route::post('/transactions/{transaction}/settlement/refund', [AdminSettlementController::class, 'recordRefund'])->name('settlements.refund');
+    Route::post('/settlements/announce-disruption', [AdminSettlementController::class, 'announceDisruption'])->name('settlements.announce-disruption');
     Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
     Route::get('/users', [AdminUserModerationController::class, 'index'])->name('users.index');
     Route::get('/users/reports/{report}', [AdminUserModerationController::class, 'show'])->name('users.reports.show');

@@ -49,4 +49,3 @@ class AdminCancellationController extends Controller
         }
     }
 }
-

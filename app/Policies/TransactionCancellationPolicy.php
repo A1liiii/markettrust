@@ -56,4 +56,3 @@ class TransactionCancellationPolicy
         return $user->isActive() && $user->isAdmin() && $cancellation->isRequested();
     }
 }
-

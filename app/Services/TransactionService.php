@@ -7,6 +7,7 @@ use App\Contracts\Services\PayoutDestinationServiceInterface;
 use App\Contracts\Services\TransactionServiceInterface;
 use App\Enums\NotificationEventType;
 use App\Enums\TransactionStatus;
+use App\Models\AuditLog;
 use App\Models\EvidenceFile;
 use App\Models\Settlement;
 use App\Models\Transaction;
@@ -156,7 +157,7 @@ class TransactionService implements TransactionServiceInterface
                 'delivery_due_at' => $newDeadline,
             ]);
 
-            return TransactionDeadlineEvent::create([
+            $event = TransactionDeadlineEvent::create([
                 'transaction_id' => $lockedTx->transaction_id,
                 'event_type' => 'DELIVERY_EXTENSION',
                 'previous_deadline' => $previousDeadline,
@@ -167,6 +168,22 @@ class TransactionService implements TransactionServiceInterface
                 'is_flagged_for_admin' => false,
                 'created_at' => now(),
             ]);
+
+            AuditLog::create([
+                'actor_id' => $actor?->user_id,
+                'action' => 'DELIVERY_DEADLINE_EXTENDED',
+                'entity_type' => 'transaction',
+                'entity_id' => $lockedTx->transaction_id,
+                'old_value' => ['delivery_due_at' => $previousDeadline?->toIso8601String()],
+                'new_value' => [
+                    'delivery_due_at' => $newDeadline->toIso8601String(),
+                    'extension_minutes' => $extensionMinutes,
+                    'reason' => $reason,
+                ],
+                'created_at' => now(),
+            ]);
+
+            return $event;
         });
     }
 
@@ -303,6 +320,19 @@ class TransactionService implements TransactionServiceInterface
                 'reason' => 'Pesanan disetujui otomatis oleh sistem karena batas waktu konfirmasi telah habis.',
                 'granted_by' => null,
                 'is_flagged_for_admin' => false,
+                'created_at' => $now,
+            ]);
+
+            AuditLog::create([
+                'actor_id' => null,
+                'action' => 'TRANSACTION_AUTO_CONFIRMED',
+                'entity_type' => 'transaction',
+                'entity_id' => $lockedTx->transaction_id,
+                'old_value' => ['status' => TransactionStatus::DELIVERED->value],
+                'new_value' => [
+                    'status' => TransactionStatus::CONFIRMED->value,
+                    'trigger' => 'AUTO_CONFIRM_GRACE_PERIOD_EXPIRED',
+                ],
                 'created_at' => $now,
             ]);
 

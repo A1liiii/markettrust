@@ -294,6 +294,18 @@
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 
+        <!-- Catatan Perpanjangan & Penyesuaian Tenggat (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.deadline-events')
+
+        <!-- Informasi Komplain & Mediasi Sengketa (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.complaint-detail')
+
+        <!-- Rincian Settlement Payout & Refund (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.settlement-detail')
+
+        <!-- Catatan Pembatalan & Pertanggungjawaban KEEP (UC-21 &bull; KF-10) -->
+        @include('transactions.partials.cancellation-detail')
+
         <!-- Immutable Agreement Snapshot Details Panel -->
         <div class="glass-panel p-6 sm:p-8 space-y-6 border border-white/90 shadow-md">
             <div class="flex items-center justify-between pb-4 border-b border-slate-200/60">
@@ -357,7 +369,9 @@
                         @endif
                     </div>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-buyer-username">
-                        @<span>{{ $agreement->buyer?->username }}</span>
+                        <a href="{{ route('profile.show', $agreement->buyer_id) }}" class="hover:text-indigo-600 hover:underline transition">
+                            @<span>{{ $agreement->buyer?->username }}</span>
+                        </a>
                         @if ($isBuyer)
                             <span class="ml-1 text-[10px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold">Anda</span>
                         @endif
@@ -384,7 +398,9 @@
                         @endif
                     </div>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-seller-username">
-                        @<span>{{ $agreement->seller?->username }}</span>
+                        <a href="{{ route('profile.show', $agreement->seller_id) }}" class="hover:text-indigo-600 hover:underline transition">
+                            @<span>{{ $agreement->seller?->username }}</span>
+                        </a>
                         @if ($isSeller)
                             <span class="ml-1 text-[10px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold">Anda</span>
                         @endif
@@ -429,46 +445,8 @@
                 </div>
             </div>
 
-            <!-- Financial Table -->
-            <div class="space-y-3">
-                <span class="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {{ $transaction->source_type->value === 'MARKETPLACE' ? 'Rincian Pembayaran' : 'Nilai Finansial Kesepakatan' }}
-                </span>
-
-                <div class="bg-white/70 rounded-xl p-4 border border-slate-200/80 space-y-2.5 text-xs sm:text-sm">
-                    <div class="flex justify-between items-center text-slate-600">
-                        <span>Harga Produk:</span>
-                        <span class="font-semibold text-slate-900" data-cy="snapshot-base-price">
-                            Rp {{ number_format($agreement->base_price, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    @if ($agreement->fee_amount > 0)
-                        <div class="flex justify-between items-center text-slate-600">
-                            <span>Biaya Layanan Platform:</span>
-                            <span class="font-semibold text-indigo-600" data-cy="snapshot-fee-amount">
-                                + Rp {{ number_format($agreement->fee_amount, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endif
-
-                    <div class="border-t border-slate-200 pt-2 flex justify-between items-center font-bold">
-                        <span class="text-slate-900">Total Pembayaran:</span>
-                        <span class="text-base font-extrabold text-indigo-700" data-cy="snapshot-buyer-total">
-                            Rp {{ number_format($agreement->buyer_total, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    @if ($isSeller)
-                        <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
-                            <span class="text-slate-600">Pencairan Hak Bersih Penjual:</span>
-                            <span class="font-bold text-emerald-600" data-cy="snapshot-seller-net">
-                                Rp {{ number_format($agreement->seller_net, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <!-- Financial Details Section (Platform Fee, Actual Gateway Fee & KEEP Separation) -->
+            @include('transactions.partials.financial-detail')
 
             <!-- Timeline / Status History -->
             @if ($transaction->statusHistories->count() > 0)
@@ -482,9 +460,14 @@
                                 <span class="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 shrink-0"></span>
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span class="font-bold text-slate-800 text-[11px]">
-                                            {{ \App\Enums\TransactionStatus::tryFrom($history->to_status)?->label() ?? $history->to_status }}
-                                        </span>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="font-bold text-slate-800 text-[11px]">
+                                                {{ \App\Enums\TransactionStatus::tryFrom($history->to_status)?->label() ?? $history->to_status }}
+                                            </span>
+                                            <span class="text-[9px] px-1.5 py-0.2 rounded font-semibold {{ $history->changed_by ? 'bg-indigo-50 text-indigo-700' : 'bg-purple-50 text-purple-700' }}">
+                                                {{ $history->changedBy ? '@' . $history->changedBy->username : 'Sistem Otomatis' }}
+                                            </span>
+                                        </div>
                                         <span class="text-[10px] text-slate-400">
                                             {{ $history->changed_at?->diffForHumans() }}
                                         </span>

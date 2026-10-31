@@ -41,4 +41,3 @@ class RequestCancellationRequest extends FormRequest
         ];
     }
 }
-

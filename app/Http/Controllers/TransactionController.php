@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Services\PaymentServiceInterface;
 use App\Enums\TransactionStatus;
+use App\Models\KeepObligation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Throwable;
 
@@ -89,33 +91,60 @@ class TransactionController extends Controller
             }
         }
 
-        $transaction->load([
+        $relations = [
             'agreement.buyer',
             'agreement.seller',
             'agreement.variant.product.category',
             'agreement.conversation',
             'listing',
             'payment',
+            'settlement.keepDeductions.keepObligation.cancellation',
+            'settlement.evidenceFiles',
+            'settlement.recordedBy',
+            'complaint.responses.responder',
+            'complaint.responses.evidenceFiles',
+            'complaint.evidenceFiles',
+            'complaint.decidedBy',
+            'complaint.raisedBy',
             'statusHistories.changedBy',
             'evidenceFiles',
-            'deadlineEvents',
-            'settlement',
-            'complaint',
+            'deadlineEvents.grantedBy',
             'cancellations.requestedBy',
             'cancellations.reviewedBy',
-            'cancellations.keepObligation',
-        ]);
+            'cancellations.keepObligation.deductions.settlement',
+        ];
+
+        if (Schema::hasTable('settlement_attempts')) {
+            $relations[] = 'settlement.attempts';
+        }
+
+        $transaction->load($relations);
+
+        $isBuyer = $user->user_id === $agreement->buyer_id;
+        $isSeller = $user->user_id === $agreement->seller_id;
+        $isAdmin = $user->isAdmin();
 
         $latestCancellation = $transaction->cancellations->sortByDesc('cancellation_id')->first();
         $hasPendingCancellation = $transaction->cancellations->where('status', 'REQUESTED')->isNotEmpty();
 
+        $sellerKeepObligations = ($isSeller || $isAdmin)
+            ? KeepObligation::query()
+                ->where('seller_id', $agreement->seller_id)
+                ->with(['cancellation.transaction', 'deductions.settlement'])
+                ->orderByRaw("CASE WHEN status = 'OPEN' THEN 0 ELSE 1 END")
+                ->latest('keep_obligation_id')
+                ->get()
+            : collect();
+
         return view('transactions.show', [
             'transaction' => $transaction,
             'agreement' => $agreement,
-            'isBuyer' => $user->user_id === $agreement->buyer_id,
-            'isSeller' => $user->user_id === $agreement->seller_id,
+            'isBuyer' => $isBuyer,
+            'isSeller' => $isSeller,
+            'isAdmin' => $isAdmin,
             'latestCancellation' => $latestCancellation,
             'hasPendingCancellation' => $hasPendingCancellation,
+            'sellerKeepObligations' => $sellerKeepObligations,
         ]);
     }
 }

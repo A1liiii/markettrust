@@ -83,16 +83,16 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Kondisi Saat Ini**:
   - Tabel `settlements` dan `keep_deductions` sudah ada, tetapi halaman `/admin/transactions` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) masih *placeholder*.
 - **Yang Harus Diselesaikan**:
-  - [ ] Membuat model `App\Models\KeepDeduction` dan halaman operasional `/admin/transactions`.
-  - [ ] **`UC-19` (Catat Payout Simulatif — Admin)**:
+  - [x] Membuat model `App\Models\KeepDeduction` dan halaman operasional `/admin/transactions`.
+  - [x] **`UC-19` (Catat Payout Simulatif — Admin)**:
     - Memeriksa kelayakan (status `CONFIRMED` atau keputusan komplain `PAYOUT`, tanpa komplain aktif), mengambil tujuan payout aktif Seller (`UC-26`) dan menyalinnya ke `settlements` (menahan proses jika tujuan Seller belum lengkap).
     - Menampilkan `gross_amount` (dari `seller_net` snapshot) dan daftar `keep_obligations` berstatus `OPEN` milik Seller dari transaksi asal lain.
     - Menghitung potongan KEEP maksimal sebesar `gross_amount` (`amount = gross_amount - keep_deducted_amount`, tidak boleh negatif; jika sisa KEEP melebihi payout, potong sampai Rp0 dan sisa kewajiban dibawa ke payout berikutnya).
     - Admin mengisi referensi, catatan, dan bukti simulasi (`evidence_files.settlement_id`); setelah dipastikan berhasil, simpan `keep_deductions`, kurangi `remaining_amount` pada `keep_obligations` (ubah ke `SETTLED` jika lunas), tandai `settlements` = `COMPLETED` dan `transactions` = `COMPLETED` secara atomik.
-  - [ ] **`UC-29` & `UC-29B` (Tangani Payout Gagal & Percobaan Ulang — Admin)**:
+  - [x] **`UC-29` & `UC-29B` (Tangani Payout Gagal & Percobaan Ulang — Admin)**:
     - Mencatat percobaan payout yang gagal atau belum pasti (`FAILED` / `UNKNOWN`) pada `settlement_attempts` (beserta penyebab, referensi, waktu, dan tindak lanjut) tanpa memotong KEEP final atau menandai transaksi selesai, dan tanpa membuat KEEP baru.
     - Alur perbaikan tujuan oleh Seller (`UC-26`), validasi Admin, pengumuman sistem jika gangguan berdampak luas, serta pengulangan payout pada settlement yang sama.
-  - [ ] **`UC-20` (Catat Refund Simulatif — Admin)**:
+  - [x] **`UC-20` (Catat Refund Simulatif — Admin)**:
     - Untuk transaksi dengan keputusan `REFUND` (dari komplain `UC-18` atau pembatalan `UC-28`), menampilkan nominal serta tujuan refund Buyer (untuk kesalahan Seller, KEEP menjadi kewajiban Seller dan **tidak memotong refund Buyer**).
     - Admin mengisi metode, referensi, dan bukti refund simulatif $\rightarrow$ menyimpan `settlements` (`settlement_type = REFUND`, `status = COMPLETED`) dan mengubah transaksi menjadi `REFUNDED`.
 
@@ -131,19 +131,19 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 
 ### 3. `UC-21` & `KF-10` — Kelengkapan Halaman Detail Riwayat Transaksi & Audit Log Admin
 - **Kondisi Saat Ini**:
-  - Halaman daftar & detail transaksi pengguna ([`resources/views/transactions/show.blade.php`](../resources/views/transactions/show.blade.php)) sudah menampilkan stepper, snapshot kesepakatan, dan `TransactionStatusHistory`, tetapi halaman `/admin/audit-logs` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) masih *placeholder*.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menampilkan bagian terpisah pada detail transaksi (`UC-21` langkah 3 & 4) untuk: bukti penyerahan & `result_link`, status konfirmasi manual vs otomatis, detail komplain & tanggapan, rincian settlement, perpanjangan tenggat, alasan & pihak bertanggung jawab atas pembatalan, serta rincian KEEP asal/potongan/sisa kewajiban sesuai hak akses.
-  - [ ] Mengganti placeholder `/admin/audit-logs` dengan tabel daftar jejak audit (`audit_logs`) beserta pencatatan otomatis setiap tindakan penting Admin/sistem.
+  - Halaman detail transaksi pengguna ([`resources/views/transactions/show.blade.php`](../resources/views/transactions/show.blade.php)) dan modul admin `/admin/audit-logs` di [`AdminModuleController.php`](../app/Http/Controllers/Admin/AdminModuleController.php) telah dilengkapi secara menyeluruh pada task `MT-A11`.
+- **Yang Telah Dilengkapi**:
+  - [x] Menampilkan bagian terpisah pada detail transaksi (`UC-21` langkah 3 & 4) untuk: bukti penyerahan & `result_link`, status konfirmasi manual vs otomatis, detail komplain & tanggapan, rincian settlement, perpanjangan tenggat, alasan & pihak bertanggung jawab atas pembatalan, serta rincian KEEP asal/potongan/sisa kewajiban sesuai hak akses.
+  - [x] Mengganti placeholder `/admin/audit-logs` dengan tabel daftar jejak audit (`audit_logs`) beserta pencatatan otomatis setiap tindakan penting Admin/sistem.
 
 ---
 
 ### 4. `UC-23` (`KF-11`) — Detail Riwayat Poin Legitimasi & Catatan Pembatalan/KEEP pada Profil
 - **Kondisi Saat Ini**:
   - Halaman profil ([`resources/views/profile/show.blade.php`](../resources/views/profile/show.blade.php)) sudah menampilkan angka `reputation_points` dan badge `UNREVIEWED` / `LEGIT` / `PROBLEMATIC`.
-- **Yang Perlu Dilengkapi**:
-  - [ ] Menampilkan daftar/riwayat `reputation_events` yang membentuk total poin beserta penjelasan makna indikatornya, serta menampilkan catatan pembatalan/KEEP hanya sesuai kewenangan dan hasil tinjauan tanpa membocorkan bukti privat (`UC-23` langkah 2–4).
-  - [ ] Menyediakan route profil publik pengguna lain (saat ini `/profile` hanya menampilkan profil pengguna yang sedang login sendiri) agar Buyer/Seller dapat melihat profil dan poin legitimasi lawan transaksinya.
+- **Yang Telah Dilengkapi**:
+  - [x] Menampilkan daftar/riwayat `reputation_events` yang membentuk total poin beserta penjelasan makna indikatornya, serta menampilkan catatan pembatalan/KEEP hanya sesuai kewenangan dan hasil tinjauan tanpa membocorkan bukti privat (`UC-23` langkah 2–4).
+  - [x] Menyediakan route profil publik pengguna lain (`/profile/{user?}`) agar Buyer/Seller dapat melihat profil dan poin legitimasi lawan transaksinya.
 
 ---
 
@@ -189,4 +189,4 @@ Dokumen ini merangkum daftar fitur pada repositori **MarketTrust** yang **belum 
 - **Masalah Saat Ini**:
   - Tabel finansial di `transactions/show.blade.php` belum menampilkan label mode fee (`EXCLUDE`/`INCLUDE`), belum menampilkan `seller_net` ketika dilihat oleh Buyer, dan belum membedakan informasi biaya gateway aktual (`gateway_fee_amount`) serta kewajiban `KEEP`.
 - **Perbaikan Sesuai SKPL**:
-  - [ ] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.
+  - [x] Menampilkan mode fee (`EX`/`INC`), `seller_net`, serta informasi terpisah antara fee platform (`fee_amount`), biaya gateway aktual (`gateway_fee_amount`), dan kewajiban `KEEP` sesuai `UC-12` langkah 2–4.
