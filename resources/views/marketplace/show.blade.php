@@ -348,7 +348,9 @@
                         @endif
                         <div class="flex-1 min-w-0">
                             <h3 class="font-bold text-slate-900 text-sm truncate">
-                                @<span>{{ $listing->seller?->username }}</span>
+                                <a href="{{ route('profile.show', $listing->seller_id) }}" class="hover:text-indigo-600 transition" data-cy="link-seller-profile">
+                                    @<span>{{ $listing->seller?->username }}</span>
+                                </a>
                             </h3>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase {{ $listing->seller?->reputation_status === 'LEGIT' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600' }}">
@@ -379,6 +381,10 @@
                     <div class="text-[11px] text-slate-400 text-center">
                         Bergabung sejak {{ $listing->seller?->created_at?->translatedFormat('F Y') ?? '-' }}
                     </div>
+
+                    <a href="{{ route('profile.show', $listing->seller_id) }}" class="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:underline pt-2 border-t border-slate-100" data-cy="btn-view-seller-profile">
+                        Lihat Profil & Riwayat Legitimasi &rarr;
+                    </a>
                 </div>
 
             </div>
@@ -408,6 +414,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
+    }
+
     const contactBtn = document.getElementById('btn-contact-seller');
     if (contactBtn) {
         contactBtn.addEventListener('click', async function (e) {

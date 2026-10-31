@@ -353,7 +353,9 @@
                 <div class="p-4 rounded-xl bg-white/60 border border-slate-100 space-y-1">
                     <span class="block text-[10px] uppercase font-bold text-slate-400">Pembeli</span>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-buyer-username">
-                        @<span>{{ $agreement->buyer?->username }}</span>
+                        <a href="{{ route('profile.show', $agreement->buyer_id) }}" class="hover:text-indigo-600 hover:underline transition">
+                            @<span>{{ $agreement->buyer?->username }}</span>
+                        </a>
                         @if ($isBuyer)
                             <span class="ml-1 text-[10px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold">Anda</span>
                         @endif
@@ -364,7 +366,9 @@
                 <div class="p-4 rounded-xl bg-white/60 border border-slate-100 space-y-1">
                     <span class="block text-[10px] uppercase font-bold text-slate-400">Penjual</span>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-seller-username">
-                        @<span>{{ $agreement->seller?->username }}</span>
+                        <a href="{{ route('profile.show', $agreement->seller_id) }}" class="hover:text-indigo-600 hover:underline transition">
+                            @<span>{{ $agreement->seller?->username }}</span>
+                        </a>
                         @if ($isSeller)
                             <span class="ml-1 text-[10px] px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 font-bold">Anda</span>
                         @endif
