@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Contracts\Services\SettlementServiceInterface;
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\KeepObligation;
 use App\Models\Settlement;
 use App\Models\Transaction;
 use App\Models\TransactionCancellation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -180,15 +182,68 @@ class AdminModuleController extends Controller
     }
 
     /**
-     * Tampilkan halaman placeholder modul Audit Log.
+     * Tampilkan riwayat audit log aktivitas administratif dan operasional sistem.
      */
-    public function auditLogs(): View
+    public function auditLogs(Request $request): View
     {
-        return view('admin.placeholder', [
-            'moduleKey' => 'audit_logs',
-            'title' => 'Audit Log & Jejak Aktivitas',
-            'description' => 'Rekam jejak seluruh aktivitas administratif, perubahan status finansial, dan audit sistem transaksi.',
-            'icon' => 'clipboard-document-list',
+        $query = AuditLog::with('actor')->latest('log_id');
+
+        if ($request->filled('action')) {
+            $query->where('action', (string) $request->query('action'));
+        }
+
+        if ($request->filled('entity_type')) {
+            $query->where('entity_type', (string) $request->query('entity_type'));
+        }
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->query('search'));
+            $lowerSearch = mb_strtolower($search);
+            $query->where(function ($q) use ($lowerSearch, $search) {
+                $q->where(DB::raw('LOWER(action)'), 'like', "%{$lowerSearch}%")
+                    ->orWhere(DB::raw('LOWER(entity_type)'), 'like', "%{$lowerSearch}%")
+                    ->orWhereHas('actor', function ($aq) use ($lowerSearch) {
+                        $aq->where(DB::raw('LOWER(username)'), 'like', "%{$lowerSearch}%")
+                            ->orWhere(DB::raw('LOWER(email)'), 'like', "%{$lowerSearch}%");
+                    });
+
+                if (is_numeric($search)) {
+                    $q->orWhere('entity_id', (int) $search);
+                }
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->query('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->query('date_to'));
+        }
+
+        $auditLogs = $query->paginate(20)->withQueryString();
+
+        $availableActions = AuditLog::query()
+            ->select('action')
+            ->distinct()
+            ->orderBy('action')
+            ->pluck('action');
+
+        $availableEntityTypes = AuditLog::query()
+            ->select('entity_type')
+            ->distinct()
+            ->orderBy('entity_type')
+            ->pluck('entity_type');
+
+        return view('admin.audit_logs.index', [
+            'auditLogs' => $auditLogs,
+            'availableActions' => $availableActions,
+            'availableEntityTypes' => $availableEntityTypes,
+            'currentAction' => $request->query('action'),
+            'currentEntityType' => $request->query('entity_type'),
+            'currentSearch' => $request->query('search'),
+            'currentDateFrom' => $request->query('date_from'),
+            'currentDateTo' => $request->query('date_to'),
         ]);
     }
 }
