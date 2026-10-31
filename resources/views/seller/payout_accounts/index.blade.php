@@ -227,15 +227,15 @@
                                         </svg>
                                     </a>
 
-                                    <form action="{{ route('seller.payout-accounts.destroy', $acc) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus rekening ini?');" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus rekening" data-cy="btn-delete-account">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            onclick="openDeletePayoutModal('{{ route('seller.payout-accounts.destroy', $acc) }}', '{{ addslashes($acc->destination_provider ?? $acc->destination_type->value) }}', '{{ addslashes($acc->masked_destination_number) }}', '{{ addslashes($acc->destination_holder) }}')"
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                                            title="Hapus rekening"
+                                            data-cy="btn-delete-account">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -261,4 +261,85 @@
         </div>
     </div>
 </div>
+
+<!-- In-Page Confirmation Modal: Hapus Rekening Payout -->
+<div id="modal-delete-payout" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs transition-opacity" role="dialog" aria-modal="true" data-cy="modal-delete-payout" onclick="if(event.target === this) closeDeletePayoutModal()">
+    <div class="glass-card w-full max-w-md p-6 bg-white/95 border border-white/80 shadow-2xl rounded-2xl space-y-5 animate-in fade-in duration-200">
+        <!-- Header Modal -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-900">Konfirmasi Hapus Rekening</h3>
+                    <p class="text-xs text-slate-500">Tindakan ini tidak dapat dibatalkan</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeDeletePayoutModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer" title="Tutup">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Isi Pesan Peringatan Web -->
+        <div class="p-3.5 rounded-xl bg-rose-50/80 border border-rose-200/80 text-xs text-rose-900 space-y-1.5">
+            <p class="font-medium">
+                Apakah Anda yakin ingin menghapus rekening berikut dari daftar tujuan pencairan dana Anda?
+            </p>
+            <div class="p-2.5 rounded-lg bg-white/90 border border-rose-100 text-slate-800 space-y-0.5">
+                <div class="font-bold text-slate-900 text-sm" id="delete-modal-provider">-</div>
+                <div class="font-mono text-xs text-slate-600 tracking-wider" id="delete-modal-number">-</div>
+                <div class="text-[11px] text-slate-500" id="delete-modal-holder">-</div>
+            </div>
+        </div>
+
+        <!-- Form Aksi Submit -->
+        <form id="form-delete-payout" method="POST" action="">
+            @csrf
+            @method('DELETE')
+            <div class="flex items-center justify-end gap-2.5 pt-2">
+                <button type="button" onclick="closeDeletePayoutModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition cursor-pointer" data-cy="btn-cancel-delete">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer" data-cy="btn-confirm-delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Hapus Rekening</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openDeletePayoutModal(actionUrl, provider, number, holder) {
+        const modal = document.getElementById('modal-delete-payout');
+        const form = document.getElementById('form-delete-payout');
+        document.getElementById('delete-modal-provider').textContent = provider;
+        document.getElementById('delete-modal-number').textContent = number;
+        document.getElementById('delete-modal-holder').textContent = 'a.n. ' + holder;
+        form.action = actionUrl;
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeDeletePayoutModal() {
+        const modal = document.getElementById('modal-delete-payout');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeDeletePayoutModal();
+        }
+    });
+</script>
 @endsection
