@@ -294,6 +294,9 @@
         <!-- Delivery Section (Form Seller pada PAID & Hasil Penyerahan pada DELIVERED dst) -->
         @include('transactions.partials.delivery-section')
 
+        <!-- Complaint & Dispute Section (Komplain Buyer, Tanggapan Seller, Resolusi Sengketa MT-A05) -->
+        @include('transactions.partials.complaint-section')
+
         <!-- Catatan Perpanjangan & Penyesuaian Tenggat (UC-21 &bull; KF-10) -->
         @include('transactions.partials.deadline-events')
 

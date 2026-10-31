@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountReportController;
 use App\Http\Controllers\Admin\AdminCancellationController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminDisputeController;
 use App\Http\Controllers\Admin\AdminModuleController;
 use App\Http\Controllers\Admin\AdminSettlementController;
 use App\Http\Controllers\Admin\AdminUserModerationController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\AgreementController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\FeePreviewController;
 use App\Http\Controllers\Forum\ForumCommentController;
@@ -104,6 +106,9 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::post('/transactions/{transaction}/confirm', [TransactionConfirmationController::class, 'confirm'])->name('transactions.confirm');
     Route::get('/transactions/{transaction}/evidence/{evidence}', [TransactionDeliveryController::class, 'downloadEvidence'])->name('transactions.delivery-evidence');
     Route::post('/transactions/{transaction}/extend-delivery', [TransactionDeliveryController::class, 'extendDeadline'])->name('transactions.extend-delivery');
+    Route::post('/transactions/{transaction}/complaints', [ComplaintController::class, 'store'])->name('transactions.complaints.store');
+    Route::post('/transactions/{transaction}/complaints/{complaint}/respond', [ComplaintController::class, 'respond'])->name('transactions.complaints.respond');
+    Route::get('/transactions/{transaction}/complaints/evidence/{evidence}', [ComplaintController::class, 'downloadEvidence'])->name('transactions.complaints.evidence');
     Route::post('/transactions/{transaction}/cancel', [TransactionCancellationController::class, 'store'])->name('transactions.cancel');
 
     // Pusat Notifikasi Pengguna & Integrasi Event
@@ -146,14 +151,21 @@ Route::middleware(['auth', 'active_account', 'admin'])->prefix('admin')->name('a
         Route::patch('/variants/{variant}/toggle', [CatalogController::class, 'toggleVariantStatus'])->name('variants.toggle');
     });
 
-    // Modul Lanjutan Administrator: Transaksi, Pembatalan, dan Pengguna/Moderasi
+    // Modul Lanjutan Administrator: Transaksi, Pembatalan, Sengketa, dan Pengguna/Moderasi
     Route::get('/transactions', [AdminModuleController::class, 'transactions'])->name('transactions.index');
     Route::post('/cancellations/{cancellation}/review', [AdminCancellationController::class, 'review'])->name('cancellations.review');
     Route::post('/transactions/{transaction}/settlement/payout', [AdminSettlementController::class, 'recordPayout'])->name('settlements.payout');
     Route::post('/transactions/{transaction}/settlement/sync-destination', [AdminSettlementController::class, 'syncDestination'])->name('settlements.sync-destination');
     Route::post('/transactions/{transaction}/settlement/refund', [AdminSettlementController::class, 'recordRefund'])->name('settlements.refund');
     Route::post('/settlements/announce-disruption', [AdminSettlementController::class, 'announceDisruption'])->name('settlements.announce-disruption');
-    Route::get('/disputes', [AdminModuleController::class, 'disputes'])->name('disputes.index');
+
+    Route::prefix('disputes')->name('disputes.')->group(function () {
+        Route::get('/', [AdminDisputeController::class, 'index'])->name('index');
+        Route::get('/{complaint}', [AdminDisputeController::class, 'show'])->name('show');
+        Route::post('/{complaint}/request-evidence', [AdminDisputeController::class, 'requestEvidence'])->name('request-evidence');
+        Route::post('/{complaint}/decide', [AdminDisputeController::class, 'decide'])->name('decide');
+    });
+
     Route::get('/users', [AdminUserModerationController::class, 'index'])->name('users.index');
     Route::get('/users/reports/{report}', [AdminUserModerationController::class, 'show'])->name('users.reports.show');
     Route::post('/users/reports/{report}/review', [AdminUserModerationController::class, 'review'])->name('users.reports.review');
