@@ -25,6 +25,10 @@
             </div>
 
             <div class="shrink-0 flex items-center gap-2.5">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                    <span>Modul Tahap Lanjutan</span>
+                </span>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200/80 text-xs font-bold text-indigo-800 shadow-2xs">
                     <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
                     <span>Audit Trail Aktif</span>

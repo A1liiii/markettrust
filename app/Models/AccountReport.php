@@ -15,6 +15,20 @@ class AccountReport extends Model
 
     protected $primaryKey = 'report_id';
 
+    public const STATUS_OPEN = 'OPEN';
+
+    public const STATUS_REVIEWING = 'REVIEWING';
+
+    public const STATUS_RESOLVED = 'RESOLVED';
+
+    public const STATUS_DISMISSED = 'DISMISSED';
+
+    public const SOURCE_USER = 'USER';
+
+    public const SOURCE_SYSTEM = 'SYSTEM';
+
+    public const SOURCE_ADMIN = 'ADMIN';
+
     protected $fillable = [
         'reported_user_id',
         'reporter_id',
@@ -26,6 +40,53 @@ class AccountReport extends Model
         'review_note',
         'reviewed_at',
     ];
+
+    public function isOpen(): bool
+    {
+        return $this->status === self::STATUS_OPEN;
+    }
+
+    public function isReviewing(): bool
+    {
+        return $this->status === self::STATUS_REVIEWING;
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->status === self::STATUS_RESOLVED;
+    }
+
+    public function isDismissed(): bool
+    {
+        return $this->status === self::STATUS_DISMISSED;
+    }
+
+    public function isActive(): bool
+    {
+        return in_array($this->status, [self::STATUS_OPEN, self::STATUS_REVIEWING], true);
+    }
+
+    public function statusBadgeClass(): string
+    {
+        return match ($this->status) {
+            self::STATUS_OPEN => 'bg-amber-100 text-amber-800 border-amber-200',
+            self::STATUS_REVIEWING => 'bg-blue-100 text-blue-800 border-blue-200',
+            self::STATUS_RESOLVED => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+            self::STATUS_DISMISSED => 'bg-slate-100 text-slate-700 border-slate-200',
+            default => 'bg-slate-100 text-slate-600 border-slate-200',
+        };
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_OPEN => 'Menunggu Tinjauan',
+            self::STATUS_REVIEWING => 'Sedang Diinvestigasi',
+            self::STATUS_RESOLVED => 'Telah Diputuskan',
+            self::STATUS_DISMISSED => 'Ditolak / Tidak Terbukti',
+            default => $this->status,
+        };
+    }
 
     protected function casts(): array
     {

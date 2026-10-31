@@ -351,7 +351,23 @@
             <!-- Agreement Parties -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl bg-white/60 border border-slate-100 space-y-1">
-                    <span class="block text-[10px] uppercase font-bold text-slate-400">Pembeli</span>
+                    <div class="flex items-center justify-between">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Pembeli</span>
+                        @if (! $isBuyer && $agreement->buyer)
+                            <button
+                                type="button"
+                                onclick="openAccountReportModal({{ $agreement->buyer->user_id }}, '{{ addslashes($agreement->buyer->username) }}', {{ $transaction->transaction_id }})"
+                                class="text-[11px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 hover:underline"
+                                title="Laporkan akun pembeli atas transaksi ini"
+                                data-cy="btn-report-buyer"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span>Laporkan</span>
+                            </button>
+                        @endif
+                    </div>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-buyer-username">
                         <a href="{{ route('profile.show', $agreement->buyer_id) }}" class="hover:text-indigo-600 hover:underline transition">
                             @<span>{{ $agreement->buyer?->username }}</span>
@@ -364,7 +380,23 @@
                 </div>
 
                 <div class="p-4 rounded-xl bg-white/60 border border-slate-100 space-y-1">
-                    <span class="block text-[10px] uppercase font-bold text-slate-400">Penjual</span>
+                    <div class="flex items-center justify-between">
+                        <span class="block text-[10px] uppercase font-bold text-slate-400">Penjual</span>
+                        @if (! $isSeller && $agreement->seller)
+                            <button
+                                type="button"
+                                onclick="openAccountReportModal({{ $agreement->seller->user_id }}, '{{ addslashes($agreement->seller->username) }}', {{ $transaction->transaction_id }})"
+                                class="text-[11px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 hover:underline"
+                                title="Laporkan akun penjual atas transaksi ini"
+                                data-cy="btn-report-seller"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span>Laporkan</span>
+                            </button>
+                        @endif
+                    </div>
                     <div class="font-bold text-sm text-slate-900" data-cy="agreement-seller-username">
                         <a href="{{ route('profile.show', $agreement->seller_id) }}" class="hover:text-indigo-600 hover:underline transition">
                             @<span>{{ $agreement->seller?->username }}</span>
@@ -492,6 +524,8 @@
 
     </div>
 </div>
+
+@include('account-reports.partials.report-modal')
 @endsection
 
 @if ($isBuyer && $transaction->status->value === 'WAITING_PAYMENT')

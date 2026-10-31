@@ -16,7 +16,7 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile information.
+     * Display the user's profile information (own or other user's public profile).
      */
     public function show(Request $request, ?User $user = null): View
     {

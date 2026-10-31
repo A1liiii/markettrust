@@ -16,6 +16,11 @@ class ReputationEvent extends Model
 
     public $timestamps = false;
 
+    public static function generateReportEventKey(int|string $reportId): string
+    {
+        return "account_report:{$reportId}:resolution";
+    }
+
     protected $fillable = [
         'user_id',
         'event_type',
