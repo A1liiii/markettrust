@@ -21,6 +21,13 @@
                     Investigasi sengketa transaksi produk digital, peninjauan bukti dua pihak, dan penetapan keputusan payout atau refund (UC-18 / KF-09 / KF-10).
                 </p>
             </div>
+
+            <div class="shrink-0 flex items-center gap-2.5">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                    <span>Modul Tahap Lanjutan</span>
+                </span>
+            </div>
         </div>
 
         @if (session('success'))

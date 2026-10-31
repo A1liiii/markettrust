@@ -242,18 +242,6 @@ class Transaction extends Model
             ->exists();
     }
 
-    public function hasActiveComplaint(): bool
-    {
-        $statusStr = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
-        if ($statusStr === 'DISPUTED') {
-            return true;
-        }
-
-        return $this->complaint()
-            ->whereIn('status', ['OPEN', 'REVIEWING'])
-            ->exists();
-    }
-
     public function hasGracePeriod(): bool
     {
         return $this->deadlineEvents()
