@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="6" assertions="37" errors="0" failures="0" skipped="0" time="0.558793">
+    <testsuite name="Tests\Unit\MarketTrust\NotificationAuditRulesTest" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\NotificationAuditRulesTest.php" tests="3" assertions="15" errors="0" failures="0" skipped="0" time="0.430631">
+      <testcase name="test_notification_event_type_enum" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\NotificationAuditRulesTest.php" line="19" class="Tests\Unit\MarketTrust\NotificationAuditRulesTest" classname="Tests.Unit.MarketTrust.NotificationAuditRulesTest" assertions="6" time="0.374182"/>
+      <testcase name="test_notification_scope_unread_and_read" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\NotificationAuditRulesTest.php" line="33" class="Tests\Unit\MarketTrust\NotificationAuditRulesTest" classname="Tests.Unit.MarketTrust.NotificationAuditRulesTest" assertions="4" time="0.041087"/>
+      <testcase name="test_audit_log_casts_json_values" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\NotificationAuditRulesTest.php" line="63" class="Tests\Unit\MarketTrust\NotificationAuditRulesTest" classname="Tests.Unit.MarketTrust.NotificationAuditRulesTest" assertions="5" time="0.015362"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\NotificationAuditScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\NotificationAuditScenarioTest.php" tests="3" assertions="22" errors="0" failures="0" skipped="0" time="0.128163">
+      <testcase name="test_tc_15_01_lonceng_notifikasi_navbar_dan_halaman_notifikasi" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\NotificationAuditScenarioTest.php" line="21" class="Tests\Feature\MarketTrust\NotificationAuditScenarioTest" classname="Tests.Feature.MarketTrust.NotificationAuditScenarioTest" assertions="8" time="0.070107"/>
+      <testcase name="test_tc_15_02_fitur_tandai_semua_notifikasi_sudah_dibaca" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\NotificationAuditScenarioTest.php" line="75" class="Tests\Feature\MarketTrust\NotificationAuditScenarioTest" classname="Tests.Feature.MarketTrust.NotificationAuditScenarioTest" assertions="8" time="0.029135"/>
+      <testcase name="test_tc_15_03_audit_trail_admin_untuk_tindakan_kritis_sistem" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\NotificationAuditScenarioTest.php" line="126" class="Tests\Feature\MarketTrust\NotificationAuditScenarioTest" classname="Tests.Feature.MarketTrust.NotificationAuditScenarioTest" assertions="6" time="0.028921"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

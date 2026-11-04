@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="9" assertions="60" errors="0" failures="0" skipped="0" time="0.607936">
+    <testsuite name="Tests\Unit\MarketTrust\AgreementRulesTest" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" tests="5" assertions="23" errors="0" failures="0" skipped="0" time="0.454916">
+      <testcase name="test_agreement_enums_values" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" line="25" class="Tests\Unit\MarketTrust\AgreementRulesTest" classname="Tests.Unit.MarketTrust.AgreementRulesTest" assertions="5" time="0.365682"/>
+      <testcase name="test_fee_calculation_service_exclude_mode" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" line="38" class="Tests\Unit\MarketTrust\AgreementRulesTest" classname="Tests.Unit.MarketTrust.AgreementRulesTest" assertions="5" time="0.014501"/>
+      <testcase name="test_fee_calculation_service_include_mode" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" line="56" class="Tests\Unit\MarketTrust\AgreementRulesTest" classname="Tests.Unit.MarketTrust.AgreementRulesTest" assertions="5" time="0.012979"/>
+      <testcase name="test_fee_calculation_service_rejects_under_minimum" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" line="74" class="Tests\Unit\MarketTrust\AgreementRulesTest" classname="Tests.Unit.MarketTrust.AgreementRulesTest" assertions="2" time="0.013487"/>
+      <testcase name="test_agreement_snapshot_dto_creation" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\AgreementRulesTest.php" line="88" class="Tests\Unit\MarketTrust\AgreementRulesTest" classname="Tests.Unit.MarketTrust.AgreementRulesTest" assertions="6" time="0.048268"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\AgreementScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\AgreementScenarioTest.php" tests="4" assertions="37" errors="0" failures="0" skipped="0" time="0.153019">
+      <testcase name="test_tc_06_01_pembuatan_usulan_kesepakatan_dari_dm" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\AgreementScenarioTest.php" line="66" class="Tests\Feature\MarketTrust\AgreementScenarioTest" classname="Tests.Feature.MarketTrust.AgreementScenarioTest" assertions="12" time="0.069532"/>
+      <testcase name="test_tc_06_02_revisi_usulan_kesepakatan_menaikkan_nomor_revisi" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\AgreementScenarioTest.php" line="111" class="Tests\Feature\MarketTrust\AgreementScenarioTest" classname="Tests.Feature.MarketTrust.AgreementScenarioTest" assertions="9" time="0.028657"/>
+      <testcase name="test_tc_06_03_penolakan_usulan_kesepakatan" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\AgreementScenarioTest.php" line="169" class="Tests\Feature\MarketTrust\AgreementScenarioTest" classname="Tests.Feature.MarketTrust.AgreementScenarioTest" assertions="7" time="0.027359"/>
+      <testcase name="test_tc_06_04_persetujuan_kesepakatan_menghasilkan_transaksi_waiting_payment" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\AgreementScenarioTest.php" line="214" class="Tests\Feature\MarketTrust\AgreementScenarioTest" classname="Tests.Feature.MarketTrust.AgreementScenarioTest" assertions="9" time="0.027471"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
