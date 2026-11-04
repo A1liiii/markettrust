@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="8" assertions="31" errors="0" failures="0" skipped="0" time="4.021568">
+    <testsuite name="Tests\Unit\MarketTrust\CheckoutRulesTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\CheckoutRulesTest.php" tests="4" assertions="8" errors="0" failures="0" skipped="0" time="1.832020">
+      <testcase name="test_tc_07_01_fee_calculation_for_marketplace_exclude" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\CheckoutRulesTest.php" line="27" class="Tests\Unit\MarketTrust\CheckoutRulesTest" classname="Tests.Unit.MarketTrust.CheckoutRulesTest" assertions="5" time="1.246192"/>
+      <testcase name="test_tc_07_01_fee_calculation_rejects_below_minimum_price" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\CheckoutRulesTest.php" line="44" class="Tests\Unit\MarketTrust\CheckoutRulesTest" classname="Tests.Unit.MarketTrust.CheckoutRulesTest" assertions="1" time="0.141734"/>
+      <testcase name="test_tc_07_02_seller_payout_validation_returns_false_when_unconfigured" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\CheckoutRulesTest.php" line="55" class="Tests\Unit\MarketTrust\CheckoutRulesTest" classname="Tests.Unit.MarketTrust.CheckoutRulesTest" assertions="1" time="0.328512"/>
+      <testcase name="test_tc_07_03_seller_payout_validation_returns_true_when_configured" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\CheckoutRulesTest.php" line="82" class="Tests\Unit\MarketTrust\CheckoutRulesTest" classname="Tests.Unit.MarketTrust.CheckoutRulesTest" assertions="1" time="0.115582"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\CheckoutScenarioTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\CheckoutScenarioTest.php" tests="4" assertions="23" errors="0" failures="0" skipped="0" time="2.189548">
+      <testcase name="test_tc_07_01_checkout_review_displays_transparent_price_breakdown" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\CheckoutScenarioTest.php" line="51" class="Tests\Feature\MarketTrust\CheckoutScenarioTest" classname="Tests.Feature.MarketTrust.CheckoutScenarioTest" assertions="7" time="1.877464"/>
+      <testcase name="test_tc_07_02_warning_displayed_when_seller_has_no_payout_account" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\CheckoutScenarioTest.php" line="69" class="Tests\Feature\MarketTrust\CheckoutScenarioTest" classname="Tests.Feature.MarketTrust.CheckoutScenarioTest" assertions="3" time="0.083124"/>
+      <testcase name="test_tc_07_03_ready_indicator_when_seller_has_active_payout_account" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\CheckoutScenarioTest.php" line="82" class="Tests\Feature\MarketTrust\CheckoutScenarioTest" classname="Tests.Feature.MarketTrust.CheckoutScenarioTest" assertions="3" time="0.079257"/>
+      <testcase name="test_tc_07_04_checkout_confirmation_creates_waiting_payment_transaction" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\CheckoutScenarioTest.php" line="99" class="Tests\Feature\MarketTrust\CheckoutScenarioTest" classname="Tests.Feature.MarketTrust.CheckoutScenarioTest" assertions="10" time="0.149703"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

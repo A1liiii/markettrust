@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="8" assertions="17" errors="0" failures="0" skipped="0" time="3.022413">
+    <testsuite name="Tests\Unit\MarketTrust\MidtransPaymentRulesTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\MidtransPaymentRulesTest.php" tests="3" assertions="6" errors="0" failures="0" skipped="0" time="0.659125">
+      <testcase name="test_tc_08_01_midtrans_signature_key_calculation" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\MidtransPaymentRulesTest.php" line="12" class="Tests\Unit\MarketTrust\MidtransPaymentRulesTest" classname="Tests.Unit.MarketTrust.MidtransPaymentRulesTest" assertions="2" time="0.518960"/>
+      <testcase name="test_tc_08_02_signature_verification_comparison" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\MidtransPaymentRulesTest.php" line="28" class="Tests\Unit\MarketTrust\MidtransPaymentRulesTest" classname="Tests.Unit.MarketTrust.MidtransPaymentRulesTest" assertions="2" time="0.091764"/>
+      <testcase name="test_tc_08_03_settlement_status_mapping" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\MidtransPaymentRulesTest.php" line="45" class="Tests\Unit\MarketTrust\MidtransPaymentRulesTest" classname="Tests.Unit.MarketTrust.MidtransPaymentRulesTest" assertions="2" time="0.048400"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" tests="5" assertions="11" errors="0" failures="0" skipped="0" time="2.363289">
+      <testcase name="test_tc_08_01_create_snap_token_success" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" line="77" class="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" classname="Tests.Feature.MarketTrust.MidtransPaymentScenarioTest" assertions="2" time="1.280282"/>
+      <testcase name="test_tc_08_02_webhook_notification_settlement_updates_status_to_paid" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" line="104" class="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" classname="Tests.Feature.MarketTrust.MidtransPaymentScenarioTest" assertions="3" time="0.506690"/>
+      <testcase name="test_tc_08_03_manual_payment_status_sync" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" line="144" class="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" classname="Tests.Feature.MarketTrust.MidtransPaymentScenarioTest" assertions="2" time="0.089271"/>
+      <testcase name="test_tc_08_04_late_payment_callback_held_for_reconciliation" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" line="171" class="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" classname="Tests.Feature.MarketTrust.MidtransPaymentScenarioTest" assertions="2" time="0.274149"/>
+      <testcase name="test_tc_08_05_check_payment_deadlines_cancels_expired_transactions" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\MidtransPaymentScenarioTest.php" line="214" class="Tests\Feature\MarketTrust\MidtransPaymentScenarioTest" classname="Tests.Feature.MarketTrust.MidtransPaymentScenarioTest" assertions="2" time="0.212897"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
