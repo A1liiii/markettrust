@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Unit\MarketTrust\PayoutAccountRulesTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/PayoutAccountRulesTest.php" tests="4" assertions="10" errors="0" failures="0" skipped="0" time="0.023988">
+    <testcase name="test_tc_02_01_bank_payout_completeness_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/PayoutAccountRulesTest.php" line="14" class="Tests\Unit\MarketTrust\PayoutAccountRulesTest" classname="Tests.Unit.MarketTrust.PayoutAccountRulesTest" assertions="4" time="0.021633"/>
+    <testcase name="test_tc_02_02_ewallet_payout_completeness_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/PayoutAccountRulesTest.php" line="40" class="Tests\Unit\MarketTrust\PayoutAccountRulesTest" classname="Tests.Unit.MarketTrust.PayoutAccountRulesTest" assertions="2" time="0.001027"/>
+    <testcase name="test_tc_02_03_qris_payout_requires_image_or_identifier" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/PayoutAccountRulesTest.php" line="56" class="Tests\Unit\MarketTrust\PayoutAccountRulesTest" classname="Tests.Unit.MarketTrust.PayoutAccountRulesTest" assertions="3" time="0.000742"/>
+    <testcase name="test_tc_02_04_short_account_number_masking_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/PayoutAccountRulesTest.php" line="80" class="Tests\Unit\MarketTrust\PayoutAccountRulesTest" classname="Tests.Unit.MarketTrust.PayoutAccountRulesTest" assertions="1" time="0.000586"/>
+  </testsuite>
+</testsuites>

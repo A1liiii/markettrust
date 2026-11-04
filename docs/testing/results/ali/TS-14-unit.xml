@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Unit\MarketTrust\CancellationKeepRulesTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/CancellationKeepRulesTest.php" tests="3" assertions="27" errors="0" failures="0" skipped="0" time="0.044509">
+    <testcase name="test_tc_12_01_and_12_02_transaction_cancellation_stage_and_status_helpers" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/CancellationKeepRulesTest.php" line="16" class="Tests\Unit\MarketTrust\CancellationKeepRulesTest" classname="Tests.Unit.MarketTrust.CancellationKeepRulesTest" assertions="9" time="0.023977"/>
+    <testcase name="test_tc_12_03_keep_obligation_calculation_rules_and_deduction_helpers" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/CancellationKeepRulesTest.php" line="43" class="Tests\Unit\MarketTrust\CancellationKeepRulesTest" classname="Tests.Unit.MarketTrust.CancellationKeepRulesTest" assertions="11" time="0.007552"/>
+    <testcase name="test_tc_12_03_payment_verified_gateway_fee_and_admin_review_request_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/CancellationKeepRulesTest.php" line="83" class="Tests\Unit\MarketTrust\CancellationKeepRulesTest" classname="Tests.Unit.MarketTrust.CancellationKeepRulesTest" assertions="7" time="0.012980"/>
+  </testsuite>
+</testsuites>

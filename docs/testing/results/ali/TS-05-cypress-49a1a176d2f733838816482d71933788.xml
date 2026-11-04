@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="5.357" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T09:12:20" tests="0" file="cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-05 — Marketplace &amp; Statistik Pasar" timestamp="2026-11-04T09:12:20" tests="2" time="5.356" failures="0">
+    <testcase name="TS-05 — Marketplace &amp; Statistik Pasar TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga pada katalog Marketplace" time="4.027" classname="TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga pada katalog Marketplace">
+    </testcase>
+    <testcase name="TS-05 — Marketplace &amp; Statistik Pasar TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (UC-05) untuk 7d, 30d, 90d (Gap Docs), dan Semua Waktu" time="1.131" classname="TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (UC-05) untuk 7d, 30d, 90d (Gap Docs), dan Semua Waktu">
+    </testcase>
+  </testsuite>
+</testsuites>

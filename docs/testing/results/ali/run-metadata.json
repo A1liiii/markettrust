@@ -1,0 +1,150 @@
+{
+  "commit": "4f89bb1",
+  "executed_at": "2026-11-04T09:15:34.531Z",
+  "runs": {
+    "TS-03-unit": {
+      "runner": "PHPUnit Unit",
+      "command": "php artisan test tests/Unit/MarketTrust/PayoutAccountRulesTest.php --log-junit docs/testing/results/ali/TS-03-unit.xml",
+      "exit_code": 0,
+      "tests_count": 4,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-03-unit.xml",
+      "log_file": "docs/testing/results/ali/TS-03-unit.log"
+    },
+    "TS-03-feature": {
+      "runner": "PHPUnit Feature",
+      "command": "php artisan test tests/Feature/MarketTrust/PayoutAccountScenarioTest.php --log-junit docs/testing/results/ali/TS-03-feature.xml",
+      "exit_code": 0,
+      "tests_count": 4,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-03-feature.xml",
+      "log_file": "docs/testing/results/ali/TS-03-feature.log"
+    },
+    "TS-03-phpunit": {
+      "runner": "PHPUnit Combined",
+      "command": "php artisan test tests/Unit/MarketTrust/PayoutAccountRulesTest.php tests/Feature/MarketTrust/PayoutAccountScenarioTest.php --log-junit docs/testing/results/ali/TS-03-phpunit.xml",
+      "exit_code": 0,
+      "tests_count": 8,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-03-phpunit.xml",
+      "log_file": "docs/testing/results/ali/TS-03-phpunit.log"
+    },
+    "TS-03-cypress": {
+      "runner": "Cypress E2E",
+      "command": "npx cypress run --spec cypress/e2e/markettrust/ts-03-rekening-payout.cy.js --reporter junit --reporter-options \"mochaFile=docs/testing/results/ali/TS-03-cypress-[hash].xml\"",
+      "exit_code": 0,
+      "tests_count": 4,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-03-cypress-4e68b9e4e2c673c87855997238435e7d.xml",
+      "log_file": "docs/testing/results/ali/TS-03-cypress.log"
+    },
+    "TS-05-unit": {
+      "runner": "PHPUnit Unit",
+      "command": "php artisan test tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php --log-junit docs/testing/results/ali/TS-05-unit.xml",
+      "exit_code": 0,
+      "tests_count": 2,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-05-unit.xml",
+      "log_file": "docs/testing/results/ali/TS-05-unit.log"
+    },
+    "TS-05-feature": {
+      "runner": "PHPUnit Feature",
+      "command": "php artisan test tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php --log-junit docs/testing/results/ali/TS-05-feature.xml",
+      "exit_code": 0,
+      "tests_count": 2,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-05-feature.xml",
+      "log_file": "docs/testing/results/ali/TS-05-feature.log"
+    },
+    "TS-05-phpunit": {
+      "runner": "PHPUnit Combined",
+      "command": "php artisan test tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php --log-junit docs/testing/results/ali/TS-05-phpunit.xml",
+      "exit_code": 0,
+      "tests_count": 4,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-05-phpunit.xml",
+      "log_file": "docs/testing/results/ali/TS-05-phpunit.log"
+    },
+    "TS-05-cypress": {
+      "runner": "Cypress E2E",
+      "command": "npx cypress run --spec cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js --reporter junit --reporter-options \"mochaFile=docs/testing/results/ali/TS-05-cypress-[hash].xml\"",
+      "exit_code": 0,
+      "tests_count": 2,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-05-cypress-49a1a176d2f733838816482d71933788.xml",
+      "log_file": "docs/testing/results/ali/TS-05-cypress.log"
+    },
+    "TS-07-unit": {
+      "runner": "PHPUnit Unit",
+      "command": "php artisan test tests/Unit/MarketTrust/DirectMessageRulesTest.php --log-junit docs/testing/results/ali/TS-07-unit.xml",
+      "exit_code": 0,
+      "tests_count": 3,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-07-unit.xml",
+      "log_file": "docs/testing/results/ali/TS-07-unit.log"
+    },
+    "TS-07-feature": {
+      "runner": "PHPUnit Feature",
+      "command": "php artisan test tests/Feature/MarketTrust/DirectMessageScenarioTest.php --log-junit docs/testing/results/ali/TS-07-feature.xml",
+      "exit_code": 0,
+      "tests_count": 2,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-07-feature.xml",
+      "log_file": "docs/testing/results/ali/TS-07-feature.log"
+    },
+    "TS-07-phpunit": {
+      "runner": "PHPUnit Combined",
+      "command": "php artisan test tests/Unit/MarketTrust/DirectMessageRulesTest.php tests/Feature/MarketTrust/DirectMessageScenarioTest.php --log-junit docs/testing/results/ali/TS-07-phpunit.xml",
+      "exit_code": 0,
+      "tests_count": 5,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-07-phpunit.xml",
+      "log_file": "docs/testing/results/ali/TS-07-phpunit.log"
+    },
+    "TS-07-cypress": {
+      "runner": "Cypress E2E",
+      "command": "npx cypress run --spec cypress/e2e/markettrust/ts-07-direct-message.cy.js --reporter junit --reporter-options \"mochaFile=docs/testing/results/ali/TS-07-cypress-[hash].xml\"",
+      "exit_code": 0,
+      "tests_count": 2,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-07-cypress-0210fa18a9cb7072d75bedc6efe19e1e.xml",
+      "log_file": "docs/testing/results/ali/TS-07-cypress.log"
+    },
+    "TS-14-unit": {
+      "runner": "PHPUnit Unit",
+      "command": "php artisan test tests/Unit/MarketTrust/CancellationKeepRulesTest.php --log-junit docs/testing/results/ali/TS-14-unit.xml",
+      "exit_code": 0,
+      "tests_count": 3,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-14-unit.xml",
+      "log_file": "docs/testing/results/ali/TS-14-unit.log"
+    },
+    "TS-14-feature": {
+      "runner": "PHPUnit Feature",
+      "command": "php artisan test tests/Feature/MarketTrust/CancellationKeepScenarioTest.php --log-junit docs/testing/results/ali/TS-14-feature.xml",
+      "exit_code": 0,
+      "tests_count": 3,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-14-feature.xml",
+      "log_file": "docs/testing/results/ali/TS-14-feature.log"
+    },
+    "TS-14-phpunit": {
+      "runner": "PHPUnit Combined",
+      "command": "php artisan test tests/Unit/MarketTrust/CancellationKeepRulesTest.php tests/Feature/MarketTrust/CancellationKeepScenarioTest.php --log-junit docs/testing/results/ali/TS-14-phpunit.xml",
+      "exit_code": 0,
+      "tests_count": 6,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-14-phpunit.xml",
+      "log_file": "docs/testing/results/ali/TS-14-phpunit.log"
+    },
+    "TS-14-cypress": {
+      "runner": "Cypress E2E",
+      "command": "npx cypress run --spec cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js --reporter junit --reporter-options \"mochaFile=docs/testing/results/ali/TS-14-cypress-[hash].xml\"",
+      "exit_code": 0,
+      "tests_count": 3,
+      "executed_at": "2026-11-04T09:15:34.531Z",
+      "xml_file": "docs/testing/results/ali/TS-14-cypress-1c5ff87d2bdbe4d7a36f0116098937ff.xml",
+      "log_file": "docs/testing/results/ali/TS-14-cypress.log"
+    }
+  }
+}
