@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="178.132" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-05T18:23:25" tests="0" file="cypress\e2e\markettrust\ts-13-komplain.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-13: Komplain &amp; Sengketa (Dispute)" timestamp="2026-11-05T18:23:25" tests="6" time="178.131" failures="0">
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-01: Pengajuan Komplain Sah oleh Buyer saat status DELIVERED (UC-16)" time="68.716" classname="TC-11-01: Pengajuan Komplain Sah oleh Buyer saat status DELIVERED (UC-16)">
+    </testcase>
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-02: Pencegahan Duplikasi Komplain (Maksimal 1 Komplain per Transaksi)" time="6.204" classname="TC-11-02: Pencegahan Duplikasi Komplain (Maksimal 1 Komplain per Transaksi)">
+    </testcase>
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-03: Seller Mengirimkan Tanggapan dan Bukti Sanggahan (UC-17)" time="38.043" classname="TC-11-03: Seller Mengirimkan Tanggapan dan Bukti Sanggahan (UC-17)">
+    </testcase>
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-04: Admin Meminta Bukti Tambahan (Status REVIEWING)" time="39.369" classname="TC-11-04: Admin Meminta Bukti Tambahan (Status REVIEWING)">
+    </testcase>
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-05: Keputusan Final Admin Memenangkan Seller (Putusan PAYOUT)" time="13.105" classname="TC-11-05: Keputusan Final Admin Memenangkan Seller (Putusan PAYOUT)">
+    </testcase>
+    <testcase name="TS-13: Komplain &amp; Sengketa (Dispute) TC-11-06: Keputusan Final Admin Memenangkan Buyer (Putusan REFUND)" time="12.585" classname="TC-11-06: Keputusan Final Admin Memenangkan Buyer (Putusan REFUND)">
+    </testcase>
+  </testsuite>
+</testsuites>

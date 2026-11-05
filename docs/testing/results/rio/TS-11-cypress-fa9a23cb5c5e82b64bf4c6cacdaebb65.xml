@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="102.077" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-05T16:52:16" tests="0" file="cypress\e2e\markettrust\ts-11-penyerahan.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-11: Penyerahan Produk Digital oleh Seller" timestamp="2026-11-05T16:52:16" tests="4" time="102.075" failures="0">
+    <testcase name="TS-11: Penyerahan Produk Digital oleh Seller TC-09-02: Seller Menyerahkan Pesanan Tanpa Bukti / Catatan ditolak validasi" time="40.580" classname="TC-09-02: Seller Menyerahkan Pesanan Tanpa Bukti / Catatan ditolak validasi">
+    </testcase>
+    <testcase name="TS-11: Penyerahan Produk Digital oleh Seller TC-09-01: Penyerahan Hasil oleh Seller dengan Berkas Bukti Sah" time="14.216" classname="TC-09-01: Penyerahan Hasil oleh Seller dengan Berkas Bukti Sah">
+    </testcase>
+    <testcase name="TS-11: Penyerahan Produk Digital oleh Seller TC-09-03: Permintaan Perpanjangan Waktu Penyerahan oleh Seller (BLOCKED - Kebijakan Batas TBD)" time="6.335" classname="TC-09-03: Permintaan Perpanjangan Waktu Penyerahan oleh Seller (BLOCKED - Kebijakan Batas TBD)">
+    </testcase>
+    <testcase name="TS-11: Penyerahan Produk Digital oleh Seller TC-09-04: Scheduler Peringatan Keterlambatan Penyerahan Seller (UC-14B)" time="40.874" classname="TC-09-04: Scheduler Peringatan Keterlambatan Penyerahan Seller (UC-14B)">
+    </testcase>
+  </testsuite>
+</testsuites>

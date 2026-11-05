@@ -9,6 +9,15 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
+    defaultCommandTimeout: 10000,
+    taskTimeout: 120000,
+    blockHosts: [
+      "*jsdelivr.net*",
+      "*bunny.net*",
+      "*midtrans.com*",
+      "*google.com*",
+      "*gstatic.com*",
+    ],
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     setupNodeEvents(on, config) {
       on('task', {

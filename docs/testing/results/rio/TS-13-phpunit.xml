@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="11" assertions="56" errors="0" failures="0" skipped="0" time="1.241401">
+    <testsuite name="Tests\Unit\MarketTrust\DisputeRulesTest" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" tests="5" assertions="26" errors="0" failures="0" skipped="0" time="0.022378">
+      <testcase name="test_tc_11_01_store_complaint_request_rules" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" line="20" class="Tests\Unit\MarketTrust\DisputeRulesTest" classname="Tests.Unit.MarketTrust.DisputeRulesTest" assertions="6" time="0.016829"/>
+      <testcase name="test_tc_11_02_duplicate_complaint_prevention_logic" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" line="38" class="Tests\Unit\MarketTrust\DisputeRulesTest" classname="Tests.Unit.MarketTrust.DisputeRulesTest" assertions="3" time="0.001143"/>
+      <testcase name="test_tc_11_03_store_complaint_response_request_rules" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" line="57" class="Tests\Unit\MarketTrust\DisputeRulesTest" classname="Tests.Unit.MarketTrust.DisputeRulesTest" assertions="5" time="0.001382"/>
+      <testcase name="test_tc_11_04_request_dispute_evidence_request_rules" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" line="73" class="Tests\Unit\MarketTrust\DisputeRulesTest" classname="Tests.Unit.MarketTrust.DisputeRulesTest" assertions="5" time="0.001539"/>
+      <testcase name="test_tc_11_05_and_06_decide_dispute_request_rules" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\DisputeRulesTest.php" line="89" class="Tests\Unit\MarketTrust\DisputeRulesTest" classname="Tests.Unit.MarketTrust.DisputeRulesTest" assertions="7" time="0.001484"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\DisputeScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" tests="6" assertions="30" errors="0" failures="0" skipped="0" time="1.219023">
+      <testcase name="test_tc_11_01_buyer_can_file_valid_complaint_on_delivered_transaction" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="127" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="7" time="0.924041"/>
+      <testcase name="test_tc_11_02_duplicate_complaint_submission_is_prevented" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="173" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="2" time="0.061314"/>
+      <testcase name="test_tc_11_03_seller_can_respond_with_rebuttal_and_evidence" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="202" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="5" time="0.076618"/>
+      <testcase name="test_tc_11_04_admin_can_request_additional_evidence_setting_status_reviewing" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="245" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="3" time="0.054888"/>
+      <testcase name="test_tc_11_05_admin_decides_in_favor_of_seller_payout" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="274" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="7" time="0.058280"/>
+      <testcase name="test_tc_11_06_admin_decides_in_favor_of_buyer_refund" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\DisputeScenarioTest.php" line="320" class="Tests\Feature\MarketTrust\DisputeScenarioTest" classname="Tests.Feature.MarketTrust.DisputeScenarioTest" assertions="6" time="0.043881"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
