@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" tests="2" assertions="39" errors="0" failures="0" skipped="0" time="0.769064">
+    <testcase name="test_tc_04_01_search_and_filter_marketplace_listings" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" line="105" class="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" classname="Tests.Feature.MarketTrust.MarketplaceStatisticsScenarioTest" assertions="15" time="0.667431"/>
+    <testcase name="test_tc_04_02_product_market_stats_calculation_and_periods" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" line="193" class="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" classname="Tests.Feature.MarketTrust.MarketplaceStatisticsScenarioTest" assertions="24" time="0.101633"/>
+  </testsuite>
+</testsuites>

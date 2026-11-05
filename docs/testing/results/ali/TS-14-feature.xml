@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\MarketTrust\CancellationKeepScenarioTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/CancellationKeepScenarioTest.php" tests="3" assertions="24" errors="0" failures="0" skipped="0" time="0.602911">
+    <testcase name="test_tc_12_01_buyer_cancels_pre_payment_transaction_immediately" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/CancellationKeepScenarioTest.php" line="92" class="Tests\Feature\MarketTrust\CancellationKeepScenarioTest" classname="Tests.Feature.MarketTrust.CancellationKeepScenarioTest" assertions="8" time="0.500062"/>
+    <testcase name="test_tc_12_02_post_payment_cancellation_requires_reason_and_waits_for_admin_review" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/CancellationKeepScenarioTest.php" line="135" class="Tests\Feature\MarketTrust\CancellationKeepScenarioTest" classname="Tests.Feature.MarketTrust.CancellationKeepScenarioTest" assertions="9" time="0.037376"/>
+    <testcase name="test_tc_12_03_admin_approves_cancellation_with_seller_at_fault_and_issues_keep_obligations" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/CancellationKeepScenarioTest.php" line="187" class="Tests\Feature\MarketTrust\CancellationKeepScenarioTest" classname="Tests.Feature.MarketTrust.CancellationKeepScenarioTest" assertions="7" time="0.065473"/>
+  </testsuite>
+</testsuites>

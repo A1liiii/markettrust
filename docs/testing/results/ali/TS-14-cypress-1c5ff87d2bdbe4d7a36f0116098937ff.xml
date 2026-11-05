@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="11.858" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T09:12:59" tests="0" file="cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-14 — Pembatalan &amp; Denda KEEP" timestamp="2026-11-04T09:12:59" tests="3" time="11.852" failures="0">
+    <testcase name="TS-14 — Pembatalan &amp; Denda KEEP TC-12-01: Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar) langsung mengubah status menjadi CANCELLED" time="6.264" classname="TC-12-01: Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar) langsung mengubah status menjadi CANCELLED">
+    </testcase>
+    <testcase name="TS-14 — Pembatalan &amp; Denda KEEP TC-12-02: Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID) wajib mengisi alasan dan masuk antrean Admin" time="2.433" classname="TC-12-02: Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID) wajib mengisi alasan dan masuk antrean Admin">
+    </testcase>
+    <testcase name="TS-14 — Pembatalan &amp; Denda KEEP TC-12-03: Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Menerbitkan denda KEEP Rp 4.000 berstatus OPEN)" time="2.918" classname="TC-12-03: Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Menerbitkan denda KEEP Rp 4.000 berstatus OPEN)">
+    </testcase>
+  </testsuite>
+</testsuites>

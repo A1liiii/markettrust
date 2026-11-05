@@ -14,6 +14,7 @@ Cypress.Commands.add('loginByForm', (login, password) => {
   cy.get('[data-cy="input-login"]').clear().type(login);
   cy.get('[data-cy="input-password"]').clear().type(password);
   cy.get('[data-cy="btn-login"]').click();
+  cy.url().should('not.include', '/login');
 });
 
 Cypress.Commands.add('registerByForm', (username, email, password, passwordConfirmation) => {

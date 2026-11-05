@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" tests="2" assertions="17" errors="0" failures="0" skipped="0" time="0.029560">
+    <testcase name="test_tc_04_01_marketplace_search_request_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" line="14" class="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" classname="Tests.Unit.MarketTrust.MarketplaceStatisticsRulesTest" assertions="11" time="0.010839"/>
+    <testcase name="test_tc_04_01_listing_estimated_delivery_formatting_and_minutes" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" line="41" class="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" classname="Tests.Unit.MarketTrust.MarketplaceStatisticsRulesTest" assertions="6" time="0.018721"/>
+  </testsuite>
+</testsuites>

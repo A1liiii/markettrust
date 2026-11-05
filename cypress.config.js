@@ -11,6 +11,7 @@ export default defineConfig({
     screenshotOnRunFailure: true,
     taskTimeout: 120000,
     defaultCommandTimeout: 10000,
+    screenshotsFolder: "docs/testing/evidence/ali",
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     setupNodeEvents(on, config) {
       on('task', {
@@ -25,7 +26,9 @@ $app->make(\\Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
 ${code}
 `;
             fs.writeFileSync(tempFile, phpCode);
-            const output = execSync('php storage/framework/cypress_task.php').toString();
+            const output = execSync('php -d variables_order=EGPCS storage/framework/cypress_task.php', {
+              env: process.env,
+            }).toString();
             return output;
           } catch (err) {
             return err.message;

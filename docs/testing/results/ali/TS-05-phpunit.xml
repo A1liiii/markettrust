@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="4" assertions="56" errors="0" failures="0" skipped="0" time="0.824090">
+    <testsuite name="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" tests="2" assertions="17" errors="0" failures="0" skipped="0" time="0.032310">
+      <testcase name="test_tc_04_01_marketplace_search_request_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" line="14" class="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" classname="Tests.Unit.MarketTrust.MarketplaceStatisticsRulesTest" assertions="11" time="0.011444"/>
+      <testcase name="test_tc_04_01_listing_estimated_delivery_formatting_and_minutes" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php" line="41" class="Tests\Unit\MarketTrust\MarketplaceStatisticsRulesTest" classname="Tests.Unit.MarketTrust.MarketplaceStatisticsRulesTest" assertions="6" time="0.020866"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" tests="2" assertions="39" errors="0" failures="0" skipped="0" time="0.791780">
+      <testcase name="test_tc_04_01_search_and_filter_marketplace_listings" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" line="105" class="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" classname="Tests.Feature.MarketTrust.MarketplaceStatisticsScenarioTest" assertions="15" time="0.690292"/>
+      <testcase name="test_tc_04_02_product_market_stats_calculation_and_periods" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php" line="193" class="Tests\Feature\MarketTrust\MarketplaceStatisticsScenarioTest" classname="Tests.Feature.MarketTrust.MarketplaceStatisticsScenarioTest" assertions="24" time="0.101488"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

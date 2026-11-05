@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Tests\Feature\MarketTrust\DirectMessageScenarioTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" tests="2" assertions="44" errors="0" failures="0" skipped="0" time="0.598861">
+    <testcase name="test_tc_05_04_send_text_message_and_sync_polling_between_participants" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" line="58" class="Tests\Feature\MarketTrust\DirectMessageScenarioTest" classname="Tests.Feature.MarketTrust.DirectMessageScenarioTest" assertions="16" time="0.440711"/>
+    <testcase name="test_tc_05_05_strict_dm_attachment_validation_all_variations" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" line="120" class="Tests\Feature\MarketTrust\DirectMessageScenarioTest" classname="Tests.Feature.MarketTrust.DirectMessageScenarioTest" assertions="28" time="0.158151"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="5" assertions="67" errors="0" failures="0" skipped="0" time="0.609169">
+    <testsuite name="Tests\Unit\MarketTrust\DirectMessageRulesTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/DirectMessageRulesTest.php" tests="3" assertions="23" errors="0" failures="0" skipped="0" time="0.035931">
+      <testcase name="test_tc_05_04_conversation_participant_and_canonical_ordering_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/DirectMessageRulesTest.php" line="17" class="Tests\Unit\MarketTrust\DirectMessageRulesTest" classname="Tests.Unit.MarketTrust.DirectMessageRulesTest" assertions="5" time="0.022972"/>
+      <testcase name="test_tc_05_05_send_message_request_attachment_validation_rules" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/DirectMessageRulesTest.php" line="47" class="Tests\Unit\MarketTrust\DirectMessageRulesTest" classname="Tests.Unit.MarketTrust.DirectMessageRulesTest" assertions="9" time="0.011520"/>
+      <testcase name="test_tc_05_05_message_model_attachment_metadata_helpers" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Unit/MarketTrust/DirectMessageRulesTest.php" line="72" class="Tests\Unit\MarketTrust\DirectMessageRulesTest" classname="Tests.Unit.MarketTrust.DirectMessageRulesTest" assertions="9" time="0.001440"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\DirectMessageScenarioTest" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" tests="2" assertions="44" errors="0" failures="0" skipped="0" time="0.573238">
+      <testcase name="test_tc_05_04_send_text_message_and_sync_polling_between_participants" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" line="58" class="Tests\Feature\MarketTrust\DirectMessageScenarioTest" classname="Tests.Feature.MarketTrust.DirectMessageScenarioTest" assertions="16" time="0.460361"/>
+      <testcase name="test_tc_05_05_strict_dm_attachment_validation_all_variations" file="/Users/jihanalireza/PARA/Area/Tech/research/college/markettrust/tests/Feature/MarketTrust/DirectMessageScenarioTest.php" line="120" class="Tests\Feature\MarketTrust\DirectMessageScenarioTest" classname="Tests.Feature.MarketTrust.DirectMessageScenarioTest" assertions="28" time="0.112878"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
