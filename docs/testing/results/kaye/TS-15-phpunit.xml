@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="7" assertions="35" errors="0" failures="0" skipped="0" time="3.098749">
+    <testsuite name="Tests\Unit\MarketTrust\SettlementRulesTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\SettlementRulesTest.php" tests="3" assertions="8" errors="0" failures="0" skipped="0" time="0.792138">
+      <testcase name="test_tc_01_01_net_payout_deduction_formula" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\SettlementRulesTest.php" line="12" class="Tests\Unit\MarketTrust\SettlementRulesTest" classname="Tests.Unit.MarketTrust.SettlementRulesTest" assertions="2" time="0.685593"/>
+      <testcase name="test_tc_01_02_net_payout_cannot_be_negative" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\SettlementRulesTest.php" line="27" class="Tests\Unit\MarketTrust\SettlementRulesTest" classname="Tests.Unit.MarketTrust.SettlementRulesTest" assertions="2" time="0.049206"/>
+      <testcase name="test_tc_13_04_valid_payout_failure_categories" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Unit\MarketTrust\SettlementRulesTest.php" line="42" class="Tests\Unit\MarketTrust\SettlementRulesTest" classname="Tests.Unit.MarketTrust.SettlementRulesTest" assertions="4" time="0.057339"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\SettlementScenarioTest" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\SettlementScenarioTest.php" tests="4" assertions="27" errors="0" failures="0" skipped="0" time="2.306610">
+      <testcase name="test_tc_13_01_simulated_payout_with_automatic_keep_deduction" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\SettlementScenarioTest.php" line="83" class="Tests\Feature\MarketTrust\SettlementScenarioTest" classname="Tests.Feature.MarketTrust.SettlementScenarioTest" assertions="10" time="1.924342"/>
+      <testcase name="test_tc_13_02_payout_held_when_seller_has_no_active_payout_account" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\SettlementScenarioTest.php" line="148" class="Tests\Feature\MarketTrust\SettlementScenarioTest" classname="Tests.Feature.MarketTrust.SettlementScenarioTest" assertions="2" time="0.117124"/>
+      <testcase name="test_tc_13_03_simulated_refund_for_buyer" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\SettlementScenarioTest.php" line="169" class="Tests\Feature\MarketTrust\SettlementScenarioTest" classname="Tests.Feature.MarketTrust.SettlementScenarioTest" assertions="8" time="0.157357"/>
+      <testcase name="test_tc_13_04_failed_payout_attempt_is_recorded" file="C:\laragon\www\PBL-Semester 5\markettrust\tests\Feature\MarketTrust\SettlementScenarioTest.php" line="237" class="Tests\Feature\MarketTrust\SettlementScenarioTest" classname="Tests.Feature.MarketTrust.SettlementScenarioTest" assertions="7" time="0.107787"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

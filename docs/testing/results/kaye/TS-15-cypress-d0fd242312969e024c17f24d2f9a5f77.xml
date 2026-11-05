@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="110.510" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T07:24:58" tests="0" file="cypress\e2e\markettrust\ts-15-settlement.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-15 — Admin Settlement &amp; Payout" timestamp="2026-11-04T07:24:58" tests="4" time="110.506" failures="0">
+    <testcase name="TS-15 — Admin Settlement &amp; Payout TC-13-01 — Akses Halaman Transaksi Admin untuk Eksekusi Settlement" time="35.916" classname="TC-13-01 — Akses Halaman Transaksi Admin untuk Eksekusi Settlement">
+    </testcase>
+    <testcase name="TS-15 — Admin Settlement &amp; Payout TC-13-02 — Verifikasi Proteksi Eksekusi Settlement Tanpa Rekening Penjual" time="28.247" classname="TC-13-02 — Verifikasi Proteksi Eksekusi Settlement Tanpa Rekening Penjual">
+    </testcase>
+    <testcase name="TS-15 — Admin Settlement &amp; Payout TC-13-03 — Verifikasi Akses Daftar Pengembalian Dana (Refund) Transaksi" time="25.900" classname="TC-13-03 — Verifikasi Akses Daftar Pengembalian Dana (Refund) Transaksi">
+    </testcase>
+    <testcase name="TS-15 — Admin Settlement &amp; Payout TC-13-04 — Verifikasi Halaman Audit Logs &amp; Riwayat Eksekusi Finansial" time="20.323" classname="TC-13-04 — Verifikasi Halaman Audit Logs &amp; Riwayat Eksekusi Finansial">
+    </testcase>
+  </testsuite>
+</testsuites>

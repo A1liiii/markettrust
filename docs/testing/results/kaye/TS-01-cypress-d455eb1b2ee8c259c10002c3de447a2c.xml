@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="68.150" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T06:54:15" tests="0" file="cypress\e2e\markettrust\ts-01-autentikasi.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-01 — Autentikasi &amp; Registrasi" timestamp="2026-11-04T06:54:15" tests="6" time="68.146" failures="0">
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-01 — Registrasi Akun Berhasil dengan Data Valid" time="8.021" classname="TC-01-01 — Registrasi Akun Berhasil dengan Data Valid">
+    </testcase>
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-02 — Registrasi Gagal Karena Validasi Input Tidak Sesuai" time="4.483" classname="TC-01-02 — Registrasi Gagal Karena Validasi Input Tidak Sesuai">
+    </testcase>
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-03 — Login Berhasil Menggunakan Username Maupun Email" time="14.270" classname="TC-01-03 — Login Berhasil Menggunakan Username Maupun Email">
+    </testcase>
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-04 — Login Akun Admin Mengarahkan Langsung ke Dashboard Admin" time="21.363" classname="TC-01-04 — Login Akun Admin Mengarahkan Langsung ke Dashboard Admin">
+    </testcase>
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-05 — Penolakan Login untuk Akun Berstatus SUSPENDED" time="6.200" classname="TC-01-05 — Penolakan Login untuk Akun Berstatus SUSPENDED">
+    </testcase>
+    <testcase name="TS-01 — Autentikasi &amp; Registrasi TC-01-06 — Logout Sesi Pengguna" time="13.478" classname="TC-01-06 — Logout Sesi Pengguna">
+    </testcase>
+  </testsuite>
+</testsuites>

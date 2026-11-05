@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="77.817" tests="5" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T07:22:45" tests="0" file="cypress\e2e\markettrust\ts-10-pembayaran-midtrans.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-10 — Pembayaran Midtrans Escrow" timestamp="2026-11-04T07:22:45" tests="5" time="77.813" failures="0">
+    <testcase name="TS-10 — Pembayaran Midtrans Escrow TC-08-01 — Tombol Bayar &amp; Rincian Transaksi Ditampilkan pada Halaman Transaksi" time="47.781" classname="TC-08-01 — Tombol Bayar &amp; Rincian Transaksi Ditampilkan pada Halaman Transaksi">
+    </testcase>
+    <testcase name="TS-10 — Pembayaran Midtrans Escrow TC-08-02 — Verifikasi Proteksi Endpoint Webhook Notifikasi Midtrans" time="1.769" classname="TC-08-02 — Verifikasi Proteksi Endpoint Webhook Notifikasi Midtrans">
+    </testcase>
+    <testcase name="TS-10 — Pembayaran Midtrans Escrow TC-08-03 — Tombol Sinkronisasi Status Pembayaran Tersedia" time="11.211" classname="TC-08-03 — Tombol Sinkronisasi Status Pembayaran Tersedia">
+    </testcase>
+    <testcase name="TS-10 — Pembayaran Midtrans Escrow TC-08-04 — Penanganan Status Transaksi Dibatalkan pada Tampilan Detail" time="12.839" classname="TC-08-04 — Penanganan Status Transaksi Dibatalkan pada Tampilan Detail">
+    </testcase>
+    <testcase name="TS-10 — Pembayaran Midtrans Escrow TC-08-05 — Scheduler Pembatalan Pembayaran Kadaluarsa Berhasil Dijalankan" time="3.791" classname="TC-08-05 — Scheduler Pembatalan Pembayaran Kadaluarsa Berhasil Dijalankan">
+    </testcase>
+  </testsuite>
+</testsuites>

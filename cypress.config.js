@@ -9,6 +9,8 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
+    taskTimeout: 120000,
+    defaultCommandTimeout: 10000,
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     setupNodeEvents(on, config) {
       on('task', {
