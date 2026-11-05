@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="7" assertions="46" errors="0" failures="0" skipped="0" time="0.566686">
+    <testsuite name="Tests\Unit\MarketTrust\ForumRulesTest" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\ForumRulesTest.php" tests="4" assertions="18" errors="0" failures="0" skipped="0" time="0.447190">
+      <testcase name="test_forum_post_status_and_defaults" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\ForumRulesTest.php" line="21" class="Tests\Unit\MarketTrust\ForumRulesTest" classname="Tests.Unit.MarketTrust.ForumRulesTest" assertions="5" time="0.392200"/>
+      <testcase name="test_forum_post_formatted_time_accessor" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\ForumRulesTest.php" line="45" class="Tests\Unit\MarketTrust\ForumRulesTest" classname="Tests.Unit.MarketTrust.ForumRulesTest" assertions="3" time="0.017608"/>
+      <testcase name="test_forum_comment_formatted_time_accessor" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\ForumRulesTest.php" line="84" class="Tests\Unit\MarketTrust\ForumRulesTest" classname="Tests.Unit.MarketTrust.ForumRulesTest" assertions="2" time="0.015976"/>
+      <testcase name="test_forum_post_and_comment_relationships" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\ForumRulesTest.php" line="114" class="Tests\Unit\MarketTrust\ForumRulesTest" classname="Tests.Unit.MarketTrust.ForumRulesTest" assertions="8" time="0.021406"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\ForumScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\ForumScenarioTest.php" tests="3" assertions="28" errors="0" failures="0" skipped="0" time="0.119496">
+      <testcase name="test_tc_05_01_pembuatan_postingan_forum_jual_beli" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\ForumScenarioTest.php" line="24" class="Tests\Feature\MarketTrust\ForumScenarioTest" classname="Tests.Feature.MarketTrust.ForumScenarioTest" assertions="6" time="0.065996"/>
+      <testcase name="test_tc_05_02_interaksi_komentar_dan_like_postingan_forum" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\ForumScenarioTest.php" line="80" class="Tests\Feature\MarketTrust\ForumScenarioTest" classname="Tests.Feature.MarketTrust.ForumScenarioTest" assertions="16" time="0.033068"/>
+      <testcase name="test_tc_05_03_tombol_negosiasi_forum_mengarah_ke_dm" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\ForumScenarioTest.php" line="155" class="Tests\Feature\MarketTrust\ForumScenarioTest" classname="Tests.Feature.MarketTrust.ForumScenarioTest" assertions="6" time="0.020432"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

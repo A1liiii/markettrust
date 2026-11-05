@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="98.607" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-04T06:49:20" tests="0" file="cypress\e2e\markettrust\ts-08-agreement.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-08 — Kesepakatan Forum (Agreement)" timestamp="2026-11-04T06:49:20" tests="4" time="98.604" failures="0">
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-01 — Pembuatan Usulan Kesepakatan (Agreement Draft) dari DM" time="23.705" classname="TC-06-01 — Pembuatan Usulan Kesepakatan (Agreement Draft) dari DM">
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-02 — Revisi Usulan Kesepakatan Menaikkan Nomor Revisi" time="24.567" classname="TC-06-02 — Revisi Usulan Kesepakatan Menaikkan Nomor Revisi">
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-03 — Penolakan Usulan Kesepakatan (Reject Agreement)" time="26.076" classname="TC-06-03 — Penolakan Usulan Kesepakatan (Reject Agreement)">
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-04 — Persetujuan Kesepakatan Menghasilkan Transaksi WAITING_PAYMENT" time="24.050" classname="TC-06-04 — Persetujuan Kesepakatan Menghasilkan Transaksi WAITING_PAYMENT">
+    </testcase>
+  </testsuite>
+</testsuites>

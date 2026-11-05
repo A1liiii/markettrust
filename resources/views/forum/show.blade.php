@@ -426,7 +426,7 @@
     // Inisialisasi DM Negosiasi Quick-Start (Zinky DM)
     document.addEventListener('DOMContentLoaded', function() {
         const negotiateForm = document.getElementById('forum-negotiate-form');
-        if (negotiateForm) {
+        if (negotiateForm && window.openGlobalDmDrawer) {
             negotiateForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const startUrl = @json(route('conversations.from-post.quick', $post->post_id));
@@ -447,6 +447,8 @@
                         const data = await res.json();
                         if (window.openGlobalDmDrawer) {
                             window.openGlobalDmDrawer(data.conversation_id);
+                        } else {
+                            window.location.href = @json(route('forum.show', $post->post_id)) + '?open_dm=' + data.conversation_id;
                         }
                     } else {
                         negotiateForm.submit();
