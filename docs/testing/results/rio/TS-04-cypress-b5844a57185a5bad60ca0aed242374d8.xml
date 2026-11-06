@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="64.162" tests="3" failures="3">
+  <testsuite name="Root Suite" timestamp="2026-11-04T06:11:29" tests="0" file="cypress\e2e\markettrust\ts-04-katalog-listing.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-04: Katalog Admin &amp; Listing Marketplace" timestamp="2026-11-04T06:11:29" tests="3" time="64.158" failures="3">
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang" time="0.000" classname="TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang">
+      <failure message="Timed out retrying after 4000ms: Expected to find element: `button[onclick*=&quot;modal-add-category&quot;]`, but never found it." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find element: `button[onclick*="modal-add-category"]`, but never found it.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-04-katalog-listing.cy.js:57:7)]]></failure>
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)" time="0.000" classname="TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)">
+      <failure message="Timed out retrying after 4000ms: `cy.select()` failed because it could not find a single `&lt;option&gt;` with value, index, or text matching: `Varian Tier QA 1793772689332`
+
+https://on.cypress.io/select" type="CypressError"><![CDATA[CypressError: Timed out retrying after 4000ms: `cy.select()` failed because it could not find a single `<option>` with value, index, or text matching: `Varian Tier QA 1793772689332`
+
+https://on.cypress.io/select
+    at getOptions (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:114408:72)
+    at tryCatcher (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1780:23)
+    at Promise.attempt.Promise.try (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:4288:29)
+    at retryOptions (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:114440:70)
+    at tryCatcher (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1780:23)
+    at Promise.attempt.Promise.try (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:4288:29)
+    at whenStable (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:160753:70)
+    at <unknown> (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:160653:14)
+    at tryCatcher (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1780:23)
+    at Promise._settlePromiseFromHandler (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1492:31)
+    at Promise._settlePromise (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1549:18)
+    at Promise._settlePromise0 (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1594:10)
+    at Promise._settlePromises (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1674:18)
+    at Promise._fulfill (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:1618:18)
+    at <unknown> (http://127.0.0.1:8000/__cypress/runner/cypress_runner.js:5423:46)]]></failure>
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)" time="0.000" classname="TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)">
+      <failure message="Timed out retrying after 4000ms: Expected to find content: &apos;Listing Uji Rio 1793772689332&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Listing Uji Rio 1793772689332' but never did.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-04-katalog-listing.cy.js:134:7)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="8" assertions="45" errors="0" failures="0" skipped="0" time="1.131938">
+    <testsuite name="Tests\Unit\MarketTrust\BuyerConfirmationRulesTest" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\BuyerConfirmationRulesTest.php" tests="3" assertions="9" errors="0" failures="0" skipped="0" time="0.005825">
+      <testcase name="test_tc_10_01_settlement_payout_due_calculation" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\BuyerConfirmationRulesTest.php" line="16" class="Tests\Unit\MarketTrust\BuyerConfirmationRulesTest" classname="Tests.Unit.MarketTrust.BuyerConfirmationRulesTest" assertions="2" time="0.002509"/>
+      <testcase name="test_tc_10_02_grace_period_window_calculation" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\BuyerConfirmationRulesTest.php" line="28" class="Tests\Unit\MarketTrust\BuyerConfirmationRulesTest" classname="Tests.Unit.MarketTrust.BuyerConfirmationRulesTest" assertions="3" time="0.001556"/>
+      <testcase name="test_tc_10_03_auto_confirm_eligibility_criteria_logic" file="C:\laragon\www\markettrust\tests\Unit\MarketTrust\BuyerConfirmationRulesTest.php" line="43" class="Tests\Unit\MarketTrust\BuyerConfirmationRulesTest" classname="Tests.Unit.MarketTrust.BuyerConfirmationRulesTest" assertions="4" time="0.001759"/>
+    </testsuite>
+    <testsuite name="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" tests="5" assertions="36" errors="0" failures="0" skipped="0" time="1.126113">
+      <testcase name="test_tc_10_01_buyer_can_manually_confirm_delivered_transaction" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" line="125" class="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" classname="Tests.Feature.MarketTrust.BuyerConfirmationScenarioTest" assertions="12" time="0.872293"/>
+      <testcase name="test_tc_10_01_seller_or_stranger_cannot_confirm_delivery" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" line="184" class="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" classname="Tests.Feature.MarketTrust.BuyerConfirmationScenarioTest" assertions="3" time="0.091934"/>
+      <testcase name="test_tc_10_02_scheduler_grants_30_minute_grace_period_to_passive_buyer" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" line="207" class="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" classname="Tests.Feature.MarketTrust.BuyerConfirmationScenarioTest" assertions="7" time="0.057580"/>
+      <testcase name="test_tc_10_03_scheduler_auto_confirms_after_grace_period_expires" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" line="257" class="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" classname="Tests.Feature.MarketTrust.BuyerConfirmationScenarioTest" assertions="9" time="0.059351"/>
+      <testcase name="test_tc_10_03_active_complaint_halts_auto_confirm" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\BuyerConfirmationScenarioTest.php" line="317" class="Tests\Feature\MarketTrust\BuyerConfirmationScenarioTest" classname="Tests.Feature.MarketTrust.BuyerConfirmationScenarioTest" assertions="5" time="0.044954"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

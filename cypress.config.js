@@ -9,9 +9,16 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
-    taskTimeout: 120000,
     defaultCommandTimeout: 10000,
+    taskTimeout: 120000,
     screenshotsFolder: "docs/testing/evidence/ali",
+    blockHosts: [
+      "*jsdelivr.net*",
+      "*bunny.net*",
+      "*midtrans.com*",
+      "*google.com*",
+      "*gstatic.com*",
+    ],
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     setupNodeEvents(on, config) {
       on('task', {

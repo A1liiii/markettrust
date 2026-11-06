@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="153.506" tests="3" failures="1">
+  <testsuite name="Root Suite" timestamp="2026-11-05T11:35:48" tests="0" file="cypress\e2e\markettrust\ts-04-katalog-listing.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-04: Katalog Admin &amp; Listing Marketplace" timestamp="2026-11-05T11:35:48" tests="3" time="153.504" failures="1">
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang" time="113.814" classname="TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang">
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)" time="25.897" classname="TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)">
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)" time="0.000" classname="TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)">
+      <failure message="Timed out retrying after 4000ms: Expected to find element: `tr`, but never found it. Queried from:
+
+              &gt; cy.contains(Listing Uji Rio 1793878547980)" type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find element: `tr`, but never found it. Queried from:
+
+              > cy.contains(Listing Uji Rio 1793878547980)
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-04-katalog-listing.cy.js:153:7)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
