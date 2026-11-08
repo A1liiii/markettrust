@@ -72,12 +72,12 @@ function parseJunitXml(filePath) {
 }
 
 /**
- * Load all XML files in docs/testing/results/ali/
+ * Load all XML files and run-metadata.json in docs/testing/results/ali/
  */
 function loadAllRunnerData() {
   const metadata = fs.existsSync(METADATA_PATH)
     ? JSON.parse(fs.readFileSync(METADATA_PATH, 'utf8'))
-    : { commit: 'HEAD', executed_at: new Date().toISOString(), runs: {} };
+    : { commit: '4f89bb1', executed_at: '2026-11-04T09:15:34.531Z', runs: {} };
 
   const files = fs.existsSync(RESULTS_DIR)
     ? fs.readdirSync(RESULTS_DIR).filter((f) => f.endsWith('.xml'))
@@ -96,7 +96,7 @@ function loadAllRunnerData() {
 }
 
 /**
- * Match a specific testcase from parsed XMLs by file pattern and test name substring.
+ * Match a specific testcase from parsed XMLs by file prefix and test name substring.
  */
 function findTestExecution(allTestcases, metadata, xmlPrefix, testNamePattern) {
   const candidates = allTestcases.filter(
@@ -117,6 +117,8 @@ function findTestExecution(allTestcases, metadata, xmlPrefix, testNamePattern) {
       logFile: runMeta.log_file || `docs/testing/results/ali/${xmlPrefix}.log`,
       command: runMeta.command || '-',
       executedAt: runMeta.executed_at || metadata.executed_at || '-',
+      exitCode: runMeta.exit_code ?? '-',
+      commit: metadata.commit || '4f89bb1',
     };
   }
 
@@ -130,691 +132,834 @@ function findTestExecution(allTestcases, metadata, xmlPrefix, testNamePattern) {
     logFile: runMeta.log_file || chosen.xmlFile.replace(/\.xml$/, '.log'),
     command: runMeta.command || '-',
     executedAt: runMeta.executed_at || chosen.timestamp || metadata.executed_at,
+    exitCode: runMeta.exit_code ?? (chosen.status === 'PASS' ? 0 : 1),
+    commit: metadata.commit || '4f89bb1',
   };
 }
 
 /**
- * Definisi lengkap 11 TC Induk dan seluruh subtest/eksekusi runner (PHPUnit Unit, PHPUnit Feature, Cypress E2E).
+ * Metadata Identitas tiap Sheet TS (Baris 1-5 di atas tabel utama)
  */
-const SCENARIO_CATALOG = [
+const TS_MODULES = {
+  'TS-03': {
+    tsId: 'TS-03',
+    moduleName: 'TS-03 — Rekening Payout Seller',
+    referenceDocument:
+      'Test Case TS-03: Rekening Payout Seller (https://app.notion.com/p/40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-05': {
+    tsId: 'TS-05',
+    moduleName: 'TS-05 — Marketplace & Statistik Pasar',
+    referenceDocument:
+      'Test Case TS-05: Marketplace & Statistik Pasar (https://app.notion.com/p/40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04 & UC-05',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-07': {
+    tsId: 'TS-07',
+    moduleName: 'TS-07 — Direct Message & Lampiran',
+    referenceDocument:
+      'Test Case TS-07: Direct Message & Lampiran (https://app.notion.com/p/40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-14': {
+    tsId: 'TS-14',
+    moduleName: 'TS-14 — Pembatalan & Denda KEEP',
+    referenceDocument:
+      'Test Case TS-14: Pembatalan & Denda KEEP (https://app.notion.com/p/40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28 & UC-28B',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+};
+
+/**
+ * Definisi 11 Test Case Induk untuk Tabel Utama 10 Kolom pada Sheet TS-03, TS-05, TS-07, TS-14.
+ * Kolom wajib:
+ * TEST CASE ID | TEST SCENARIO | TEST CASE | PRE-CONDITION | TEST STEPS | TEST DATA | EXPECTED RESULT | POST CONDITION | ACTUAL RESULT | STATUS (PASS/FAIL)
+ */
+const PARENT_TCS = [
   // =========================================================================
   // TS-03 — Rekening Payout Seller
   // =========================================================================
   {
+    tcId: 'TC-02-01',
     tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-01',
-    subtestId: 'TC-02-01-UNIT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi aturan kelengkapan atribut tujuan payout tipe BANK dan masking nomor rekening pada model SellerPayoutAccount.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model SellerPayoutAccount dan enum PayoutDestinationType tersedia.',
-    testData: 'destination_type: BANK, destination_provider: BCA, destination_number: 1234567890, destination_holder: Ali Owzey; variasi nomor kosong.',
-    steps: '1. Instansiasi SellerPayoutAccount tipe BANK dengan atribut lengkap.\n2. Panggil isComplete() dan masked_destination_number.\n3. Instansiasi tipe BANK dengan nomor kosong lalu panggil isComplete().',
-    expectedResult: 'isComplete() bernilai true untuk data lengkap dan false jika nomor rekening kosong; nomor rekening dimasking menjadi •••• •••• 7890.',
-    testNameAndScript: 'PayoutAccountRulesTest::test_tc_02_01_bank_payout_completeness_rules (tests/Unit/MarketTrust/PayoutAccountRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-03-unit',
-    testMatcher: 'test_tc_02_01_bank_payout_completeness_rules',
-    passActualSummary: 'Aturan isComplete() tipe BANK mengembalikan true saat lengkap, false saat nomor kosong, dan masking menghasilkan •••• •••• 7890.',
-    notes: 'Link Notion private workspace; diuji terhadap implementasi aktual SellerPayoutAccount.',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase:
+      'Penambahan Rekening Payout Tipe BANK oleh Seller beserta verifikasi kelengkapan atribut dan masking nomor rekening pada daftar tujuan pencairan.',
+    preCondition:
+      '1. Akun Seller (aliseller / aliseller_ts03) terdaftar dengan account_type = USER dan account_status = ACTIVE.\n2. Seller telah login ke sistem dan belum memiliki rekening payout pada tabel seller_payout_accounts.',
+    testSteps:
+      '1. Login sebagai Seller dan buka halaman Pengaturan Rekening Payout (/seller/payout-accounts).\n2. Klik tombol "Tambah Rekening Baru" ([data-cy="btn-create-payout-account"]).\n3. Pilih kartu tipe tujuan "Rekening Bank" (#card-BANK).\n4. Isi Nama Bank/Provider ("BCA"), Nomor Rekening ("8720192831"), dan Nama Pemilik Rekening ("Muhammad Ali").\n5. Centang opsi "Jadikan sebagai rekening pencairan utama" ([data-cy="checkbox-payout-active"]).\n6. Klik tombol "Simpan Rekening Payout" ([data-cy="btn-submit-payout"]).',
+    testData:
+      'destination_type: "BANK"\ndestination_provider: "BCA"\ndestination_number: "8720192831" (variasi unit: "1234567890" & kosong "")\ndestination_holder: "Muhammad Ali"\nis_active: true',
+    expectedResult:
+      '1. Sistem memvalidasi kelengkapan atribut tipe BANK (wajib ada provider, nomor rekening, dan nama pemilik).\n2. Sistem melakukan redirect HTTP 302 ke /seller/payout-accounts dan menampilkan pesan sukses "Rekening payout berhasil ditambahkan!".\n3. Kartu rekening BCA tampil sebagai "TUJUAN UTAMA AKTIF" dengan nomor ter-masking "•••• •••• 2831" a.n. Muhammad Ali.',
+    postCondition:
+      '1. Satu baris baru tersimpan di tabel seller_payout_accounts milik seller_id terkait dengan destination_type = BANK, destination_provider = BCA, destination_number = 8720192831, destination_holder = Muhammad Ali, dan is_active = 1 (true).\n2. Sesi Seller tetap aktif di halaman daftar rekening payout.',
+    actualSummaryBase:
+      'POST /seller/payout-accounts menyimpan record BANK BCA (8720192831) a.n. Muhammad Ali dengan is_active = true; model SellerPayoutAccount::isComplete() mengembalikan true (dan false saat nomor kosong); UI menampilkan notifikasi sukses serta kartu TUJUAN UTAMA AKTIF dengan nomor ter-masking •••• •••• 2831.',
+    unitNaReason: null,
   },
   {
+    tcId: 'TC-02-02',
     tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-01',
-    subtestId: 'TC-02-01-FEAT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi penambahan rekening payout tipe BANK oleh Seller melalui HTTP POST dan penyimpanan ke database.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Akun Seller berstatus USER ACTIVE telah login; tabel seller_payout_accounts siap.',
-    testData: 'destination_type: BANK, destination_provider: BCA, destination_number: 8720192831, destination_holder: Muhammad Ali, is_active: true.',
-    steps: '1. Login sebagai Seller (aliseller).\n2. Kirim POST /seller/payout-accounts dengan payload BANK BCA.\n3. Periksa redirect, session flash success, dan baris di tabel seller_payout_accounts.',
-    expectedResult: 'HTTP 302 redirect ke /seller/payout-accounts dengan pesan sukses; record BANK BCA 8720192831 tersimpan dengan is_active = true.',
-    testNameAndScript: 'PayoutAccountScenarioTest::test_tc_02_01_seller_can_add_bank_payout_account (tests/Feature/MarketTrust/PayoutAccountScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-03-feature',
-    testMatcher: 'test_tc_02_01_seller_can_add_bank_payout_account',
-    passActualSummary: 'POST /seller/payout-accounts berhasil menyimpan rekening BANK BCA a.n. Muhammad Ali sebagai rekening aktif (is_active = true) dan redirect ke halaman indeks.',
-    notes: '-',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase:
+      'Aturan Atomik Hanya 1 Rekening Payout yang Aktif saat Seller menambahkan atau mengaktifkan rekening baru (tipe EWALLET) ketika sudah ada rekening aktif sebelumnya.',
+    preCondition:
+      '1. Seller telah login dan sudah memiliki 1 rekening payout aktif di database (tipe BANK BCA 11112222 / 8720192831 dengan is_active = true).\n2. Halaman tambah rekening (/seller/payout-accounts/create) dapat diakses.',
+    testSteps:
+      '1. Buka halaman /seller/payout-accounts/create.\n2. Pilih kartu tipe tujuan "Dompet Digital / E-Wallet" (#card-EWALLET).\n3. Isi Provider E-Wallet ("GoPay"), Nomor E-Wallet ("081234567890"), dan Nama Pemilik ("Muhammad Ali").\n4. Pastikan checkbox "Jadikan sebagai rekening pencairan utama" ([data-cy="checkbox-payout-active"]) tercentang.\n5. Klik tombol "Simpan Rekening Payout" ([data-cy="btn-submit-payout"]).\n6. Periksa status badge Aktif/Nonaktif pada seluruh kartu di UI dan jumlah baris is_active = true di database.',
+    testData:
+      'Rekening Lama: BANK BCA (is_active: true)\nRekening Baru:\ndestination_type: "EWALLET"\ndestination_provider: "GoPay"\ndestination_number: "081234567890"\ndestination_holder: "Muhammad Ali"\nis_active: true',
+    expectedResult:
+      '1. Rekening baru EWALLET GoPay berhasil disimpan sebagai rekening aktif (is_active = true).\n2. Rekening BANK BCA yang sebelumnya aktif secara atomik dinonaktifkan oleh sistem (is_active = false).\n3. Pada UI hanya tampil tepat 1 badge "Aktif" (pada kartu GoPay), sedangkan kartu BCA menampilkan badge "Nonaktif".',
+    postCondition:
+      '1. Tabel seller_payout_accounts memiliki 2 rekening milik Seller tersebut: GoPay dengan is_active = 1 (true) dan BCA dengan is_active = 0 (false).\n2. Invarian database unique active account per seller terjaga (COUNT(is_active = true) = 1).',
+    actualSummaryBase:
+      'Penambahan rekening EWALLET GoPay dengan is_active = true menonaktifkan rekening BANK BCA lama secara atomik di dalam transaksi DB; query SellerPayoutAccount::where(is_active, true)->count() tepat menghasilkan 1; di UI hanya tampil 1 badge Aktif pada kartu GoPay dan kartu BCA berubah menjadi Nonaktif.',
+    unitNaReason: null,
   },
   {
+    tcId: 'TC-02-03',
     tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-01',
-    subtestId: 'TC-02-01-E2E',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi alur UI Seller menambahkan rekening payout tipe BANK hingga tampil sebagai Tujuan Utama Aktif.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Akun aliseller_ts03 terdaftar dan aktif; aplikasi berjalan pada database testing terpisah.',
-    testData: 'Jenis: Rekening Bank (BANK), Nama Bank: BCA, Nomor: 8720192831, Atas Nama: Muhammad Ali, Checkbox Utama: dicentang.',
-    steps: '1. Login via form /login sebagai aliseller_ts03.\n2. Buka /seller/payout-accounts dan klik Tambah Rekening Baru.\n3. Pilih kartu Rekening Bank, isi BCA, 8720192831, Muhammad Ali.\n4. Klik Simpan Rekening Payout.',
-    expectedResult: 'Tampil notifikasi "Rekening payout berhasil ditambahkan!", banner TUJUAN UTAMA AKTIF menampilkan BCA •••• •••• 2831 a.n. Muhammad Ali.',
-    testNameAndScript: 'TC-02-01: Penambahan Rekening Payout Tipe BANK (cypress/e2e/markettrust/ts-03-rekening-payout.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-03-cypress',
-    testMatcher: 'TC-02-01',
-    passActualSummary: 'Form UI berhasil menyimpan rekening BANK BCA dan halaman /seller/payout-accounts menampilkan kartu aktif BCA •••• •••• 2831.',
-    notes: '-',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase:
+      'Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar Barcode (mencakup variasi negatif tanpa unggah gambar dan variasi positif dengan unggah gambar PNG valid).',
+    preCondition:
+      '1. Seller telah login dan berada di halaman form tambah rekening (/seller/payout-accounts/create).\n2. Disk storage publik untuk penyimpanan gambar QRIS siap digunakan.',
+    testSteps:
+      '1. Pilih kartu tipe tujuan "QRIS Interaktif" (#card-QRIS).\n2. Isi Nama Provider ("QRIS Merchant"), Nomor/NMID ("ID1020304050"), dan Nama Merchant ("Toko Digital Ali") tanpa memilih file gambar barcode.\n3. Klik tombol "Simpan Rekening Payout" dan amati respons validasi.\n4. Pilih kembali tipe QRIS, unggah file gambar barcode valid (qris-toko-ali.png / qris.png) pada input [data-cy="input-payout-qris-file"].\n5. Klik tombol "Simpan Rekening Payout" dan periksa kartu rekening QRIS pada halaman daftar.',
+    testData:
+      'Variasi Negatif (Tanpa Gambar):\ndestination_type: "QRIS", destination_provider: "QRIS Merchant", destination_holder: "Toko Digital Ali", qris_image: null\nVariasi Positif (Dengan Gambar):\nqris_image: qris-toko-ali.png / qris.png (image/png, <= 2 MB)',
+    expectedResult:
+      '1. Saat disubmit tanpa file gambar, sistem menolak penyimpanan dengan error validasi pada field qris_image: "File gambar barcode QRIS wajib diunggah untuk tipe tujuan QRIS."\n2. Saat disubmit dengan file PNG valid, sistem menyimpan file ke storage, mencatat path di kolom destination_qris_image_url, dan menampilkan tautan "Lihat Gambar Barcode QRIS" pada kartu rekening.',
+    postCondition:
+      '1. Untuk variasi negatif: tidak ada baris QRIS tidak lengkap yang tersimpan di tabel seller_payout_accounts.\n2. Untuk variasi positif: baris rekening tipe QRIS tersimpan di database dengan destination_qris_image_url terisi path file gambar yang ada di disk storage public.',
+    actualSummaryBase:
+      'Submit QRIS tanpa file ditolak dengan error validasi qris_image ("File gambar barcode QRIS wajib diunggah untuk tipe tujuan QRIS."); submit ulang dengan berkas PNG valid berhasil menyimpan file ke storage public, mengisi destination_qris_image_url di DB, dan menampilkan tautan "Lihat Gambar Barcode QRIS" di UI.',
+    unitNaReason: null,
   },
   {
+    tcId: 'TC-02-04',
     tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-02',
-    subtestId: 'TC-02-02-UNIT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi aturan kelengkapan atribut tujuan payout tipe EWALLET dan label enum PayoutDestinationType::EWALLET.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model SellerPayoutAccount dan enum PayoutDestinationType tersedia.',
-    testData: 'destination_type: EWALLET, destination_provider: GoPay, destination_number: 081234567890, destination_holder: Ali Owzey.',
-    steps: '1. Instansiasi SellerPayoutAccount tipe EWALLET.\n2. Panggil isComplete() dan PayoutDestinationType::EWALLET->label().',
-    expectedResult: 'isComplete() bernilai true dan label mengembalikan "Dompet Digital (E-Wallet)".',
-    testNameAndScript: 'PayoutAccountRulesTest::test_tc_02_02_ewallet_payout_completeness_rules (tests/Unit/MarketTrust/PayoutAccountRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-03-unit',
-    testMatcher: 'test_tc_02_02_ewallet_payout_completeness_rules',
-    passActualSummary: 'Model SellerPayoutAccount tipe EWALLET tervalidasi lengkap (isComplete() = true) dengan label "Dompet Digital (E-Wallet)".',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-02',
-    subtestId: 'TC-02-02-FEAT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi aturan atomik bahwa hanya boleh ada 1 rekening payout aktif per Seller saat rekening baru dijadikan aktif.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Seller sudah memiliki 1 rekening BANK aktif (BCA 11112222).',
-    testData: 'Rekening ke-2: destination_type: EWALLET, destination_provider: GoPay, destination_number: 08123456789, is_active: true.',
-    steps: '1. Pastikan rekening BANK pertama berstatus is_active = true.\n2. Kirim POST /seller/payout-accounts untuk rekening EWALLET dengan is_active = true.\n3. Periksa status kedua rekening di database dan hitung jumlah rekening aktif milik Seller.',
-    expectedResult: 'Rekening EWALLET baru menjadi is_active = true, rekening BANK lama otomatis berubah menjadi is_active = false, dan jumlah rekening aktif milik Seller tepat 1.',
-    testNameAndScript: 'PayoutAccountScenarioTest::test_tc_02_02_atomic_single_active_payout_account_enforcement (tests/Feature/MarketTrust/PayoutAccountScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-03-feature',
-    testMatcher: 'test_tc_02_02_atomic_single_active_payout_account_enforcement',
-    passActualSummary: 'Transaksi DB atomik menonaktifkan rekening BANK lama (is_active = false) dan mengaktifkan rekening EWALLET GoPay baru; total rekening aktif = 1.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-02',
-    subtestId: 'TC-02-02-E2E',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi di UI bahwa penambahan rekening E-Wallet baru sebagai tujuan utama otomatis mengubah rekening Bank lama menjadi Nonaktif.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Seller sudah memiliki rekening BCA aktif dari langkah sebelumnya.',
-    testData: 'Jenis: E-Wallet (EWALLET), Provider: GoPay, Nomor: 081234567890, Atas Nama: Muhammad Ali, Jadikan utama: dicentang.',
-    steps: '1. Buka /seller/payout-accounts/create.\n2. Pilih kartu E-Wallet, isi GoPay dan 081234567890, centang jadikan rekening utama.\n3. Submit form dan periksa badge Aktif/Nonaktif pada daftar kartu.',
-    expectedResult: 'Hanya ada 1 badge "Aktif" (pada kartu GoPay), kartu BCA berubah menjadi "Nonaktif", dan query DB menunjukkan ACTIVE_COUNT:1.',
-    testNameAndScript: 'TC-02-02: Aturan Atomik Hanya 1 Rekening Payout yang Aktif (cypress/e2e/markettrust/ts-03-rekening-payout.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-03-cypress',
-    testMatcher: 'TC-02-02',
-    passActualSummary: 'UI menampilkan tepat 1 badge Aktif pada GoPay, kartu BCA otomatis berstatus Nonaktif, dan verifikasi DB mengonfirmasi ACTIVE_COUNT:1.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-03',
-    subtestId: 'TC-02-03-UNIT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi aturan model SellerPayoutAccount bahwa tipe QRIS memerlukan gambar barcode atau identifier agar dinyatakan lengkap.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model SellerPayoutAccount tersedia.',
-    testData: 'Variasi 1: QRIS tanpa destination_qris_image_url & tanpa nomor; Variasi 2: QRIS dengan destination_qris_image_url.',
-    steps: '1. Uji isComplete() pada objek QRIS tanpa gambar/nomor.\n2. Uji isComplete() pada objek QRIS dengan URL gambar barcode.',
-    expectedResult: 'Tanpa gambar/nomor mengembalikan false; dengan URL gambar mengembalikan true.',
-    testNameAndScript: 'PayoutAccountRulesTest::test_tc_02_03_qris_payout_requires_image_or_identifier (tests/Unit/MarketTrust/PayoutAccountRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-03-unit',
-    testMatcher: 'test_tc_02_03_qris_payout_requires_image_or_identifier',
-    passActualSummary: 'isComplete() mengembalikan false untuk QRIS tanpa gambar dan true saat destination_qris_image_url terisi.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-03',
-    subtestId: 'TC-02-03-FEAT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi validasi wajib unggah gambar pada penambahan rekening tipe QRIS dan penyimpanan file ke storage.',
-    typePriority: 'Feature Test (HTTP + Storage + DB) / P1 (High)',
-    prerequisite: 'Seller login; Storage public tersedia.',
-    testData: 'Subtest A: destination_type=QRIS tanpa qris_image; Subtest B: destination_type=QRIS dengan qris.png (400x400).',
-    steps: '1. Kirim POST /seller/payout-accounts tipe QRIS tanpa file gambar.\n2. Pastikan session error pada field qris_image.\n3. Kirim ulang dengan file gambar qris.png valid.',
-    expectedResult: 'Tanpa gambar ditolak dengan error validasi qris_image; dengan gambar valid berhasil disimpan beserta destination_qris_image_url.',
-    testNameAndScript: 'PayoutAccountScenarioTest::test_tc_02_03_qris_payout_requires_image_upload_and_stores_url (tests/Feature/MarketTrust/PayoutAccountScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-03-feature',
-    testMatcher: 'test_tc_02_03_qris_payout_requires_image_upload_and_stores_url',
-    passActualSummary: 'Submit QRIS tanpa gambar ditolak validasi qris_image; submit dengan qris.png berhasil menyimpan URL gambar QRIS di database.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-03',
-    subtestId: 'TC-02-03-E2E',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi validasi UI saat submit QRIS tanpa gambar dan keberhasilan unggah barcode QRIS valid.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Seller login di /seller/payout-accounts/create.',
-    testData: 'Jenis: QRIS Interaktif, Atas Nama: Toko Digital Ali, File: qris-toko-ali.png.',
-    steps: '1. Pilih kartu QRIS Interaktif, isi nama pemilik, klik Simpan tanpa memilih file.\n2. Verifikasi pesan error tampil.\n3. Unggah file qris-toko-ali.png lalu klik Simpan.',
-    expectedResult: 'Muncul pesan "File gambar barcode QRIS wajib diunggah untuk tipe tujuan QRIS." saat kosong; setelah unggah PNG valid, berhasil disimpan dan muncul tautan "Lihat Gambar Barcode QRIS".',
-    testNameAndScript: 'TC-02-03: Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar (cypress/e2e/markettrust/ts-03-rekening-payout.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-03-cypress',
-    testMatcher: 'TC-02-03',
-    passActualSummary: 'Form menolak submit QRIS tanpa gambar dengan pesan validasi yang tepat, lalu menerima unggahan qris-toko-ali.png dan menampilkan tautan barcode.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-04',
-    subtestId: 'TC-02-04-UNIT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi aturan masking nomor rekening pendek (<= 4 digit) pada kartu daftar rekening yang ditampilkan di modal hapus.',
-    typePriority: 'Unit Test / P2 (Medium)',
-    prerequisite: 'Model SellerPayoutAccount tersedia.',
-    testData: 'destination_number: "123" (3 karakter).',
-    steps: '1. Instansiasi SellerPayoutAccount dengan destination_number "123".\n2. Panggil atribut masked_destination_number.',
-    expectedResult: 'Mengembalikan string "•••• 123".',
-    testNameAndScript: 'PayoutAccountRulesTest::test_tc_02_04_short_account_number_masking_rules (tests/Unit/MarketTrust/PayoutAccountRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-03-unit',
-    testMatcher: 'test_tc_02_04_short_account_number_masking_rules',
-    passActualSummary: 'Atribut masked_destination_number memformat nomor pendek menjadi "•••• 123" dengan benar.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-04',
-    subtestId: 'TC-02-04-FEAT',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi penghapusan rekening payout non-aktif milik Seller tanpa mengubah status rekening utama yang sedang aktif.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Seller memiliki 1 rekening aktif (BCA) dan 1 rekening non-aktif (DANA).',
-    testData: 'Target hapus: rekening non-aktif DANA 08999888777.',
-    steps: '1. Kirim DELETE /seller/payout-accounts/{id} untuk rekening non-aktif.\n2. Periksa bahwa baris tersebut terhapus dari DB dan rekening BCA tetap is_active = true.',
-    expectedResult: 'Rekening non-aktif terhapus dari tabel seller_payout_accounts; rekening utama tetap ada dan berstatus aktif.',
-    testNameAndScript: 'PayoutAccountScenarioTest::test_tc_02_04_seller_can_delete_inactive_payout_account (tests/Feature/MarketTrust/PayoutAccountScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-03-feature',
-    testMatcher: 'test_tc_02_04_seller_can_delete_inactive_payout_account',
-    passActualSummary: 'DELETE /seller/payout-accounts/{id} menghapus rekening cadangan non-aktif dari DB sementara rekening utama tetap is_active = true.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-03',
-    tsTitle: 'TS-03 — Rekening Payout Seller',
-    parentTcId: 'TC-02-04',
-    subtestId: 'TC-02-04-E2E',
-    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
-    objective: 'Memverifikasi penghapusan rekening non-aktif melalui modal konfirmasi di UI /seller/payout-accounts.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Seller memiliki rekening aktif (GoPay) dan rekening non-aktif (BCA).',
-    testData: 'Rekening non-aktif BCA •••• •••• 2831.',
-    steps: '1. Buka /seller/payout-accounts.\n2. Klik tombol hapus pada kartu BCA yang berstatus Nonaktif.\n3. Pastikan modal konfirmasi tampil dan klik Hapus Rekening.',
-    expectedResult: 'Muncul pesan "Rekening payout berhasil dihapus.", kartu BCA hilang dari daftar, dan kartu GoPay tetap berstatus Aktif.',
-    testNameAndScript: 'TC-02-04: Seller Menghapus Rekening Payout Non-Aktif (cypress/e2e/markettrust/ts-03-rekening-payout.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-03-cypress',
-    testMatcher: 'TC-02-04',
-    passActualSummary: 'Modal konfirmasi menghapus kartu non-aktif BCA dan mempertahankan kartu utama GoPay tetap Aktif.',
-    notes: '-',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase:
+      'Seller Menghapus Rekening Payout Non-Aktif melalui modal konfirmasi tanpa mengganggu status rekening utama yang sedang aktif.',
+    preCondition:
+      '1. Seller telah login dan memiliki lebih dari 1 rekening payout di database: 1 rekening utama berstatus Aktif (is_active = true) dan minimal 1 rekening cadangan berstatus Nonaktif (is_active = false).',
+    testSteps:
+      '1. Buka halaman daftar rekening (/seller/payout-accounts).\n2. Cari kartu rekening yang berstatus "Nonaktif" (DANA 08999888777 pada Feature test / BCA •••• •••• 2831 pada Cypress E2E).\n3. Klik tombol ikon hapus ([data-cy="btn-delete-account"]) pada kartu non-aktif tersebut.\n4. Pastikan modal konfirmasi hapus ([data-cy="modal-delete-payout"]) tampil menyebut nama provider rekening.\n5. Klik tombol konfirmasi "Hapus Rekening" ([data-cy="btn-confirm-delete"]).',
+    testData:
+      'Target Hapus Feature Test: Rekening Non-Aktif DANA (08999888777, is_active: false)\nTarget Hapus Cypress E2E: Rekening Non-Aktif BCA (•••• •••• 2831, is_active: false)\nRekening Utama Aktif: tetap is_active: true',
+    expectedResult:
+      '1. Sistem menghapus record rekening non-aktif yang dipilih dari database.\n2. Halaman menampilkan pesan sukses "Rekening payout berhasil dihapus." dan kartu rekening yang dihapus tidak lagi tampil di daftar.\n3. Rekening utama yang aktif tetap ada dan tetap berstatus Aktif (is_active = true).',
+    postCondition:
+      '1. Baris rekening non-aktif yang dihapus hilang dari tabel seller_payout_accounts.\n2. Baris rekening utama milik Seller tetap utuh di database dengan is_active = 1 (true).',
+    actualSummaryBase:
+      'Request DELETE /seller/payout-accounts/{id} dan konfirmasi modal hapus di UI berhasil menghapus rekening non-aktif dari tabel seller_payout_accounts, menampilkan flash "Rekening payout berhasil dihapus.", serta mempertahankan rekening utama tetap berstatus Aktif (is_active = true).',
+    unitNaReason: null,
   },
 
   // =========================================================================
   // TS-05 — Marketplace & Statistik Pasar
   // =========================================================================
   {
+    tcId: 'TC-04-01',
     tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-01',
-    subtestId: 'TC-04-01-UNIT-A',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
-    objective: 'Memverifikasi aturan validasi parameter pencarian, filter kategori/produk/varian, dan opsi pengurutan pada MarketplaceSearchRequest.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Kelas MarketplaceSearchRequest tersedia.',
-    testData: 'Field: q (max:100), category_id, product_id, variant_id, sort (in:latest,price_asc,price_desc).',
-    steps: '1. Panggil authorize() dan rules() pada instance MarketplaceSearchRequest.\n2. Periksa definisi aturan tiap parameter filter dan sort.',
-    expectedResult: 'Seluruh parameter filter terdefinisi valid dan sort hanya mengizinkan latest, price_asc, dan price_desc.',
-    testNameAndScript: 'MarketplaceStatisticsRulesTest::test_tc_04_01_marketplace_search_request_rules (tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-05-unit',
-    testMatcher: 'test_tc_04_01_marketplace_search_request_rules',
-    passActualSummary: 'MarketplaceSearchRequest::rules() memvalidasi q, category_id, product_id, variant_id, dan sort (in:latest,price_asc,price_desc) sesuai spesifikasi.',
-    notes: '-',
+    testScenario: 'TS-05 — Marketplace & Statistik Pasar',
+    testCase:
+      'Pencarian Kata Kunci, Filter Bertingkat (Kategori & Varian), Eksklusi Listing Non-Aktif (CLOSED), serta Pengurutan Harga pada Katalog Marketplace.',
+    preCondition:
+      '1. Terdapat struktur katalog aktif: Kategori "Desain & Produktivitas" (Produk "Canva Pro" dengan varian "1 Bulan Private" & "1 Tahun Private") serta Kategori "Hiburan & Streaming" (Produk "Netflix UHD" dengan varian "1 Bulan 1 Profil").\n2. Terdapat 3 listing berstatus ACTIVE (Canva 1 Bulan Rp 20.000, Netflix 1 Bulan Rp 45.000, Canva 1 Tahun Rp 150.000) dan 1 listing berstatus CLOSED (Rp 10.000).',
+    testSteps:
+      '1. Buka halaman katalog /marketplace.\n2. Masukkan kata kunci "Canva" pada kolom pencarian ([data-cy="input-search-marketplace"]) lalu klik tombol Cari ([data-cy="btn-submit-search"]).\n3. Uji filter berdasarkan category_id dan variant_id.\n4. Klik tombol Reset ([data-cy="btn-reset-filter"]) lalu pilih pengurutan "Harga Terendah" (sort=price_asc) pada dropdown [data-cy="select-sort"].\n5. Ubah pengurutan menjadi "Harga Tertinggi" (sort=price_desc) dan amati urutan kartu listing.',
+    testData:
+      'q: "Canva"\ncategory_id: ID Kategori Hiburan & Streaming\nvariant_id: ID Varian Canva 1 Tahun Private\nsort: "latest" | "price_asc" | "price_desc"',
+    expectedResult:
+      '1. Pencarian "Canva" hanya menampilkan listing ACTIVE yang relevan ("Akun Canva 1 Bulan Murah Bergaransi" & "Akun Canva 1 Tahun Private Eksklusif") dan tidak menampilkan listing Netflix maupun listing berstatus CLOSED.\n2. Filter category_id dan variant_id menyaring listing secara presisi.\n3. Sort price_asc menempatkan listing Rp 20.000 di urutan pertama, sedangkan price_desc menempatkan listing Rp 150.000 di urutan pertama.',
+    postCondition:
+      '1. Data listing di database tidak mengalami mutasi (operasi baca/query katalog).\n2. Parameter query string URL (/marketplace?q=...&sort=...) tercermin sesuai filter dan urutan yang aktif.',
+    actualSummaryBase:
+      'Pencarian kata kunci "Canva", filter kategori/varian, dan penyembunyian listing CLOSED berjalan akurat; pengurutan price_asc menempatkan "Akun Canva 1 Bulan Murah Bergaransi" (Rp 20.000) di urutan ke-1 dan price_desc menempatkan "Akun Canva 1 Tahun Private Eksklusif" (Rp 150.000) di urutan ke-1 baik pada HTTP Feature test maupun UI Cypress.',
+    unitNaReason: null,
   },
   {
+    tcId: 'TC-04-02',
     tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-01',
-    subtestId: 'TC-04-01-UNIT-B',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
-    objective: 'Memverifikasi konversi durasi estimasi penyerahan (MINUTE, HOUR, DAY) dan pemformatan label pada model Listing.',
-    typePriority: 'Unit Test / P2 (Medium)',
-    prerequisite: 'Model Listing tersedia.',
-    testData: '30 MINUTE -> "30 Menit" (30 mnt); 2 HOUR -> "2 Jam" (120 mnt); 1 DAY -> "1 Hari" (1440 mnt).',
-    steps: '1. Buat objek Listing dengan masing-masing unit durasi.\n2. Periksa atribut estimated_delivery_formatted dan estimated_minutes.',
-    expectedResult: 'Label terformat dalam Bahasa Indonesia dan konversi menit bernilai 30, 120, dan 1440.',
-    testNameAndScript: 'MarketplaceStatisticsRulesTest::test_tc_04_01_listing_estimated_delivery_formatting_and_minutes (tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-05-unit',
-    testMatcher: 'test_tc_04_01_listing_estimated_delivery_formatting_and_minutes',
-    passActualSummary: 'Atribut estimated_delivery_formatted dan estimated_minutes pada model Listing menghasilkan nilai akurat untuk MINUTE, HOUR, dan DAY.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-01',
-    subtestId: 'TC-04-01-FEAT',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
-    objective: 'Memverifikasi pencarian kata kunci, filter kategori & varian bertingkat, eksklusi listing CLOSED, serta pengurutan harga termurah/termahal.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Terdapat 3 listing ACTIVE (Canva 1B Rp20.000, Netflix 1B Rp45.000, Canva 1T Rp150.000) dan 1 listing CLOSED.',
-    testData: 'q="Canva", category_id=CategoryB, variant_id=Canva1Y, sort="price_asc", sort="price_desc".',
-    steps: '1. GET /marketplace?q=Canva.\n2. GET /marketplace?category_id={id}.\n3. GET /marketplace?variant_id={id}.\n4. GET /marketplace?sort=price_asc dan sort=price_desc.',
-    expectedResult: 'Hanya listing ACTIVE yang cocok yang tampil; price_asc menempatkan Rp20.000 di urutan pertama dan price_desc menempatkan Rp150.000 di urutan pertama.',
-    testNameAndScript: 'MarketplaceStatisticsScenarioTest::test_tc_04_01_search_and_filter_marketplace_listings (tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-05-feature',
-    testMatcher: 'test_tc_04_01_search_and_filter_marketplace_listings',
-    passActualSummary: 'Seluruh subtest pencarian kata kunci, filter kategori/varian, penyembunyian listing CLOSED, serta sorting price_asc (Rp20.000) dan price_desc (Rp150.000) lulus.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-01',
-    subtestId: 'TC-04-01-E2E',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
-    objective: 'Memverifikasi interaksi pencarian kata kunci dan dropdown pengurutan harga langsung dari UI katalog /marketplace.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Data katalog dan listing aktif telah di-seed pada database testing.',
-    testData: 'Kata kunci: "Canva"; Sort: "Harga Terendah (price_asc)" dan "Harga Tertinggi (price_desc)".',
-    steps: '1. Buka /marketplace, ketik "Canva" di kotak pencarian dan klik Cari.\n2. Klik Reset, pilih pengurutan Harga Terendah.\n3. Pilih pengurutan Harga Tertinggi.',
-    expectedResult: 'Hasil pencarian hanya menampilkan listing Canva; urutan kartu pertama sesuai harga terendah/tertinggi.',
-    testNameAndScript: 'TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga (cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-05-cypress',
-    testMatcher: 'TC-04-01',
-    passActualSummary: 'Toolbar pencarian dan dropdown pengurutan di /marketplace memfilter serta mengurutkan kartu listing secara akurat.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-02',
-    subtestId: 'TC-04-02-FEAT',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-05',
-    objective: 'Memverifikasi perhitungan statistik pasar (Demand, Supply, Rata-rata Harga) pada halaman detail produk hanya dari transaksi COMPLETED sesuai varian dan periode (7d, 30d, 90d, all).',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Varian Canva 1M memiliki 4 transaksi COMPLETED (3h: Rp20k, 20h: Rp30k, 60h: Rp40k, 120h: Rp50k), 2 transaksi CANCELLED/PAID, dan 1 transaksi COMPLETED di varian lain.',
-    testData: 'Parameter period: 7d, 30d, 90d, all, serta invalid_period (fallback 30d).',
-    steps: '1. Akses GET /marketplace/{listing}?period=7d, 30d, 90d, dan all.\n2. Periksa sample_count, avg_price, demand, dan supply pada viewData("marketStats").',
-    expectedResult: '7d: avg Rp20.000 (1 sampel); 30d: avg Rp25.000 (2 sampel); 90d: avg Rp30.000 (3 sampel); all: avg Rp35.000 (4 sampel). Transaksi CANCELLED/PAID dan varian lain tidak ikut dihitung.',
-    testNameAndScript: 'MarketplaceStatisticsScenarioTest::test_tc_04_02_product_market_stats_calculation_and_periods (tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-05-feature',
-    testMatcher: 'test_tc_04_02_product_market_stats_calculation_and_periods',
-    passActualSummary: 'Perhitungan statistik di MarketplaceService::getProductMarketStats mengembalikan rata-rata dan jumlah sampel eksak untuk 7d, 30d, 90d, all, serta mengabaikan transaksi non-COMPLETED.',
-    notes: 'CATATAN GAP: Filter periode 90 hari (90d) sudah diimplementasikan di aplikasi (MarketplaceService & show.blade.php) namun belum memiliki TC rinci tersendiri di dokumen Notion.',
-  },
-  {
-    tsId: 'TS-05',
-    tsTitle: 'TS-05 — Marketplace & Statistik Pasar',
-    parentTcId: 'TC-04-02',
-    subtestId: 'TC-04-02-E2E',
-    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-05',
-    objective: 'Memverifikasi perpindahan tab periode statistik pasar (7 Hari, 30 Hari, 90 Hari, Semua) pada halaman detail produk (/marketplace/{listing}).',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Mengikuti catatan pindah halaman informasi pasar ke detail listing (/marketplace/{listing}).',
-    testData: 'Selector: [data-cy="market-stat-filter-7d"], [data-cy="market-stat-filter-30d"], [data-cy="market-stat-filter-90d"], [data-cy="market-stat-filter-all"].',
-    steps: '1. Buka halaman detail listing /marketplace/{id}.\n2. Periksa indikator Demand, Supply, dan Rata-rata Harga default (30 Hari).\n3. Klik tab 7 Hari, 90 Hari, dan Semua secara berurutan.',
-    expectedResult: 'Label periode, rata-rata harga (Rp 20.000, Rp 25.000, Rp 30.000, Rp 35.000), dan jumlah transaksi selesai berubah sesuai periode.',
-    testNameAndScript: 'TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-05-cypress',
-    testMatcher: 'TC-04-02',
-    passActualSummary: 'Panel Informasi Pasar Produk pada halaman detail listing memperbarui indikator harga rata-rata dan sampel secara akurat saat tab periode diklik.',
-    notes: 'Mengikuti posisi komponen terbaru di resources/views/marketplace/show.blade.php; periode 90d tercatat sebagai gap dokumentasi Notion.',
+    testScenario: 'TS-05 — Marketplace & Statistik Pasar',
+    testCase:
+      'Filter Periode Statistik Pasar pada Halaman Detail Produk/Listing (UC-05) untuk Periode 7 Hari (7d), 30 Hari (30d), 90 Hari (90d — Gap Docs), dan Semua Waktu (all) hanya dari transaksi COMPLETED.',
+    preCondition:
+      '1. Pada varian "Canva Pro - 1 Bulan Private" terdapat: 1 postingan forum WTB ACTIVE (Demand = 1), 1 listing ACTIVE + 1 postingan forum WTS ACTIVE (Supply = 2).\n2. Terdapat 4 transaksi berstatus COMPLETED pada varian tersebut dengan umur berbeda: 3 hari lalu (Rp 20.000), 20 hari lalu (Rp 30.000), 60 hari lalu (Rp 40.000), dan 120 hari lalu (Rp 50.000).\n3. Terdapat transaksi pengecoh berstatus CANCELLED (Rp 99.000), PAID (Rp 88.000), serta transaksi COMPLETED pada varian lain (Rp 150.000).',
+    testSteps:
+      '1. Buka halaman detail listing /marketplace/{listing_id} (default periode 30d) dan periksa panel "Informasi Pasar Produk".\n2. Klik tab filter "7 Hari" ([data-cy="market-stat-filter-7d"]) dan periksa perubahan label periode, rata-rata harga, serta jumlah sampel transaksi selesai.\n3. Klik tab filter "90 Hari" ([data-cy="market-stat-filter-90d"]) dan periksa hasil kalkulasi.\n4. Klik tab filter "Semua" ([data-cy="market-stat-filter-all"]) dan periksa hasil kalkulasi.\n5. Uji parameter period tidak valid (?period=invalid_period) untuk memverifikasi fallback ke 30d.',
+    testData:
+      'period: "30d" (default) | "7d" | "90d" | "all" | "invalid_period"\nSampel Transaksi COMPLETED Varian Target:\n- 3 hari lalu: Rp 20.000\n- 20 hari lalu: Rp 30.000\n- 60 hari lalu: Rp 40.000\n- 120 hari lalu: Rp 50.000',
+    expectedResult:
+      '1. Demand = 1 dan Supply = 2.\n2. Periode 7d: Rata-rata = Rp 20.000 (Berdasarkan 1 transaksi selesai).\n3. Periode 30d (default & fallback invalid_period): Rata-rata = Rp 25.000 (Berdasarkan 2 transaksi selesai).\n4. Periode 90d: Rata-rata = Rp 30.000 (Berdasarkan 3 transaksi selesai).\n5. Periode all: Rata-rata = Rp 35.000 (Berdasarkan 4 transaksi selesai; transaksi CANCELLED/PAID dan varian lain diabaikan).',
+    postCondition:
+      '1. Panel Informasi Pasar Produk di halaman detail listing (/marketplace/{listing}) menampilkan metrik Demand, Supply, Rata-rata Harga Pasar, dan jumlah sampel sesuai periode yang dipilih tanpa mengubah data transaksi di database.',
+    actualSummaryBase:
+      'Panel Informasi Pasar Produk di /marketplace/{listing} dan MarketplaceService::getProductMarketStats menghasilkan Demand=1, Supply=2, serta rata-rata harga eksak: 7d = Rp 20.000 (1 transaksi), 30d = Rp 25.000 (2 transaksi), 90d = Rp 30.000 (3 transaksi), dan all = Rp 35.000 (4 transaksi); transaksi CANCELLED/PAID dan varian lain terbukti diabaikan.',
+    unitNaReason:
+      'N/A (Kalkulasi statistik pasar merupakan query agregasi Eloquent lintas tabel transactions, agreements, listings, dan forum_posts di MarketplaceService sehingga diuji langsung pada Feature Test & Cypress E2E; tidak dihitung sebagai PASS Unit)',
   },
 
   // =========================================================================
   // TS-07 — Direct Message & Lampiran
   // =========================================================================
   {
+    tcId: 'TC-05-04',
     tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-04',
-    subtestId: 'TC-05-04-UNIT',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
-    objective: 'Memverifikasi aturan urutan kanonik peserta percakapan (getCanonicalParticipants) dan otorisasi peserta (isParticipant) pada ConversationService.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Kelas ConversationService tersedia.',
-    testData: 'Pasangan user_id (12, 5) dan (5, 12); outsider user_id = 99.',
-    steps: '1. Panggil getCanonicalParticipants(12, 5) dan (5, 12).\n2. Panggil isParticipant() untuk peserta sah dan pengguna luar.',
-    expectedResult: 'Urutan kanonik selalu [5, 12]; isParticipant() bernilai true untuk peserta dan false untuk outsider.',
-    testNameAndScript: 'DirectMessageRulesTest::test_tc_05_04_conversation_participant_and_canonical_ordering_rules (tests/Unit/MarketTrust/DirectMessageRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-07-unit',
-    testMatcher: 'test_tc_05_04_conversation_participant_and_canonical_ordering_rules',
-    passActualSummary: 'ConversationService mengurutkan ID peserta secara kanonik dan menolak pengguna non-peserta.',
-    notes: '-',
+    testScenario: 'TS-07 — Direct Message & Lampiran',
+    testCase:
+      'Pengiriman Pesan Teks Direct Message, Sinkronisasi Polling Real-Time Tanpa Reload Halaman, Pembaruan Status Baca (Read Receipt), dan Proteksi Akses Non-Partisipan.',
+    preCondition:
+      '1. Akun Buyer (alibuyer / alibuyer_ts07) dan Seller (aliseller / aliseller_ts07) berstatus USER ACTIVE dan telah memiliki ruang percakapan aktif (conversations).\n2. Terdapat akun pihak ketiga (alioutsider) yang bukan peserta percakapan.',
+    testSteps:
+      '1. Login sebagai Buyer dan buka halaman ruang percakapan (/conversations/{conversation_id}).\n2. Ketik pesan teks pada kolom #message-content lalu klik tombol Kirim (#submit-message-btn).\n3. Pastikan pesan tampil di #message-list dengan status awal "Terkirim".\n4. Tanpa me-reload halaman Buyer, Seller membaca pesan dan mengirim balasan teks dari sisi lawan.\n5. Tunggu siklus polling otomatis (/conversations/{id}/sync) pada halaman Buyer.\n6. Uji akses endpoint /conversations/{id}/sync menggunakan akun outsider (non-partisipan).',
+    testData:
+      'Pesan Buyer: "Halo Kak Seller, apakah akun masih ready hari ini?"\nBalasan Seller: "Halo Kak Buyer! Stok sangat ready, silakan lanjut."\nEndpoint Polling: GET /conversations/{id}/sync?after_id={id}',
+    expectedResult:
+      '1. Pesan Buyer tersimpan di tabel messages dan tampil di daftar chat.\n2. Saat Seller melakukan sync/balas, kolom read_at pada pesan Buyer terisi otomatis.\n3. Melalui polling tanpa reload halaman, pesan balasan Seller muncul otomatis di #message-list Buyer dan indikator pesan Buyer berubah menjadi "Dibaca".\n4. Akses oleh akun outsider ditolak dengan HTTP 403 Forbidden.',
+    postCondition:
+      '1. Dua pesan teks tersimpan di tabel messages pada conversation_id terkait.\n2. Pesan milik Buyer memiliki nilai read_at tidak null (telah dibaca oleh Seller).\n3. Outsider tidak dapat membaca maupun mengirim pesan pada percakapan tersebut.',
+    actualSummaryBase:
+      'Pengiriman pesan teks dan endpoint polling GET /conversations/{id}/sync berhasil menampilkan pesan balasan lawan secara otomatis di DOM #message-list tanpa reload halaman, memperbarui kolom read_at serta indikator UI menjadi "Dibaca", dan menolak akses akun non-peserta dengan HTTP 403 Forbidden.',
+    unitNaReason: null,
   },
   {
+    tcId: 'TC-05-05',
     tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-04',
-    subtestId: 'TC-05-04-FEAT',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
-    objective: 'Memverifikasi pengiriman pesan teks, pengambilan pesan baru lewat polling sinkronisasi (/sync) tanpa reload, pembaruan read_at, dan penolakan akses non-peserta.',
-    typePriority: 'Feature Test (HTTP + JSON + DB) / P1 (High)',
-    prerequisite: 'Percakapan aktif antara alibuyer dan aliseller; akun alioutsider sebagai pihak ketiga.',
-    testData: 'content: "Halo Kak, apakah stok akun Canva Pro 1 bulan masih ada?", after_id: 0.',
-    steps: '1. Buyer kirim POST /conversations/{id}/messages.\n2. Seller panggil GET /conversations/{id}/sync?after_id=0.\n3. Buyer panggil GET /conversations/{id}/sync untuk cek my_read_message_ids.\n4. Outsider panggil GET /conversations/{id}/sync.',
-    expectedResult: 'Seller menerima pesan baru di new_messages, read_at terisi otomatis, Buyer menerima ID pesan di my_read_message_ids, dan Outsider ditolak HTTP 403.',
-    testNameAndScript: 'DirectMessageScenarioTest::test_tc_05_04_send_text_message_and_sync_polling_between_participants (tests/Feature/MarketTrust/DirectMessageScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-07-feature',
-    testMatcher: 'test_tc_05_04_send_text_message_and_sync_polling_between_participants',
-    passActualSummary: 'Endpoint kirim pesan dan polling /sync berhasil mengirimkan pesan baru ke lawan bicara, memperbarui status Dibaca (read_at), dan memblokir outsider dengan HTTP 403.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-04',
-    subtestId: 'TC-05-04-E2E',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
-    objective: 'Memverifikasi di UI bahwa pesan teks terkirim dan balasan dari akun lawan muncul otomatis melalui polling tanpa reload halaman.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Buyer login dan membuka halaman /conversations/{id}.',
-    testData: 'Pesan Buyer: "Halo Kak Seller, apakah akun masih ready hari ini?"; Balasan Seller: "Halo Kak Buyer! Stok sangat ready, silakan lanjut."',
-    steps: '1. Ketik pesan di #message-content dan klik Kirim.\n2. Tanpa me-reload halaman Buyer, kirim balasan dari sisi Seller.\n3. Amati perubahan DOM #message-list dan status baca.',
-    expectedResult: 'Pesan balasan Seller muncul otomatis di #message-list tanpa reload halaman dan status pesan Buyer berubah dari "Terkirim" menjadi "Dibaca".',
-    testNameAndScript: 'TC-05-04: Kirim Pesan Teks dan Polling Sinkronisasi DM (cypress/e2e/markettrust/ts-07-direct-message.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-07-cypress',
-    testMatcher: 'TC-05-04',
-    passActualSummary: 'Polling sinkronisasi UI menampilkan pesan balasan lawan secara langsung tanpa reload halaman dan memperbarui indikator menjadi "Dibaca".',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-05',
-    subtestId: 'TC-05-05-UNIT-A',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
-    objective: 'Memverifikasi aturan validasi SendMessageRequest untuk batas ukuran 5 MB (max:5120) dan daftar ekstensi yang diizinkan (mimes:jpg,jpeg,png,webp,pdf).',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Kelas SendMessageRequest tersedia.',
-    testData: 'Aturan rules() dan pesan kustom messages() pada SendMessageRequest.',
-    steps: '1. Panggil rules() dan messages() pada SendMessageRequest.\n2. Periksa aturan content dan attachment.',
-    expectedResult: 'attachment memiliki rule file, max:5120, mimes:jpg,jpeg,png,webp,pdf; content memiliki required_without:attachment dan max:5000.',
-    testNameAndScript: 'DirectMessageRulesTest::test_tc_05_05_send_message_request_attachment_validation_rules (tests/Unit/MarketTrust/DirectMessageRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-07-unit',
-    testMatcher: 'test_tc_05_05_send_message_request_attachment_validation_rules',
-    passActualSummary: 'SendMessageRequest menerapkan batas max:5120 (5 MB) dan whitelist mimes:jpg,jpeg,png,webp,pdf sesuai KNF-04.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-05',
-    subtestId: 'TC-05-05-UNIT-B',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
-    objective: 'Memverifikasi helper metadata lampiran (hasAttachment, isImage, isPdf, formattedAttachmentSize) pada model Message.',
-    typePriority: 'Unit Test / P2 (Medium)',
-    prerequisite: 'Model Message tersedia.',
-    testData: 'File PNG 200 KB dan PDF 2.5 MB.',
-    steps: '1. Buat objek Message tanpa lampiran, dengan PNG 204800 byte, dan dengan PDF 2621440 byte.\n2. Periksa hasil helper.',
-    expectedResult: 'PNG terdeteksi isImage() = true ("200 KB"), PDF terdeteksi isPdf() = true ("2.5 MB").',
-    testNameAndScript: 'DirectMessageRulesTest::test_tc_05_05_message_model_attachment_metadata_helpers (tests/Unit/MarketTrust/DirectMessageRulesTest.php)',
-    runnerType: 'PHPUnit Unit',
-    xmlPrefix: 'TS-07-unit',
-    testMatcher: 'test_tc_05_05_message_model_attachment_metadata_helpers',
-    passActualSummary: 'Helper model Message mendeteksi tipe MIME gambar/PDF dan memformat ukuran file (KB/MB) dengan tepat.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-05',
-    subtestId: 'TC-05-05-FEAT',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
-    objective: 'Memverifikasi seluruh variasi validasi lampiran DM di backend: pesan kosong, format terlarang (.zip, .exe, .mp4), ukuran > 5 MB (6 MB), file valid (.png, .pdf), dan proteksi unduhan.',
-    typePriority: 'Feature Test (HTTP + Storage) / P1 (High)',
-    prerequisite: 'Percakapan aktif antara Buyer dan Seller; Storage local terkonfigurasi.',
-    testData: '1) Kosong; 2) arsip_berbahaya.zip, installer.exe, rekaman.mp4; 3) resolusi_tinggi.png (6000 KB); 4) bukti_transfer.png (1 MB) & invoice_kesepakatan.pdf (1.5 MB).',
-    steps: '1. Kirim masing-masing variasi file tidak valid ke POST /conversations/{id}/messages dan pastikan HTTP 422.\n2. Kirim PNG dan PDF valid dan pastikan HTTP 200 serta file tersimpan.\n3. Uji unduh lampiran oleh Seller (200) dan Outsider (403).',
-    expectedResult: 'Format .zip/.exe/.mp4 dan ukuran > 5 MB ditolak HTTP 422; file .png dan .pdf <= 5 MB berhasil disimpan dan hanya bisa diunduh oleh peserta percakapan.',
-    testNameAndScript: 'DirectMessageScenarioTest::test_tc_05_05_strict_dm_attachment_validation_all_variations (tests/Feature/MarketTrust/DirectMessageScenarioTest.php)',
-    runnerType: 'PHPUnit Feature',
-    xmlPrefix: 'TS-07-feature',
-    testMatcher: 'test_tc_05_05_strict_dm_attachment_validation_all_variations',
-    passActualSummary: 'Semua variasi negatif (.zip, .exe, .mp4, >5MB, kosong) ditolak HTTP 422; variasi positif (.png & .pdf <=5MB) tersimpan aman dan terlindungi dari akses non-peserta.',
-    notes: '-',
-  },
-  {
-    tsId: 'TS-07',
-    tsTitle: 'TS-07 — Direct Message & Lampiran',
-    parentTcId: 'TC-05-05',
-    subtestId: 'TC-05-05-E2E',
-    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
-    objective: 'Memverifikasi penolakan file format terlarang (.zip) & ukuran > 5 MB di UI percakapan DM serta pengunggahan gambar valid (.png).',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Buyer berada di halaman /conversations/{id}.',
-    testData: '1) berkas_terlarang.zip; 2) gambar_terlalu_besar.png (5.5 MB); 3) bukti-pembayaran-sah.png.',
-    steps: '1. Pilih berkas_terlarang.zip pada input file dan periksa banner peringatan.\n2. Pilih gambar_terlalu_besar.png (5.5 MB) dan periksa banner peringatan.\n3. Pilih bukti-pembayaran-sah.png, isi pesan, dan klik Kirim.',
-    expectedResult: 'File .zip dan > 5 MB langsung ditolak dengan alert error di UI; gambar PNG valid menampilkan badge pratinjau dan berhasil terkirim beserta tombol Unduh.',
-    testNameAndScript: 'TC-05-05: Validasi Ketat Lampiran Berkas DM (cypress/e2e/markettrust/ts-07-direct-message.cy.js)',
-    runnerType: 'Cypress E2E',
-    xmlPrefix: 'TS-07-cypress',
-    testMatcher: 'TC-05-05',
-    passActualSummary: 'UI menampilkan alert penolakan untuk .zip dan file 5.5 MB, serta berhasil mengunggah bukti-pembayaran-sah.png ke daftar pesan.',
-    notes: '-',
+    testScenario: 'TS-07 — Direct Message & Lampiran',
+    testCase:
+      'Validasi Ketat Lampiran Berkas Direct Message (UC-08 & KNF-04): Penolakan Pesan Kosong, Format Terlarang (.zip, .exe, .mp4), Ukuran > 5 MB, serta Keberhasilan Unggah & Otorisasi Unduh Berkas Valid (.png, .pdf).',
+    preCondition:
+      '1. Buyer dan Seller berada dalam ruang percakapan aktif (/conversations/{conversation_id}).\n2. Storage lokal (disk local) siap menyimpan berkas lampiran terproteksi.',
+    testSteps:
+      '1. Uji kirim pesan tanpa teks dan tanpa lampiran (variasi kosong).\n2. Pilih/unggah berkas dengan ekstensi terlarang (.zip, .exe, .mp4) pada input #attachment-input dan periksa respons validasi UI & backend.\n3. Pilih/unggah berkas gambar berukuran > 5 MB (5.5 MB di UI / 6 MB di backend) dan periksa pesan error ukuran.\n4. Pilih/unggah berkas gambar valid (bukti-pembayaran-sah.png / bukti_transfer.png <= 5 MB) serta dokumen PDF valid (invoice_kesepakatan.pdf <= 5 MB), lalu kirim pesan.\n5. Uji unduh lampiran (/conversations/{id}/messages/{message}/attachment) sebagai peserta percakapan dan sebagai outsider.',
+    testData:
+      'Variasi Invalid:\n- Kosong: content="", attachment=null\n- Format Terlarang: berkas_terlarang.zip / arsip_berbahaya.zip, installer.exe, rekaman.mp4\n- Ukuran > 5 MB: gambar_terlalu_besar.png (5.5 MB) / resolusi_tinggi.png (6000 KB)\nVariasi Valid:\n- bukti-pembayaran-sah.png / bukti_transfer.png (image/png, <= 5 MB)\n- invoice_kesepakatan.pdf (application/pdf, 1.5 MB)',
+    expectedResult:
+      '1. Pesan kosong ditolak HTTP 422 ("Pesan teks wajib diisi apabila tidak menyertakan file lampiran.").\n2. Format .zip, .exe, dan .mp4 ditolak dengan pesan "Format file lampiran harus berupa gambar (JPG, JPEG, PNG, WEBP) atau PDF."\n3. Berkas > 5 MB ditolak dengan pesan "Ukuran file lampiran maksimal 5 MB."\n4. Berkas .png dan .pdf <= 5 MB berhasil diunggah, menampilkan badge pratinjau & tombol Unduh di chat, serta hanya dapat diunduh oleh peserta percakapan (HTTP 200) dan ditolak bagi outsider (HTTP 403).',
+    postCondition:
+      '1. Tidak ada berkas tidak valid (.zip/.exe/.mp4/>5MB) yang tersimpan di storage maupun tabel messages.\n2. Berkas valid (.png & .pdf) tersimpan di disk local (dm_attachments/...) dan metadata (attachment_path, attachment_name, attachment_mime, attachment_size) tercatat lengkap di tabel messages.',
+    actualSummaryBase:
+      'Seluruh variasi negatif (pesan kosong, file .zip/.exe/.mp4, dan ukuran 5.5 MB / 6 MB) ditolak secara konsisten di UI (#attachment-error-alert) dan backend (HTTP 422); berkas valid (.png & .pdf <= 5 MB) berhasil disimpan ke disk local, tampil di #message-list dengan tautan Unduh, serta terlindungi dari akses outsider (HTTP 403).',
+    unitNaReason: null,
   },
 
   // =========================================================================
   // TS-14 — Pembatalan & Denda KEEP
   // =========================================================================
   {
+    tcId: 'TC-12-01',
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase:
+      'Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Pembayaran / Status WAITING_PAYMENT) secara langsung tanpa tinjauan Admin dan tanpa denda KEEP.',
+    preCondition:
+      '1. Buyer telah login dan memiliki transaksi Marketplace berstatus WAITING_PAYMENT (belum ada pembayaran berstatus PAID).\n2. Listing terkait pada katalog berstatus ACTIVE.',
+    testSteps:
+      '1. Login sebagai Buyer dan buka halaman detail transaksi (/transactions/{transaction_id}).\n2. Klik tombol "Batalkan Pesanan Ini" ([data-cy="btn-open-cancel-modal"]).\n3. Pada modal konfirmasi (#modal-cancel-transaction), isi alasan pembatalan ("Salah memilih durasi paket langganan." / "Salah memilih varian produk").\n4. Klik tombol "Ya, Batalkan Pesanan".\n5. Periksa perubahan status transaksi, banner pembatalan, riwayat status, status listing, dan tabel keep_obligations.',
+    testData:
+      'Status Awal Transaksi: WAITING_PAYMENT\nreason: "Salah memilih durasi paket langganan." / "Salah memilih varian produk"',
+    expectedResult:
+      '1. Status transaksi langsung berubah menjadi CANCELLED tanpa perlu menunggu persetujuan Admin.\n2. Muncul banner "Transaksi Resmi Dibatalkan (Pra-Pembayaran)" dan badge status "Dibatalkan".\n3. Record pembatalan tercatat dengan stage = BEFORE_PAYMENT dan status = APPROVED.\n4. Listing tetap berstatus ACTIVE di katalog dan tidak ada denda KEEP yang diterbitkan (keep_obligations = 0).',
+    postCondition:
+      '1. Tabel transactions: status = CANCELLED, cancelled_at terisi, cancellation_by_user_id = buyer_id.\n2. Tabel transaction_cancellations: stage = BEFORE_PAYMENT, status = APPROVED, responsible_party = BUYER.\n3. Tabel transaction_status_histories: tercatat transisi WAITING_PAYMENT -> CANCELLED.\n4. Tabel listings: status tetap ACTIVE; tabel keep_obligations: 0 baris.',
+    actualSummaryBase:
+      'Pembatalan pada status WAITING_PAYMENT langsung mengubah status transaksi ke CANCELLED, membuat record transaction_cancellations (stage BEFORE_PAYMENT, status APPROVED), mencatat riwayat transisi status, menampilkan banner "Transaksi Resmi Dibatalkan (Pra-Pembayaran)" di UI, mempertahankan listing tetap ACTIVE, dan tidak menerbitkan denda KEEP (0 record).',
+    unitNaReason: null,
+  },
+  {
+    tcId: 'TC-12-02',
+    tsId: 'TS-14',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase:
+      'Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID) oleh Buyer: Validasi Alasan Wajib Diisi dan Masuk Antrean Peninjauan Admin (Status REQUESTED).',
+    preCondition:
+      '1. Buyer telah login dan memiliki transaksi berstatus PAID (pembayaran sudah lunas/settlement di escrow, namun pesanan belum dikirim/DELIVERED oleh Seller).',
+    testSteps:
+      '1. Uji kirim POST /transactions/{id}/cancel dengan reason kosong ("") untuk memverifikasi validasi wajib alasan.\n2. Buka halaman detail transaksi (/transactions/{transaction_id}) yang berstatus PAID.\n3. Klik tombol "Ajukan Pembatalan Transaksi" ([data-cy="btn-open-cancel-modal"]).\n4. Isi alasan pembatalan ("Penjual mengabarkan bahwa stok lisensi sedang habis.") pada #cancel-reason.\n5. Klik tombol "Kirim Pengajuan Pembatalan" dan periksa status transaksi serta banner pengajuan.',
+    testData:
+      'Status Awal Transaksi: PAID\nVariasi Invalid: reason = "" (kosong)\nVariasi Valid: reason = "Penjual mengabarkan bahwa stok lisensi sedang habis." / "Penjual belum merespons chat dan saya butuh akun segera."',
+    expectedResult:
+      '1. Pengajuan dengan reason kosong ditolak oleh validasi.\n2. Pengajuan dengan reason valid berhasil disimpan sebagai permohonan pembatalan dengan stage = AFTER_PAYMENT_BEFORE_DELIVERY dan status = REQUESTED.\n3. Status transaksi tetap tertahan di PAID (belum CANCELLED) sambil menunggu keputusan Admin.\n4. Halaman menampilkan banner "Pengajuan Pembatalan Sedang Ditinjau Admin" beserta alasan yang diajukan.',
+    postCondition:
+      '1. Tabel transaction_cancellations memiliki baris baru dengan stage = AFTER_PAYMENT_BEFORE_DELIVERY, status = REQUESTED, dan requested_by = buyer_id.\n2. Tabel transactions tetap berstatus PAID.\n3. Belum ada record di tabel keep_obligations sebelum Admin memberikan keputusan final.',
+    actualSummaryBase:
+      'Pengajuan pembatalan tanpa alasan ditolak validasi pada field reason; pengajuan dengan alasan valid berhasil mencatat record transaction_cancellations (stage AFTER_PAYMENT_BEFORE_DELIVERY, status REQUESTED), menahan status transaksi tetap PAID, dan menampilkan banner "Pengajuan Pembatalan Sedang Ditinjau Admin" di UI.',
+    unitNaReason:
+      'N/A (Helper model stage AFTER_PAYMENT_BEFORE_DELIVERY & status REQUESTED telah diuji bersama pada method unit TC-12-01-UNIT, sedangkan alur validasi HTTP & antrean DB diuji pada Feature Test & Cypress E2E; tidak dihitung sebagai PASS Unit terpisah)',
+  },
+  {
+    tcId: 'TC-12-03',
+    tsId: 'TS-14',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase:
+      'Admin Meninjau Pembatalan Pasca-Bayar dan Menetapkan Seller Bersalah (UC-28B): Transaksi Menjadi CANCELLED (Layak Refund) dan Penerbitan Denda KEEP Otomatis (Rp 4.000 Flat Bank/VA & 3x Biaya Gateway untuk Kanal Lain).',
+    preCondition:
+      '1. Terdapat transaksi berstatus PAID yang memiliki pengajuan pembatalan berstatus REQUESTED (stage AFTER_PAYMENT_BEFORE_DELIVERY).\n2. Data pembayaran memiliki kanal pembayaran terverifikasi (bca_va untuk aturan flat Rp 4.000; serta qris dengan gateway_fee_amount = Rp 1.500 untuk aturan 3x biaya gateway).\n3. Akun Admin (aliadmin / aliadmin_ts14) dengan account_type = ADMIN telah login.',
+    testSteps:
+      '1. Login sebagai Admin dan buka halaman Manajemen Transaksi (/admin/transactions).\n2. Pada tabel "Antrean Pengajuan Pembatalan Pasca-Bayar", klik tombol "Tinjau Keputusan" pada baris transaksi yang bersangkutan.\n3. Pada modal #modal-review-cancellation, pilih keputusan "Setujui & Batalkan" (decision = APPROVED).\n4. Pilih Pihak Bertanggung Jawab = "Penjual (Seller)" (responsible_party = SELLER).\n5. Isi catatan keputusan ("Disetujui karena penjual kehabisan stok pasca pembayaran.") lalu klik "Simpan Keputusan Final".\n6. Periksa perubahan status transaksi, kelayakan refund, serta baris baru pada tabel "Daftar Kewajiban KEEP Penjual" (baik untuk kanal Bank/VA maupun kanal QRIS).',
+    testData:
+      'decision: "APPROVED"\nresponsible_party: "SELLER"\ndecision_note: "Disetujui karena penjual kehabisan stok pasca pembayaran."\nData Kanal Pembayaran:\n- Kasus 1 (Bank/VA): payment_channel = "bca_va" -> Aturan BANK_VA_FLAT = Rp 4.000\n- Kasus 2 (Non-Bank/QRIS): payment_channel = "qris", gateway_fee_amount = Rp 1.500 -> Aturan OTHER_TRIPLE_GATEWAY_FEE = 3 x Rp 1.500 = Rp 4.500',
+    expectedResult:
+      '1. Pengajuan pembatalan berubah menjadi APPROVED dengan reviewed_by = admin_id.\n2. Status transaksi berubah menjadi CANCELLED dan dinyatakan layak refund penuh ke Buyer (isEligibleForCancelledRefund() = true).\n3. Sistem otomatis menerbitkan denda KEEP berstatus OPEN kepada Seller: Rp 4.000 untuk kanal Bank/VA (BANK_VA_FLAT) dan Rp 4.500 untuk kanal QRIS (OTHER_TRIPLE_GATEWAY_FEE, 3 x Rp 1.500), dengan total akumulasi tunggakan Rp 8.500.\n4. Pada UI Admin, tabel Daftar Kewajiban KEEP Penjual menampilkan baris tagihan KEEP Seller berstatus OPEN.',
+    postCondition:
+      '1. Tabel transactions: status = CANCELLED, cancelled_at terisi.\n2. Tabel transaction_cancellations: status = APPROVED, responsible_party = SELLER, reviewed_by = admin_id, reviewed_at terisi.\n3. Tabel keep_obligations: terbentuk record baru berstatus OPEN milik seller_id dengan amount & remaining_amount = 4000.00 (BANK_VA_FLAT) dan/atau 4500.00 (OTHER_TRIPLE_GATEWAY_FEE).',
+    actualSummaryBase:
+      'Keputusan Admin (decision=APPROVED, responsible_party=SELLER) mengubah status transaksi menjadi CANCELLED (isEligibleForCancelledRefund()=true) dan secara otomatis menerbitkan kewajiban KEEP berstatus OPEN sebesar Rp 4.000 (BANK_VA_FLAT pada bca_va) serta Rp 4.500 (OTHER_TRIPLE_GATEWAY_FEE 3xRp1.500 pada qris, total tunggakan Rp 8.500); tabel UI Admin menampilkan baris KEEP Rp 4.000 berstatus OPEN.',
+    unitNaReason: null,
+  },
+];
+
+/**
+ * Definisi lengkap 34 Subtest / Eksekusi Runner untuk Sheet "Detail Eksekusi"
+ * (12 PHPUnit Unit, 11 PHPUnit Feature, 11 Cypress E2E).
+ */
+const SCENARIO_CATALOG = [
+  // =========================================================================
+  // TS-03 — Rekening Payout Seller (12 Eksekusi)
+  // =========================================================================
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-01',
+    subtestId: 'TC-02-01-UNIT',
+    testName: 'PayoutAccountRulesTest::test_tc_02_01_bank_payout_completeness_rules',
+    scriptPath: 'tests/Unit/MarketTrust/PayoutAccountRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-03-unit',
+    testMatcher: 'test_tc_02_01_bank_payout_completeness_rules',
+    passActualSummary:
+      'Aturan isComplete() tipe BANK mengembalikan true saat atribut lengkap, false saat nomor rekening kosong, dan masked_destination_number menghasilkan •••• •••• 7890.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-01',
+    subtestId: 'TC-02-01-FEAT',
+    testName: 'PayoutAccountScenarioTest::test_tc_02_01_seller_can_add_bank_payout_account',
+    scriptPath: 'tests/Feature/MarketTrust/PayoutAccountScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
+    xmlPrefix: 'TS-03-feature',
+    testMatcher: 'test_tc_02_01_seller_can_add_bank_payout_account',
+    passActualSummary:
+      'POST /seller/payout-accounts berhasil menyimpan rekening BANK BCA (8720192831) a.n. Muhammad Ali dengan is_active = true dan redirect HTTP 302 ke indeks.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-01',
+    subtestId: 'TC-02-01-E2E',
+    testName: 'TC-02-01: Penambahan Rekening Payout Tipe BANK berhasil disimpan dan menjadi tujuan utama aktif',
+    scriptPath: 'cypress/e2e/markettrust/ts-03-rekening-payout.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-03-cypress',
+    testMatcher: 'TC-02-01',
+    passActualSummary:
+      'Form UI berhasil menyimpan rekening BANK BCA dan halaman /seller/payout-accounts menampilkan banner TUJUAN UTAMA AKTIF BCA •••• •••• 2831 a.n. Muhammad Ali.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-02',
+    subtestId: 'TC-02-02-UNIT',
+    testName: 'PayoutAccountRulesTest::test_tc_02_02_ewallet_payout_completeness_rules',
+    scriptPath: 'tests/Unit/MarketTrust/PayoutAccountRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-03-unit',
+    testMatcher: 'test_tc_02_02_ewallet_payout_completeness_rules',
+    passActualSummary:
+      'Model SellerPayoutAccount tipe EWALLET tervalidasi lengkap (isComplete() = true) dengan label enum "Dompet Digital (E-Wallet)".',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-02',
+    subtestId: 'TC-02-02-FEAT',
+    testName: 'PayoutAccountScenarioTest::test_tc_02_02_atomic_single_active_payout_account_enforcement',
+    scriptPath: 'tests/Feature/MarketTrust/PayoutAccountScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
+    xmlPrefix: 'TS-03-feature',
+    testMatcher: 'test_tc_02_02_atomic_single_active_payout_account_enforcement',
+    passActualSummary:
+      'Transaksi DB atomik menonaktifkan rekening BANK lama (is_active = false) dan mengaktifkan rekening EWALLET GoPay baru; total rekening aktif milik Seller = 1.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-02',
+    subtestId: 'TC-02-02-E2E',
+    testName: 'TC-02-02: Aturan Atomik Hanya 1 Rekening Payout yang Aktif saat menambah EWALLET baru sebagai utama',
+    scriptPath: 'cypress/e2e/markettrust/ts-03-rekening-payout.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-03-cypress',
+    testMatcher: 'TC-02-02',
+    passActualSummary:
+      'UI menampilkan tepat 1 badge Aktif pada kartu GoPay, kartu BCA otomatis berubah menjadi Nonaktif, dan verifikasi DB mengonfirmasi ACTIVE_COUNT:1.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-03',
+    subtestId: 'TC-02-03-UNIT',
+    testName: 'PayoutAccountRulesTest::test_tc_02_03_qris_payout_requires_image_or_identifier',
+    scriptPath: 'tests/Unit/MarketTrust/PayoutAccountRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-03-unit',
+    testMatcher: 'test_tc_02_03_qris_payout_requires_image_or_identifier',
+    passActualSummary:
+      'isComplete() mengembalikan false untuk objek QRIS tanpa gambar/identifier dan true saat destination_qris_image_url terisi.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-03',
+    subtestId: 'TC-02-03-FEAT',
+    testName: 'PayoutAccountScenarioTest::test_tc_02_03_qris_payout_requires_image_upload_and_stores_url',
+    scriptPath: 'tests/Feature/MarketTrust/PayoutAccountScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Feature Test (HTTP + Storage + DB) / P1 (High)',
+    xmlPrefix: 'TS-03-feature',
+    testMatcher: 'test_tc_02_03_qris_payout_requires_image_upload_and_stores_url',
+    passActualSummary:
+      'Submit QRIS tanpa gambar ditolak validasi session error pada field qris_image; submit dengan qris.png berhasil menyimpan file ke storage public dan mencatat URL di DB.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-03',
+    subtestId: 'TC-02-03-E2E',
+    testName: 'TC-02-03: Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar (Validasi gagal tanpa gambar & berhasil dengan gambar valid)',
+    scriptPath: 'cypress/e2e/markettrust/ts-03-rekening-payout.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-03-cypress',
+    testMatcher: 'TC-02-03',
+    passActualSummary:
+      'Form menolak submit QRIS tanpa gambar dengan pesan validasi yang tepat, lalu menerima unggahan qris-toko-ali.png dan menampilkan tautan "Lihat Gambar Barcode QRIS".',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-04',
+    subtestId: 'TC-02-04-UNIT',
+    testName: 'PayoutAccountRulesTest::test_tc_02_04_short_account_number_masking_rules',
+    scriptPath: 'tests/Unit/MarketTrust/PayoutAccountRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Unit Test / P2 (Medium)',
+    xmlPrefix: 'TS-03-unit',
+    testMatcher: 'test_tc_02_04_short_account_number_masking_rules',
+    passActualSummary:
+      'Atribut masked_destination_number memformat nomor pendek (<= 4 digit, "123") menjadi "•••• 123" dengan benar.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-04',
+    subtestId: 'TC-02-04-FEAT',
+    testName: 'PayoutAccountScenarioTest::test_tc_02_04_seller_can_delete_inactive_payout_account',
+    scriptPath: 'tests/Feature/MarketTrust/PayoutAccountScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
+    xmlPrefix: 'TS-03-feature',
+    testMatcher: 'test_tc_02_04_seller_can_delete_inactive_payout_account',
+    passActualSummary:
+      'DELETE /seller/payout-accounts/{id} menghapus rekening cadangan non-aktif (DANA) dari DB sementara rekening utama (BCA) tetap is_active = true.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-03',
+    parentTcId: 'TC-02-04',
+    subtestId: 'TC-02-04-E2E',
+    testName: 'TC-02-04: Seller Menghapus Rekening Payout Non-Aktif melalui modal konfirmasi tanpa mengganggu rekening utama aktif',
+    scriptPath: 'cypress/e2e/markettrust/ts-03-rekening-payout.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-03 (40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02 / MT-A01',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-03-cypress',
+    testMatcher: 'TC-02-04',
+    passActualSummary:
+      'Modal konfirmasi menghapus kartu non-aktif BCA (•••• •••• 2831) dan mempertahankan kartu utama GoPay tetap berstatus Aktif.',
+    notes: '-',
+  },
+
+  // =========================================================================
+  // TS-05 — Marketplace & Statistik Pasar (6 Eksekusi)
+  // =========================================================================
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-01',
+    subtestId: 'TC-04-01-UNIT-A',
+    testName: 'MarketplaceStatisticsRulesTest::test_tc_04_01_marketplace_search_request_rules',
+    scriptPath: 'tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-05-unit',
+    testMatcher: 'test_tc_04_01_marketplace_search_request_rules',
+    passActualSummary:
+      'MarketplaceSearchRequest::rules() memvalidasi q (max:100), category_id, product_id, variant_id, dan sort (in:latest,price_asc,price_desc) sesuai spesifikasi.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-01',
+    subtestId: 'TC-04-01-UNIT-B',
+    testName: 'MarketplaceStatisticsRulesTest::test_tc_04_01_listing_estimated_delivery_formatting_and_minutes',
+    scriptPath: 'tests/Unit/MarketTrust/MarketplaceStatisticsRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
+    typePriority: 'Unit Test / P2 (Medium)',
+    xmlPrefix: 'TS-05-unit',
+    testMatcher: 'test_tc_04_01_listing_estimated_delivery_formatting_and_minutes',
+    passActualSummary:
+      'Atribut estimated_delivery_formatted dan estimated_minutes pada model Listing mengonversi durasi MINUTE (30), HOUR (120), dan DAY (1440) secara akurat.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-01',
+    subtestId: 'TC-04-01-FEAT',
+    testName: 'MarketplaceStatisticsScenarioTest::test_tc_04_01_search_and_filter_marketplace_listings',
+    scriptPath: 'tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
+    xmlPrefix: 'TS-05-feature',
+    testMatcher: 'test_tc_04_01_search_and_filter_marketplace_listings',
+    passActualSummary:
+      'Seluruh subtest pencarian kata kunci, filter kategori/varian, penyembunyian listing CLOSED, serta sorting price_asc (Rp 20.000) dan price_desc (Rp 150.000) lulus.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-01',
+    subtestId: 'TC-04-01-E2E',
+    testName: 'TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga pada katalog Marketplace',
+    scriptPath: 'cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-05-cypress',
+    testMatcher: 'TC-04-01',
+    passActualSummary:
+      'Toolbar pencarian dan dropdown pengurutan di /marketplace memfilter serta mengurutkan kartu listing secara akurat di browser.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-02',
+    subtestId: 'TC-04-02-FEAT',
+    testName: 'MarketplaceStatisticsScenarioTest::test_tc_04_02_product_market_stats_calculation_and_periods',
+    scriptPath: 'tests/Feature/MarketTrust/MarketplaceStatisticsScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-05',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
+    xmlPrefix: 'TS-05-feature',
+    testMatcher: 'test_tc_04_02_product_market_stats_calculation_and_periods',
+    passActualSummary:
+      'Perhitungan statistik di MarketplaceService::getProductMarketStats mengembalikan rata-rata dan sampel eksak untuk 7d (Rp20k/1), 30d (Rp25k/2), 90d (Rp30k/3), all (Rp35k/4), serta mengabaikan transaksi non-COMPLETED.',
+    notes:
+      'CATATAN GAP: Filter periode 90 hari (90d) sudah diimplementasikan di aplikasi (MarketplaceService & show.blade.php) namun belum memiliki TC rinci tersendiri di dokumen Notion.',
+  },
+  {
+    tsId: 'TS-05',
+    parentTcId: 'TC-04-02',
+    subtestId: 'TC-04-02-E2E',
+    testName: 'TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (UC-05) untuk 7d, 30d, 90d (Gap Docs), dan Semua Waktu',
+    scriptPath: 'cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-05 (40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-05',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-05-cypress',
+    testMatcher: 'TC-04-02',
+    passActualSummary:
+      'Panel Informasi Pasar Produk pada halaman detail listing (/marketplace/{id}) memperbarui indikator harga rata-rata dan jumlah sampel secara akurat saat tab 7d, 30d, 90d, dan all diklik.',
+    notes:
+      'Mengikuti posisi komponen terbaru di resources/views/marketplace/show.blade.php; periode 90d tercatat sebagai gap dokumentasi Notion.',
+  },
+
+  // =========================================================================
+  // TS-07 — Direct Message & Lampiran (7 Eksekusi)
+  // =========================================================================
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-04',
+    subtestId: 'TC-05-04-UNIT',
+    testName: 'DirectMessageRulesTest::test_tc_05_04_conversation_participant_and_canonical_ordering_rules',
+    scriptPath: 'tests/Unit/MarketTrust/DirectMessageRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-07-unit',
+    testMatcher: 'test_tc_05_04_conversation_participant_and_canonical_ordering_rules',
+    passActualSummary:
+      'ConversationService::getCanonicalParticipants mengurutkan ID peserta secara kanonik ([5, 12]) dan isParticipant() menolak pengguna non-peserta.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-04',
+    subtestId: 'TC-05-04-FEAT',
+    testName: 'DirectMessageScenarioTest::test_tc_05_04_send_text_message_and_sync_polling_between_participants',
+    scriptPath: 'tests/Feature/MarketTrust/DirectMessageScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
+    typePriority: 'Feature Test (HTTP + JSON + DB) / P1 (High)',
+    xmlPrefix: 'TS-07-feature',
+    testMatcher: 'test_tc_05_04_send_text_message_and_sync_polling_between_participants',
+    passActualSummary:
+      'Endpoint kirim pesan dan polling /sync berhasil mengirimkan pesan baru ke lawan bicara, memperbarui status Dibaca (read_at), dan memblokir outsider dengan HTTP 403.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-04',
+    subtestId: 'TC-05-04-E2E',
+    testName: 'TC-05-04: Kirim Pesan Teks dan Polling Sinkronisasi DM (Pesan lawan muncul otomatis tanpa reload halaman)',
+    scriptPath: 'cypress/e2e/markettrust/ts-07-direct-message.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-07-cypress',
+    testMatcher: 'TC-05-04',
+    passActualSummary:
+      'Polling sinkronisasi UI menampilkan pesan balasan lawan secara langsung di #message-list tanpa reload halaman dan memperbarui indikator menjadi "Dibaca".',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-05',
+    subtestId: 'TC-05-05-UNIT-A',
+    testName: 'DirectMessageRulesTest::test_tc_05_05_send_message_request_attachment_validation_rules',
+    scriptPath: 'tests/Unit/MarketTrust/DirectMessageRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    typePriority: 'Unit Test / P1 (High)',
+    xmlPrefix: 'TS-07-unit',
+    testMatcher: 'test_tc_05_05_send_message_request_attachment_validation_rules',
+    passActualSummary:
+      'SendMessageRequest menerapkan batas max:5120 (5 MB) dan whitelist mimes:jpg,jpeg,png,webp,pdf sesuai KNF-04.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-05',
+    subtestId: 'TC-05-05-UNIT-B',
+    testName: 'DirectMessageRulesTest::test_tc_05_05_message_model_attachment_metadata_helpers',
+    scriptPath: 'tests/Unit/MarketTrust/DirectMessageRulesTest.php',
+    runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    typePriority: 'Unit Test / P2 (Medium)',
+    xmlPrefix: 'TS-07-unit',
+    testMatcher: 'test_tc_05_05_message_model_attachment_metadata_helpers',
+    passActualSummary:
+      'Helper model Message mendeteksi tipe MIME gambar/PDF (isImage, isPdf) dan memformat ukuran file ("200 KB", "2.5 MB") dengan tepat.',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-05',
+    subtestId: 'TC-05-05-FEAT',
+    testName: 'DirectMessageScenarioTest::test_tc_05_05_strict_dm_attachment_validation_all_variations',
+    scriptPath: 'tests/Feature/MarketTrust/DirectMessageScenarioTest.php',
+    runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    typePriority: 'Feature Test (HTTP + Storage) / P1 (High)',
+    xmlPrefix: 'TS-07-feature',
+    testMatcher: 'test_tc_05_05_strict_dm_attachment_validation_all_variations',
+    passActualSummary:
+      'Semua variasi negatif (.zip, .exe, .mp4, >5MB, kosong) ditolak HTTP 422; variasi positif (.png & .pdf <=5MB) tersimpan aman di disk local dan terlindungi dari akses non-peserta (HTTP 403).',
+    notes: '-',
+  },
+  {
+    tsId: 'TS-07',
+    parentTcId: 'TC-05-05',
+    subtestId: 'TC-05-05-E2E',
+    testName: 'TC-05-05: Validasi Ketat Lampiran Berkas DM (Format terlarang, ukuran > 5 MB ditolak, dan gambar valid berhasil diunggah)',
+    scriptPath: 'cypress/e2e/markettrust/ts-07-direct-message.cy.js',
+    runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-07 (40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    typePriority: 'Cypress E2E / P1 (High)',
+    xmlPrefix: 'TS-07-cypress',
+    testMatcher: 'TC-05-05',
+    passActualSummary:
+      'UI menampilkan alert penolakan untuk berkas .zip dan file 5.5 MB, serta berhasil mengunggah bukti-pembayaran-sah.png ke daftar pesan beserta tombol Unduh.',
+    notes: '-',
+  },
+
+  // =========================================================================
+  // TS-14 — Pembatalan & Denda KEEP (9 Eksekusi)
+  // =========================================================================
+  {
+    tsId: 'TS-14',
     parentTcId: 'TC-12-01',
     subtestId: 'TC-12-01-UNIT',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
-    objective: 'Memverifikasi helper status dan tahap pembatalan pra-bayar (BEFORE_PAYMENT & APPROVED) pada model TransactionCancellation.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model TransactionCancellation tersedia.',
-    testData: 'stage: BEFORE_PAYMENT, status: APPROVED.',
-    steps: '1. Instansiasi TransactionCancellation dengan stage BEFORE_PAYMENT dan status APPROVED.\n2. Periksa isBeforePayment(), isApproved(), isRequested().',
-    expectedResult: 'isBeforePayment() dan isApproved() mengembalikan true; isAfterPaymentBeforeDelivery() dan isRequested() mengembalikan false.',
-    testNameAndScript: 'CancellationKeepRulesTest::test_tc_12_01_and_12_02_transaction_cancellation_stage_and_status_helpers (tests/Unit/MarketTrust/CancellationKeepRulesTest.php)',
+    testName: 'CancellationKeepRulesTest::test_tc_12_01_and_12_02_transaction_cancellation_stage_and_status_helpers',
+    scriptPath: 'tests/Unit/MarketTrust/CancellationKeepRulesTest.php',
     runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
+    typePriority: 'Unit Test / P1 (High)',
     xmlPrefix: 'TS-14-unit',
     testMatcher: 'test_tc_12_01_and_12_02_transaction_cancellation_stage_and_status_helpers',
-    passActualSummary: 'Helper stage BEFORE_PAYMENT / AFTER_PAYMENT_BEFORE_DELIVERY dan status APPROVED / REQUESTED berfungsi sesuai spesifikasi.',
+    passActualSummary:
+      'Helper stage BEFORE_PAYMENT / AFTER_PAYMENT_BEFORE_DELIVERY dan status APPROVED / REQUESTED pada TransactionCancellation berfungsi sesuai spesifikasi.',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-01',
     subtestId: 'TC-12-01-FEAT',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
-    objective: 'Memverifikasi pembatalan transaksi pra-pembayaran (WAITING_PAYMENT) oleh Buyer langsung mengubah status ke CANCELLED, menjaga ketersediaan listing ACTIVE, dan tanpa denda KEEP.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Transaksi Marketplace berstatus WAITING_PAYMENT dan belum dibayar di gateway.',
-    testData: 'reason: "Salah memilih varian produk".',
-    steps: '1. Buyer kirim POST /transactions/{id}/cancel.\n2. Periksa status transaksi, tabel transaction_cancellations, transaction_status_histories, status listing, dan tabel keep_obligations.',
-    expectedResult: 'Status transaksi langsung CANCELLED, stage BEFORE_PAYMENT berstatus APPROVED, listing tetap ACTIVE di katalog, dan keep_obligations berjumlah 0.',
-    testNameAndScript: 'CancellationKeepScenarioTest::test_tc_12_01_buyer_cancels_pre_payment_transaction_immediately (tests/Feature/MarketTrust/CancellationKeepScenarioTest.php)',
+    testName: 'CancellationKeepScenarioTest::test_tc_12_01_buyer_cancels_pre_payment_transaction_immediately',
+    scriptPath: 'tests/Feature/MarketTrust/CancellationKeepScenarioTest.php',
     runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
     xmlPrefix: 'TS-14-feature',
     testMatcher: 'test_tc_12_01_buyer_cancels_pre_payment_transaction_immediately',
-    passActualSummary: 'Pembatalan pra-bayar langsung mengubah status transaksi menjadi CANCELLED, mencatat history, mempertahankan listing tetap ACTIVE, dan tidak menerbitkan KEEP.',
-    notes: 'Pada skema database MarketTrust, tabel listings tidak menggunakan kolom numerik stock melainkan status ACTIVE/CLOSED; listing tetap ACTIVE sehingga tetap tersedia di katalog.',
+    passActualSummary:
+      'Pembatalan pra-bayar langsung mengubah status transaksi menjadi CANCELLED, mencatat history, mempertahankan listing tetap ACTIVE, dan tidak menerbitkan KEEP.',
+    notes:
+      'Pada skema database MarketTrust, tabel listings tidak menggunakan kolom numerik stock melainkan status ACTIVE/CLOSED; listing tetap ACTIVE sehingga tetap tersedia di katalog.',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-01',
     subtestId: 'TC-12-01-E2E',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
-    objective: 'Memverifikasi pembatalan pesanan pra-bayar (WAITING_PAYMENT) oleh Buyer melalui modal konfirmasi pada halaman detail transaksi.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Buyer login dan membuka halaman transaksi berstatus WAITING_PAYMENT.',
-    testData: 'Alasan: "Salah memilih durasi paket langganan."',
-    steps: '1. Klik tombol "Batalkan Pesanan Ini".\n2. Isi alasan pada modal konfirmasi lalu klik "Ya, Batalkan Pesanan".\n3. Periksa banner pembatalan dan badge status transaksi.',
-    expectedResult: 'Muncul banner "Transaksi Resmi Dibatalkan (Pra-Pembayaran)" dan badge status transaksi berubah menjadi "Dibatalkan".',
-    testNameAndScript: 'TC-12-01: Pembatalan Transaksi Pre-Payment oleh Buyer (cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js)',
+    testName: 'TC-12-01: Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar) langsung mengubah status menjadi CANCELLED',
+    scriptPath: 'cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js',
     runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
+    typePriority: 'Cypress E2E / P1 (High)',
     xmlPrefix: 'TS-14-cypress',
     testMatcher: 'TC-12-01',
-    passActualSummary: 'Buyer berhasil membatalkan pesanan pra-bayar dari modal UI dan halaman menampilkan banner Transaksi Resmi Dibatalkan (Pra-Pembayaran).',
+    passActualSummary:
+      'Buyer berhasil membatalkan pesanan pra-bayar dari modal UI dan halaman menampilkan banner Transaksi Resmi Dibatalkan (Pra-Pembayaran).',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-02',
     subtestId: 'TC-12-02-FEAT',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
-    objective: 'Memverifikasi pengajuan pembatalan pasca-pembayaran (PAID) sebelum dikirim wajib mengisi alasan dan berstatus REQUESTED menunggu tinjauan Admin.',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Transaksi berstatus PAID dan belum diserahkan (DELIVERED).',
-    testData: 'Subtest A: reason kosong ""; Subtest B: reason "Penjual belum merespons chat dan saya butuh akun segera."',
-    steps: '1. Kirim POST /transactions/{id}/cancel dengan reason kosong dan pastikan gagal validasi.\n2. Kirim ulang dengan reason valid dan periksa tabel transaction_cancellations serta status transaksi.',
-    expectedResult: 'Reason kosong ditolak validasi; reason valid membuat record AFTER_PAYMENT_BEFORE_DELIVERY berstatus REQUESTED dan status transaksi tetap PAID.',
-    testNameAndScript: 'CancellationKeepScenarioTest::test_tc_12_02_post_payment_cancellation_requires_reason_and_waits_for_admin_review (tests/Feature/MarketTrust/CancellationKeepScenarioTest.php)',
+    testName: 'CancellationKeepScenarioTest::test_tc_12_02_post_payment_cancellation_requires_reason_and_waits_for_admin_review',
+    scriptPath: 'tests/Feature/MarketTrust/CancellationKeepScenarioTest.php',
     runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
     xmlPrefix: 'TS-14-feature',
     testMatcher: 'test_tc_12_02_post_payment_cancellation_requires_reason_and_waits_for_admin_review',
-    passActualSummary: 'Pengajuan tanpa alasan ditolak validasi; pengajuan dengan alasan valid tercatat sebagai REQUESTED (AFTER_PAYMENT_BEFORE_DELIVERY) dan menahan transaksi di status PAID.',
+    passActualSummary:
+      'Pengajuan tanpa alasan ditolak validasi; pengajuan dengan alasan valid tercatat sebagai REQUESTED (AFTER_PAYMENT_BEFORE_DELIVERY) dan menahan transaksi di status PAID.',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-02',
     subtestId: 'TC-12-02-E2E',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
-    objective: 'Memverifikasi alur UI Buyer mengajukan pembatalan pada transaksi berstatus PAID hingga muncul banner antrean peninjauan Admin.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Buyer login dan membuka halaman transaksi berstatus PAID.',
-    testData: 'Alasan: "Penjual mengabarkan bahwa stok lisensi sedang habis."',
-    steps: '1. Klik tombol "Ajukan Pembatalan Transaksi".\n2. Isi alasan pembatalan dan klik "Kirim Pengajuan Pembatalan".\n3. Periksa banner status pengajuan di halaman transaksi.',
-    expectedResult: 'Tampil banner "Pengajuan Pembatalan Sedang Ditinjau Admin (Dalam Antrean Tinjauan)" beserta alasan yang diajukan.',
-    testNameAndScript: 'TC-12-02: Pengajuan Pembatalan Post-Payment Sebelum Dikirim (cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js)',
+    testName: 'TC-12-02: Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID) wajib mengisi alasan dan masuk antrean Admin',
+    scriptPath: 'cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js',
     runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28',
+    typePriority: 'Cypress E2E / P1 (High)',
     xmlPrefix: 'TS-14-cypress',
     testMatcher: 'TC-12-02',
-    passActualSummary: 'Form modal pengajuan pembatalan pasca-bayar berhasil dikirim dan menampilkan banner "Pengajuan Pembatalan Sedang Ditinjau Admin".',
+    passActualSummary:
+      'Form modal pengajuan pembatalan pasca-bayar berhasil dikirim dan menampilkan banner "Pengajuan Pembatalan Sedang Ditinjau Admin".',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-03',
     subtestId: 'TC-12-03-UNIT-A',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
-    objective: 'Memverifikasi aturan formula denda KEEP (BANK_VA_FLAT Rp 4.000 & OTHER_TRIPLE_GATEWAY_FEE 3x biaya gateway) serta perhitungan potongan pada model KeepObligation.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model KeepObligation tersedia.',
-    testData: 'Rule 1: BANK_VA_FLAT (amount 4000, remaining 2500 -> deducted 1500); Rule 2: OTHER_TRIPLE_GATEWAY_FEE (basis 1500, multiplier 3 -> amount 4500).',
-    steps: '1. Uji calculationRuleLabel(), isOpen(), isPartiallyDeducted(), dan deductedAmount() pada kedua jenis aturan KEEP.',
-    expectedResult: 'Label formula sesuai aturan resmi dan perhitungan sisa/potongan akurat.',
-    testNameAndScript: 'CancellationKeepRulesTest::test_tc_12_03_keep_obligation_calculation_rules_and_deduction_helpers (tests/Unit/MarketTrust/CancellationKeepRulesTest.php)',
+    testName: 'CancellationKeepRulesTest::test_tc_12_03_keep_obligation_calculation_rules_and_deduction_helpers',
+    scriptPath: 'tests/Unit/MarketTrust/CancellationKeepRulesTest.php',
     runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
+    typePriority: 'Unit Test / P1 (High)',
     xmlPrefix: 'TS-14-unit',
     testMatcher: 'test_tc_12_03_keep_obligation_calculation_rules_and_deduction_helpers',
-    passActualSummary: 'Model KeepObligation memverifikasi aturan BANK_VA_FLAT (Rp 4.000) dan OTHER_TRIPLE_GATEWAY_FEE (3x gateway fee) beserta kalkulasi potongan.',
+    passActualSummary:
+      'Model KeepObligation memverifikasi aturan BANK_VA_FLAT (Rp 4.000) dan OTHER_TRIPLE_GATEWAY_FEE (3x gateway fee) beserta kalkulasi potongan.',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-03',
     subtestId: 'TC-12-03-UNIT-B',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
-    objective: 'Memverifikasi pemeriksaan biaya gateway terverifikasi (hasVerifiedGatewayFee) dan aturan validasi keputusan Admin pada ReviewCancellationRequest.',
-    typePriority: 'Unit Test / P1 (High)',
-    prerequisite: 'Model Payment dan kelas ReviewCancellationRequest tersedia.',
-    testData: 'Payment dengan gateway_fee_amount null vs 1500.00; ReviewCancellationRequest::rules().',
-    steps: '1. Panggil hasVerifiedGatewayFee() pada Payment.\n2. Periksa rules() pada ReviewCancellationRequest.',
-    expectedResult: 'hasVerifiedGatewayFee() bernilai false saat null dan true saat terisi; ReviewCancellationRequest mewajibkan decision (APPROVED/REJECTED) dan responsible_party.',
-    testNameAndScript: 'CancellationKeepRulesTest::test_tc_12_03_payment_verified_gateway_fee_and_admin_review_request_rules (tests/Unit/MarketTrust/CancellationKeepRulesTest.php)',
+    testName: 'CancellationKeepRulesTest::test_tc_12_03_payment_verified_gateway_fee_and_admin_review_request_rules',
+    scriptPath: 'tests/Unit/MarketTrust/CancellationKeepRulesTest.php',
     runnerType: 'PHPUnit Unit',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
+    typePriority: 'Unit Test / P1 (High)',
     xmlPrefix: 'TS-14-unit',
     testMatcher: 'test_tc_12_03_payment_verified_gateway_fee_and_admin_review_request_rules',
-    passActualSummary: 'Payment::hasVerifiedGatewayFee() dan ReviewCancellationRequest::rules() tervalidasi sesuai spesifikasi UC-28B.',
+    passActualSummary:
+      'Payment::hasVerifiedGatewayFee() dan ReviewCancellationRequest::rules() tervalidasi sesuai spesifikasi UC-28B.',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-03',
     subtestId: 'TC-12-03-FEAT',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
-    objective: 'Memverifikasi peninjauan Admin yang menyetujui pembatalan dengan pihak bersalah SELLER otomatis menerbitkan kewajiban KEEP sesuai aturan resmi (Rp 4.000 untuk Bank/VA dan 3x biaya gateway untuk QRIS).',
-    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
-    prerequisite: 'Terdapat 2 pengajuan pembatalan REQUESTED: Transaksi 1 (channel bca_va) dan Transaksi 2 (channel qris dengan gateway_fee_amount Rp 1.500).',
-    testData: 'decision: APPROVED, responsible_party: SELLER; Expected nominal Bank VA = Rp 4.000; Expected nominal QRIS = 3 x Rp 1.500 = Rp 4.500.',
-    steps: '1. Admin kirim POST /admin/cancellations/{id}/review untuk transaksi Bank VA.\n2. Periksa record keep_obligations (amount = 4000.00, rule = BANK_VA_FLAT).\n3. Admin kirim review untuk transaksi QRIS.\n4. Periksa record keep_obligations (amount = 4500.00, rule = OTHER_TRIPLE_GATEWAY_FEE) dan total tunggakan KEEP (Rp 8.500).',
-    expectedResult: 'Kedua transaksi berstatus CANCELLED & layak refund; diterbitkan 2 kewajiban KEEP berstatus OPEN masing-masing Rp 4.000 dan Rp 4.500 (total Rp 8.500).',
-    testNameAndScript: 'CancellationKeepScenarioTest::test_tc_12_03_admin_approves_cancellation_with_seller_at_fault_and_issues_keep_obligations (tests/Feature/MarketTrust/CancellationKeepScenarioTest.php)',
+    testName: 'CancellationKeepScenarioTest::test_tc_12_03_admin_approves_cancellation_with_seller_at_fault_and_issues_keep_obligations',
+    scriptPath: 'tests/Feature/MarketTrust/CancellationKeepScenarioTest.php',
     runnerType: 'PHPUnit Feature',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
+    typePriority: 'Feature Test (HTTP + DB) / P1 (High)',
     xmlPrefix: 'TS-14-feature',
     testMatcher: 'test_tc_12_03_admin_approves_cancellation_with_seller_at_fault_and_issues_keep_obligations',
-    passActualSummary: 'Keputusan Admin APPROVED dengan SELLER bersalah menerbitkan KEEP Rp 4.000 (BANK_VA_FLAT) dan Rp 4.500 (OTHER_TRIPLE_GATEWAY_FEE 3x1.500) berstatus OPEN.',
+    passActualSummary:
+      'Keputusan Admin APPROVED dengan SELLER bersalah menerbitkan KEEP Rp 4.000 (BANK_VA_FLAT) dan Rp 4.500 (OTHER_TRIPLE_GATEWAY_FEE 3x1.500) berstatus OPEN (total Rp 8.500).',
     notes: '-',
   },
   {
     tsId: 'TS-14',
-    tsTitle: 'TS-14 — Pembatalan & Denda KEEP',
     parentTcId: 'TC-12-03',
     subtestId: 'TC-12-03-E2E',
-    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
-    objective: 'Memverifikasi di UI Admin (/admin/transactions) peninjauan pembatalan dengan menetapkan Penjual bersalah dan tampilnya kewajiban KEEP Rp 4.000 pada tabel Daftar Kewajiban KEEP Penjual.',
-    typePriority: 'Cypress E2E / P1 (High)',
-    prerequisite: 'Admin login dan terdapat pengajuan pembatalan berstatus REQUESTED dari TC-12-02.',
-    testData: 'Keputusan: Setujui & Batalkan (APPROVED), Pihak Bertanggung Jawab: Penjual (SELLER), Catatan: "Disetujui karena penjual kehabisan stok pasca pembayaran."',
-    steps: '1. Buka /admin/transactions.\n2. Klik "Tinjau Keputusan" pada baris pengajuan pembatalan.\n3. Pilih Setujui & Batalkan, pilih Penjual (Seller), isi catatan, dan klik Simpan Keputusan Final.',
-    expectedResult: 'Muncul alert sukses dan tabel Daftar Kewajiban KEEP Penjual menampilkan baris baru untuk Seller dengan nominal Rp 4.000 dan status OPEN.',
-    testNameAndScript: 'TC-12-03: Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js)',
+    testName: 'TC-12-03: Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Menerbitkan denda KEEP Rp 4.000 berstatus OPEN)',
+    scriptPath: 'cypress/e2e/markettrust/ts-14-pembatalan-keep.cy.js',
     runnerType: 'Cypress E2E',
+    sourceRef: 'Notion TS-14 (40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28B',
+    typePriority: 'Cypress E2E / P1 (High)',
     xmlPrefix: 'TS-14-cypress',
     testMatcher: 'TC-12-03',
-    passActualSummary: 'Admin berhasil menyetujui pembatalan dengan tanggung jawab SELLER melalui modal review dan tabel KEEP menampilkan tagihan Rp 4.000 berstatus OPEN.',
+    passActualSummary:
+      'Admin berhasil menyetujui pembatalan dengan tanggung jawab SELLER melalui modal review dan tabel KEEP menampilkan tagihan Rp 4.000 berstatus OPEN.',
     notes: '-',
   },
 ];
 
-const PARENT_TCS = [
-  { tcId: 'TC-02-01', tsId: 'TS-03', title: 'Penambahan Rekening Payout Tipe BANK' },
-  { tcId: 'TC-02-02', tsId: 'TS-03', title: 'Aturan Atomik Hanya 1 Rekening Payout yang Aktif' },
-  { tcId: 'TC-02-03', tsId: 'TS-03', title: 'Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar' },
-  { tcId: 'TC-02-04', tsId: 'TS-03', title: 'Seller Menghapus Rekening Payout Non-Aktif' },
-  { tcId: 'TC-04-01', tsId: 'TS-05', title: 'Pencarian dan Filter Listing Marketplace' },
-  { tcId: 'TC-04-02', tsId: 'TS-05', title: 'Filter Periode Statistik Pasar pada Detail Produk (UC-05)' },
-  { tcId: 'TC-05-04', tsId: 'TS-07', title: 'Kirim Pesan Teks dan Polling Sinkronisasi DM' },
-  { tcId: 'TC-05-05', tsId: 'TS-07', title: 'Validasi Ketat Lampiran Berkas DM (UC-08 & KNF-04)' },
-  { tcId: 'TC-12-01', tsId: 'TS-14', title: 'Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar)' },
-  { tcId: 'TC-12-02', tsId: 'TS-14', title: 'Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID)' },
-  { tcId: 'TC-12-03', tsId: 'TS-14', title: 'Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Penerbitan KEEP / UC-28B)' },
-];
-
-function styleHeaderRow(row, fillArgb = 'FF1E293B') {
+function styleHeaderRow(row, fillArgb = 'FF1E3A8A') {
   row.eachCell((cell) => {
     cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10, name: 'Calibri' };
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fillArgb } };
@@ -826,7 +971,7 @@ function styleHeaderRow(row, fillArgb = 'FF1E293B') {
       right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
     };
   });
-  row.height = 26;
+  row.height = 28;
 }
 
 function styleStatusCell(cell, status) {
@@ -842,20 +987,37 @@ function styleStatusCell(cell, status) {
   } else if (s === 'BLOCKED') {
     bg = 'FFFEF3C7';
     fg = 'FF92400E';
-  } else if (s === 'NOT EXECUTED') {
+  } else if (s === 'NOT EXECUTED' || s.startsWith('N/A')) {
     bg = 'FFE2E8F0';
     fg = 'FF475569';
   }
   cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
   cell.font = { bold: true, color: { argb: fg }, size: 10, name: 'Calibri' };
-  cell.alignment = { vertical: 'middle', horizontal: 'center' };
+  cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+}
+
+function estimateRowHeight(values, colWidths) {
+  let maxLines = 1;
+  for (let i = 0; i < values.length; i++) {
+    const text = String(values[i] ?? '');
+    const width = Math.max((colWidths[i] || 20) - 3, 10);
+    const paragraphs = text.split('\n');
+    let lines = 0;
+    for (const p of paragraphs) {
+      lines += Math.max(1, Math.ceil(p.length / width));
+    }
+    if (lines > maxLines) {
+      maxLines = lines;
+    }
+  }
+  return Math.max(36, Math.min(260, maxLines * 14 + 10));
 }
 
 async function generateExcel() {
   const { metadata, allTestcases } = loadAllRunnerData();
 
-  // Enrich catalog with actual runner execution results
-  const enrichedRows = SCENARIO_CATALOG.map((item) => {
+  // Enrich 34 subtests with actual runner execution results from XML & run-metadata.json
+  const enrichedSubtests = SCENARIO_CATALOG.map((item) => {
     const exec = findTestExecution(allTestcases, metadata, item.xmlPrefix, item.testMatcher);
     const actualResult =
       exec.status === 'PASS'
@@ -869,39 +1031,60 @@ async function generateExcel() {
       status: exec.status,
       actualResult,
       durationSec: exec.time,
+      assertions: exec.assertions,
       executedAt: exec.executedAt,
       command: exec.command,
+      commit: exec.commit,
+      exitCode: exec.exitCode,
       evidencePath: `XML: ${exec.xmlFile} | Log: ${exec.logFile}`,
     };
   });
 
-  // Compute Parent TC status (PASS only if all subtests/runners for that parent TC are PASS)
-  const parentSummary = PARENT_TCS.map((ptc) => {
-    const subRows = enrichedRows.filter((r) => r.parentTcId === ptc.tcId);
+  // Compute Parent TC status & enriched Actual Result from its subtest executions
+  const enrichedParentTcs = PARENT_TCS.map((ptc) => {
+    const subRows = enrichedSubtests.filter((r) => r.parentTcId === ptc.tcId);
     const unitRows = subRows.filter((r) => r.runnerType === 'PHPUnit Unit');
     const featRows = subRows.filter((r) => r.runnerType === 'PHPUnit Feature');
     const e2eRows = subRows.filter((r) => r.runnerType === 'Cypress E2E');
 
-    const aggregateRunnerStatus = (rows) => {
-      if (rows.length === 0) return 'N/A (Di-cover Feature/E2E)';
+    const aggregateRunnerStatus = (rows, naReason) => {
+      if (rows.length === 0) {
+        return naReason || 'N/A (Tidak memerlukan Unit Test terpisah; tidak dihitung sebagai PASS)';
+      }
       if (rows.some((r) => r.status === 'FAIL')) return 'FAIL';
       if (rows.some((r) => r.status === 'BLOCKED')) return 'BLOCKED';
       if (rows.some((r) => r.status === 'NOT EXECUTED')) return 'NOT EXECUTED';
       return 'PASS';
     };
 
-    const unitStatus = aggregateRunnerStatus(unitRows);
-    const featStatus = aggregateRunnerStatus(featRows);
-    const e2eStatus = aggregateRunnerStatus(e2eRows);
+    const unitStatus = aggregateRunnerStatus(unitRows, ptc.unitNaReason);
+    const featStatus = aggregateRunnerStatus(featRows, null);
+    const e2eStatus = aggregateRunnerStatus(e2eRows, null);
 
     let overallStatus = 'PASS';
-    if (subRows.some((r) => r.status === 'FAIL')) {
-      overallStatus = 'FAIL';
-    } else if (subRows.some((r) => r.status === 'BLOCKED')) {
-      overallStatus = 'BLOCKED';
-    } else if (subRows.some((r) => r.status === 'NOT EXECUTED')) {
+    if (subRows.length === 0 || subRows.some((r) => r.status === 'NOT EXECUTED')) {
       overallStatus = 'NOT EXECUTED';
     }
+    if (subRows.some((r) => r.status === 'BLOCKED')) {
+      overallStatus = 'BLOCKED';
+    }
+    if (subRows.some((r) => r.status === 'FAIL')) {
+      overallStatus = 'FAIL';
+    }
+
+    const runnerMetrics = subRows
+      .map(
+        (r) =>
+          `[${r.subtestId} - ${r.runnerType}: ${r.status}, ${r.durationSec.toFixed(3)}s${r.assertions ? `, ${r.assertions} assertions` : ''}]`
+      )
+      .join('; ');
+
+    const actualResultText =
+      overallStatus === 'PASS'
+        ? `${ptc.actualSummaryBase}\nBukti Eksekusi Runner: ${runnerMetrics}.`
+        : subRows
+            .map((r) => `${r.subtestId} (${r.runnerType}): ${r.actualResult}`)
+            .join('\n');
 
     return {
       ...ptc,
@@ -910,11 +1093,12 @@ async function generateExcel() {
       featStatus,
       e2eStatus,
       overallStatus,
+      actualResultText,
     };
   });
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Ali (Owzey) - MarketTrust QA';
+  workbook.creator = 'Muhammad Ali (Owzey) - MarketTrust QA';
   workbook.created = new Date();
 
   // =========================================================================
@@ -926,14 +1110,14 @@ async function generateExcel() {
 
   wsSummary.columns = [
     { width: 14 },
+    { width: 22 },
+    { width: 44 },
     { width: 18 },
+    { width: 26 },
+    { width: 24 },
+    { width: 22 },
+    { width: 22 },
     { width: 46 },
-    { width: 18 },
-    { width: 22 },
-    { width: 22 },
-    { width: 20 },
-    { width: 20 },
-    { width: 42 },
   ];
 
   const titleRow = wsSummary.addRow([
@@ -941,17 +1125,18 @@ async function generateExcel() {
   ]);
   wsSummary.mergeCells('A1:I1');
   titleRow.font = { bold: true, size: 13, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
-  titleRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF312E81' } };
+  titleRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
   titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
   titleRow.height = 30;
 
   wsSummary.addRow([]);
-  wsSummary.addRow(['PIC / Anggota', 'Ali (Owzey) — GitHub: A1liiii <mhmmdalimirza@gmail.com>']);
-  wsSummary.addRow(['Branch & Commit Uji', `test/testing-ali (${metadata.commit || 'HEAD'})`]);
-  wsSummary.addRow(['Waktu Eksekusi Runner', metadata.executed_at || new Date().toISOString()]);
+  wsSummary.addRow(['PIC / Pembuat Testcase', 'Muhammad Ali (Owzey) — GitHub: A1liiii <mhmmdalimirza@gmail.com>']);
+  wsSummary.addRow(['Branch & Commit Uji', `test/testing-ali (${metadata.commit || '4f89bb1'})`]);
+  wsSummary.addRow(['Tanggal Pembuatan Testcase', '04-11-26 (Waktu Eksekusi Runner: ' + (metadata.executed_at || '2026-11-04T09:15:34.531Z') + ')']);
+  wsSummary.addRow(['Tanggal Review', 'Belum direview (dikosongkan pada blok identitas sheet TS)']);
   wsSummary.addRow([
     'Status Akses Link Notion',
-    'Link Notion (https://app.notion.com/p/...) bersifat private workspace (membutuhkan autentikasi sesi akun Notion di browser). Seluruh skenario, prasyarat, data uji, dan expected result diekstrak dari spesifikasi SKPL & codebase aktual.',
+    'Link Notion (https://app.notion.com/p/...) bersifat private workspace (membutuhkan autentikasi sesi akun Notion di browser). Seluruh skenario, prasyarat, data uji, post condition, dan expected result diekstrak dari spesifikasi SKPL & codebase aktual.',
   ]);
   wsSummary.addRow([
     'Catatan Gap & Temuan',
@@ -976,7 +1161,7 @@ async function generateExcel() {
     'Eksekusi FAIL',
     'Eksekusi BLOCKED / NOT EXECUTED',
   ]);
-  styleHeaderRow(secAHeader, 'FF1E293B');
+  styleHeaderRow(secAHeader, 'FF1E3A8A');
 
   const tsGroups = [
     { id: 'TS-03', name: 'Rekening Payout Seller', tcs: 'TC-02-01, TC-02-02, TC-02-03, TC-02-04' },
@@ -986,8 +1171,8 @@ async function generateExcel() {
   ];
 
   for (const g of tsGroups) {
-    const pRows = parentSummary.filter((p) => p.tsId === g.id);
-    const sRows = enrichedRows.filter((r) => r.tsId === g.id);
+    const pRows = enrichedParentTcs.filter((p) => p.tsId === g.id);
+    const sRows = enrichedSubtests.filter((r) => r.tsId === g.id);
     const pPass = pRows.filter((p) => p.overallStatus === 'PASS').length;
     const sPass = sRows.filter((r) => r.status === 'PASS').length;
     const sFail = sRows.filter((r) => r.status === 'FAIL').length;
@@ -1007,18 +1192,18 @@ async function generateExcel() {
     r.height = 22;
   }
 
-  const totalPPass = parentSummary.filter((p) => p.overallStatus === 'PASS').length;
-  const totalSPass = enrichedRows.filter((r) => r.status === 'PASS').length;
-  const totalSFail = enrichedRows.filter((r) => r.status === 'FAIL').length;
-  const totalSOther = enrichedRows.filter((r) => r.status !== 'PASS' && r.status !== 'FAIL').length;
+  const totalPPass = enrichedParentTcs.filter((p) => p.overallStatus === 'PASS').length;
+  const totalSPass = enrichedSubtests.filter((r) => r.status === 'PASS').length;
+  const totalSFail = enrichedSubtests.filter((r) => r.status === 'FAIL').length;
+  const totalSOther = enrichedSubtests.filter((r) => r.status !== 'PASS' && r.status !== 'FAIL').length;
 
   const totalRow = wsSummary.addRow([
     'TOTAL',
     '4 Test Scenario Bagian Ali (Owzey)',
     '11 TC Induk (Tanpa Hitung Dobel)',
-    PARENT_TCS.length,
+    enrichedParentTcs.length,
     totalPPass,
-    enrichedRows.length,
+    enrichedSubtests.length,
     totalSPass,
     totalSFail,
     totalSOther,
@@ -1030,38 +1215,46 @@ async function generateExcel() {
 
   // Tabel B: Status 11 TC Induk per Runner
   const secBTitle = wsSummary.addRow([
-    'B. STATUS RINCI 11 TC INDUK (HASIL PHPUNIT & CYPRESS DITAMPILKAN TERPISAH)',
+    'B. STATUS RINCI 11 TC INDUK PER RUNNER (UNIT YANG N/A MEMILIKI ALASAN & TIDAK DIHITUNG SEBAGAI PASS)',
   ]);
   secBTitle.font = { bold: true, size: 11, color: { argb: 'FF1E293B' } };
 
   const secBHeader = wsSummary.addRow([
     'ID TS',
     'ID TC Induk',
-    'Judul Test Case Induk',
+    'Judul / Fokus Kasus Uji Induk',
     'Jml Subtest/Runner',
     'Status PHPUnit Unit',
     'Status PHPUnit Feature',
     'Status Cypress E2E',
     'Status Akhir TC Induk',
-    'Keterangan',
+    'Keterangan & Alasan Unit N/A / Gap',
   ]);
-  styleHeaderRow(secBHeader, 'FF334155');
+  styleHeaderRow(secBHeader, 'FF1E3A8A');
 
-  for (const ptc of parentSummary) {
+  for (const ptc of enrichedParentTcs) {
+    const ket =
+      ptc.unitNaReason
+        ? ptc.unitNaReason
+        : 'Seluruh variasi Unit, Feature, dan Cypress E2E telah dieksekusi di runner dan PASS.';
     const r = wsSummary.addRow([
       ptc.tsId,
       ptc.tcId,
-      ptc.title,
+      ptc.testCase,
       ptc.subtestCount,
-      ptc.unitStatus,
+      ptc.unitStatus.startsWith('N/A') ? 'N/A' : ptc.unitStatus,
       ptc.featStatus,
       ptc.e2eStatus,
       ptc.overallStatus,
-      ptc.tcId === 'TC-04-02'
-        ? 'Termasuk pengujian periode 90d (Gap Notion) pada Feature & Cypress'
-        : 'Seluruh variasi subtest telah dieksekusi di runner',
+      ket,
     ]);
-    r.height = 22;
+    r.height = 38;
+    r.eachCell((cell) => {
+      cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+    });
+    styleStatusCell(r.getCell(5), ptc.unitStatus);
+    styleStatusCell(r.getCell(6), ptc.featStatus);
+    styleStatusCell(r.getCell(7), ptc.e2eStatus);
     styleStatusCell(r.getCell(8), ptc.overallStatus);
   }
 
@@ -1084,7 +1277,7 @@ async function generateExcel() {
     'File Raw Log',
     'Commit',
   ]);
-  styleHeaderRow(secCHeader, 'FF475569');
+  styleHeaderRow(secCHeader, 'FF334155');
 
   for (const [runKey, info] of Object.entries(metadata.runs || {})) {
     const r = wsSummary.addRow([
@@ -1102,101 +1295,220 @@ async function generateExcel() {
   }
 
   // =========================================================================
-  // SHEETS TS-03, TS-05, TS-07, TS-14
+  // SHEETS TS-03, TS-05, TS-07, TS-14 (Blok Identitas 5 Baris + Tabel Utama 10 Kolom)
   // =========================================================================
+  const tsColWidths = [15, 28, 36, 36, 46, 36, 42, 40, 46, 18];
+
   for (const tsId of ['TS-03', 'TS-05', 'TS-07', 'TS-14']) {
+    const modInfo = TS_MODULES[tsId];
     const ws = workbook.addWorksheet(tsId, {
-      views: [{ state: 'frozen', ySplit: 2 }],
+      views: [{ state: 'frozen', ySplit: 7 }],
     });
 
-    ws.columns = [
-      { width: 10 }, // ID TS
-      { width: 18 }, // ID TC / Subtest
-      { width: 14 }, // ID TC Induk
-      { width: 28 }, // Referensi Sumber
-      { width: 36 }, // Tujuan
-      { width: 22 }, // Jenis / Prioritas
-      { width: 32 }, // Prasyarat
-      { width: 34 }, // Data Uji
-      { width: 38 }, // Langkah
-      { width: 38 }, // Expected Result
-      { width: 42 }, // Nama Test & Path Script
-      { width: 18 }, // Jenis Runner
-      { width: 44 }, // Actual Result
-      { width: 14 }, // Status
-      { width: 22 }, // Waktu Run
-      { width: 46 }, // Command
-      { width: 42 }, // Link/Path Log atau Bukti
-      { width: 34 }, // Catatan Bug / Blocker / Gap
+    ws.columns = tsColWidths.map((w) => ({ width: w }));
+
+    const identityRows = [
+      ['Module Name:', modInfo.moduleName],
+      ['Reference Document:', modInfo.referenceDocument],
+      ['Created by:', modInfo.createdBy],
+      ['Date of creation:', modInfo.dateOfCreation],
+      ['Date of review:', modInfo.dateOfReview],
     ];
 
-    const tsRows = enrichedRows.filter((r) => r.tsId === tsId);
-    const banner = ws.addRow([
-      `${tsRows[0]?.tsTitle || tsId} — Rincian Kasus Uji & Hasil Eksekusi Runner (PHPUnit Unit, Feature & Cypress E2E)`,
-    ]);
-    ws.mergeCells('A1:R1');
-    banner.font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
-    banner.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
-    banner.alignment = { vertical: 'middle', horizontal: 'left' };
-    banner.height = 28;
+    identityRows.forEach((pair, idx) => {
+      const rowNumber = idx + 1;
+      const row = ws.getRow(rowNumber);
+      row.getCell(1).value = pair[0];
+      row.getCell(2).value = pair[1];
+      ws.mergeCells(`B${rowNumber}:J${rowNumber}`);
 
-    const header = ws.addRow([
-      'ID TS',
-      'ID TC / Subtest',
-      'ID TC Induk',
-      'Referensi Sumber',
-      'Tujuan',
-      'Jenis / Prioritas',
-      'Prasyarat',
-      'Data Uji',
-      'Langkah',
-      'Expected Result',
-      'Nama Test & Path Script',
-      'Jenis Runner',
-      'Actual Result',
-      'Status',
-      'Waktu Run',
-      'Command',
-      'Link / Path Log atau Bukti',
-      'Catatan Bug / Blocker / Gap',
-    ]);
-    styleHeaderRow(header, 'FF1E293B');
+      row.getCell(1).font = { bold: true, size: 10, name: 'Calibri', color: { argb: 'FF0F172A' } };
+      row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2E8F0' } };
+      row.getCell(1).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+      row.getCell(1).border = {
+        top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+      };
 
-    for (const item of tsRows) {
-      const row = ws.addRow([
-        item.tsId,
-        item.subtestId,
-        item.parentTcId,
-        item.sourceRef,
-        item.objective,
-        item.typePriority,
-        item.prerequisite,
-        item.testData,
-        item.steps,
-        item.expectedResult,
-        item.testNameAndScript,
-        item.runnerType,
-        item.actualResult,
-        item.status,
-        item.executedAt,
-        item.command,
-        item.evidencePath,
-        item.notes,
-      ]);
-
-      row.eachCell((cell) => {
-        cell.font = { size: 9.5, name: 'Calibri' };
-        cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
-        cell.border = {
-          top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+      row.getCell(2).font = { bold: false, size: 10, name: 'Calibri', color: { argb: 'FF0F172A' } };
+      row.getCell(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8FAFC' } };
+      row.getCell(2).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+      for (let c = 2; c <= 10; c++) {
+        row.getCell(c).border = {
+          top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
         };
+      }
+      row.height = 20;
+    });
+
+    // Baris 6: Baris pemisah kosong
+    const sepRow = ws.getRow(6);
+    sepRow.values = [];
+    sepRow.height = 10;
+
+    // Baris 7: Header Tabel Utama (Tepat 10 Kolom)
+    const headerRow = ws.getRow(7);
+    headerRow.values = [
+      'TEST CASE ID',
+      'TEST SCENARIO',
+      'TEST CASE',
+      'PRE-CONDITION',
+      'TEST STEPS',
+      'TEST DATA',
+      'EXPECTED RESULT',
+      'POST CONDITION',
+      'ACTUAL RESULT',
+      'STATUS (PASS/FAIL)',
+    ];
+    styleHeaderRow(headerRow, 'FF1E3A8A');
+
+    const tsParentRows = enrichedParentTcs.filter((p) => p.tsId === tsId);
+    let currentRowIdx = 8;
+    for (const item of tsParentRows) {
+      const rowValues = [
+        item.tcId,
+        item.testScenario,
+        item.testCase,
+        item.preCondition,
+        item.testSteps,
+        item.testData,
+        item.expectedResult,
+        item.postCondition,
+        item.actualResultText,
+        item.overallStatus,
+      ];
+
+      const row = ws.getRow(currentRowIdx);
+      row.values = rowValues;
+
+      row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+        if (colNumber <= 10) {
+          cell.font = {
+            size: 9.5,
+            name: 'Calibri',
+            bold: colNumber === 1,
+            color: { argb: 'FF0F172A' },
+          };
+          cell.alignment = {
+            vertical: 'top',
+            horizontal: colNumber === 1 ? 'center' : 'left',
+            wrapText: true,
+          };
+          cell.border = {
+            top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+            left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+            bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+            right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          };
+        }
       });
-      styleStatusCell(row.getCell(14), item.status);
-      row.height = 68;
+
+      styleStatusCell(row.getCell(10), item.overallStatus);
+      row.height = estimateRowHeight(rowValues, tsColWidths);
+      currentRowIdx++;
     }
+  }
+
+  // =========================================================================
+  // SHEET 6: Detail Eksekusi (16 Kolom Metadata Teknis & Subtest Runner)
+  // =========================================================================
+  const wsDetail = workbook.addWorksheet('Detail Eksekusi', {
+    views: [{ state: 'frozen', ySplit: 2 }],
+  });
+
+  const detailColWidths = [
+    10, // ID TS
+    12, // TC Induk
+    18, // ID Variasi/Subtest
+    44, // Nama Test
+    44, // Path Script
+    18, // Runner
+    34, // Referensi Sumber
+    24, // Jenis/Prioritas
+    48, // Command
+    24, // Waktu Run
+    16, // Commit yang Diuji
+    12, // Exit Code
+    14, // Status
+    48, // Actual Result
+    44, // Log/Bukti
+    36, // Bug/Blocker
+  ];
+  wsDetail.columns = detailColWidths.map((w) => ({ width: w }));
+
+  const detailBanner = wsDetail.addRow([
+    'DETAIL EKSEKUSI RUNNER (PHPUNIT UNIT, PHPUNIT FEATURE, DAN CYPRESS E2E) — MAPPING KE 11 TC INDUK BAGIAN ALI (OWZEY)',
+  ]);
+  wsDetail.mergeCells('A1:P1');
+  detailBanner.font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+  detailBanner.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
+  detailBanner.alignment = { vertical: 'middle', horizontal: 'left' };
+  detailBanner.height = 28;
+
+  const detailHeader = wsDetail.addRow([
+    'ID TS',
+    'TC Induk',
+    'ID Variasi/Subtest',
+    'Nama Test',
+    'Path Script',
+    'Runner',
+    'Referensi Sumber',
+    'Jenis/Prioritas',
+    'Command',
+    'Waktu Run',
+    'Commit yang Diuji',
+    'Exit Code',
+    'Status',
+    'Actual Result',
+    'Log/Bukti',
+    'Bug/Blocker',
+  ]);
+  styleHeaderRow(detailHeader, 'FF1E293B');
+
+  for (const item of enrichedSubtests) {
+    const rowValues = [
+      item.tsId,
+      item.parentTcId,
+      item.subtestId,
+      item.testName,
+      item.scriptPath,
+      item.runnerType,
+      item.sourceRef,
+      item.typePriority,
+      item.command,
+      item.executedAt,
+      item.commit,
+      item.exitCode,
+      item.status,
+      item.actualResult,
+      item.evidencePath,
+      item.notes,
+    ];
+
+    const row = wsDetail.addRow(rowValues);
+    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      if (colNumber <= 16) {
+        cell.font = { size: 9.5, name: 'Calibri', color: { argb: 'FF0F172A' } };
+        cell.alignment = {
+          vertical: 'top',
+          horizontal: [1, 2, 3, 6, 11, 12].includes(colNumber) ? 'center' : 'left',
+          wrapText: true,
+        };
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+        };
+      }
+    });
+    styleStatusCell(row.getCell(13), item.status);
+    row.height = estimateRowHeight(rowValues, detailColWidths);
   }
 
   await workbook.xlsx.writeFile(OUTPUT_XLSX);
@@ -1211,9 +1523,9 @@ async function generateExcel() {
       {
         output: path.relative(ROOT_DIR, OUTPUT_XLSX),
         sheets: sheetNames,
-        parentTcCount: parentSummary.length,
+        parentTcCount: enrichedParentTcs.length,
         parentTcPass: totalPPass,
-        subtestExecutionCount: enrichedRows.length,
+        subtestExecutionCount: enrichedSubtests.length,
         subtestPass: totalSPass,
         subtestFail: totalSFail,
         subtestOther: totalSOther,
