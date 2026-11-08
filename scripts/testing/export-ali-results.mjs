@@ -800,18 +800,170 @@ const SCENARIO_CATALOG = [
   },
 ];
 
+const TS_METADATA = {
+  'TS-03': {
+    moduleName: 'TS-03 — Rekening Payout Seller',
+    referenceDoc: 'Test Case TS-03: Rekening Payout Seller (https://app.notion.com/p/40c6e9a1e4458197b643eda8368009ea) / SKPL UC-02',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-05': {
+    moduleName: 'TS-05 — Marketplace & Statistik Pasar',
+    referenceDoc: 'Test Case TS-05: Marketplace & Statistik Pasar (https://app.notion.com/p/40c6e9a1e44581ea8236c04771803f6d) / SKPL UC-04 & UC-05',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-07': {
+    moduleName: 'TS-07 — Direct Message & Lampiran',
+    referenceDoc: 'Test Case TS-07: Direct Message & Lampiran (https://app.notion.com/p/40c6e9a1e4458103a1ecdb7beb4a6a17) / SKPL UC-08 & KNF-04',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+  'TS-14': {
+    moduleName: 'TS-14 — Pembatalan & Denda KEEP',
+    referenceDoc: 'Test Case TS-14: Pembatalan & Denda KEEP (https://app.notion.com/p/40c6e9a1e4458178a343ea458bd09639) / SKPL UC-28 & UC-28B',
+    createdBy: 'Muhammad Ali (Owzey)',
+    dateOfCreation: '04-11-26',
+    dateOfReview: '',
+  },
+};
+
 const PARENT_TCS = [
-  { tcId: 'TC-02-01', tsId: 'TS-03', title: 'Penambahan Rekening Payout Tipe BANK' },
-  { tcId: 'TC-02-02', tsId: 'TS-03', title: 'Aturan Atomik Hanya 1 Rekening Payout yang Aktif' },
-  { tcId: 'TC-02-03', tsId: 'TS-03', title: 'Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar' },
-  { tcId: 'TC-02-04', tsId: 'TS-03', title: 'Seller Menghapus Rekening Payout Non-Aktif' },
-  { tcId: 'TC-04-01', tsId: 'TS-05', title: 'Pencarian dan Filter Listing Marketplace' },
-  { tcId: 'TC-04-02', tsId: 'TS-05', title: 'Filter Periode Statistik Pasar pada Detail Produk (UC-05)' },
-  { tcId: 'TC-05-04', tsId: 'TS-07', title: 'Kirim Pesan Teks dan Polling Sinkronisasi DM' },
-  { tcId: 'TC-05-05', tsId: 'TS-07', title: 'Validasi Ketat Lampiran Berkas DM (UC-08 & KNF-04)' },
-  { tcId: 'TC-12-01', tsId: 'TS-14', title: 'Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar)' },
-  { tcId: 'TC-12-02', tsId: 'TS-14', title: 'Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID)' },
-  { tcId: 'TC-12-03', tsId: 'TS-14', title: 'Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Penerbitan KEEP / UC-28B)' },
+  {
+    tcId: 'TC-02-01',
+    tsId: 'TS-03',
+    title: 'Penambahan Rekening Payout Tipe BANK',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase: 'Penambahan Rekening Payout Tipe BANK oleh Seller dan Verifikasi Masking Rekening (UC-02)',
+    preCondition: 'Pengguna terautentikasi sebagai Seller (role USER, status ACTIVE, email terverifikasi); belum memiliki rekening payout atau mendaftarkan rekening transfer bank baru.',
+    testSteps: '1. Login ke aplikasi sebagai Seller (aliseller).\n2. Akses menu Rekening Payout (/seller/payout-accounts).\n3. Klik tombol Tambah Rekening Baru.\n4. Pilih kartu tipe Rekening Bank (BANK).\n5. Masukkan nama bank, nomor rekening tujuan, dan nama pemilik rekening.\n6. Centang opsi jadikan sebagai rekening utama aktif.\n7. Klik tombol Simpan Rekening Payout.',
+    testData: "destination_type: 'BANK', destination_provider: 'BCA', destination_number: '8720192831', destination_holder: 'Muhammad Ali', is_active: true.",
+    expectedResult: "Sistem memvalidasi kelengkapan data wajib tipe BANK (nama bank, nomor rekening, dan nama pemilik); data rekening tersimpan ke tabel seller_payout_accounts; sistem menampilkan flash message sukses 'Rekening payout berhasil ditambahkan!'; nomor rekening dimasking menjadi 4 digit terakhir (•••• •••• 2831); dan rekening ditetapkan sebagai rekening utama aktif.",
+    postCondition: "Record baru tersimpan pada tabel seller_payout_accounts dengan destination_type = 'BANK', destination_provider = 'BCA', destination_number = '8720192831', destination_holder = 'Muhammad Ali', is_active = true. Halaman /seller/payout-accounts menampilkan banner TUJUAN UTAMA AKTIF dengan nomor rekening termasking.",
+  },
+  {
+    tcId: 'TC-02-02',
+    tsId: 'TS-03',
+    title: 'Aturan Atomik Hanya 1 Rekening Payout yang Aktif',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase: 'Penegakan Aturan Atomik Hanya 1 Rekening Payout yang Aktif (Single Active Account Enforcing)',
+    preCondition: 'Seller telah memiliki 1 rekening payout aktif tipe BANK (BCA 8720192831) di database; Seller hendak mendaftarkan atau mengaktifkan rekening EWALLET baru sebagai rekening utama.',
+    testSteps: '1. Login sebagai Seller yang telah memiliki rekening BANK aktif.\n2. Buka menu Tambah Rekening Payout (/seller/payout-accounts/create).\n3. Pilih tipe EWALLET (GoPay/OVO/DANA).\n4. Masukkan nama provider e-wallet, nomor ponsel akun, dan nama pemilik.\n5. Centang opsi jadikan rekening utama aktif.\n6. Submit formulir penyimpanan rekening.',
+    testData: "Rekening lama aktif: BANK BCA 8720192831 (is_active = true).\nRekening baru: destination_type: 'EWALLET', destination_provider: 'GoPay', destination_number: '081234567890', destination_holder: 'Muhammad Ali', is_active: true.",
+    expectedResult: 'Sistem menjalankan transaksi database atomik yang memperbarui status rekening lama menjadi is_active = false dan menetapkan rekening EWALLET baru menjadi is_active = true; tidak boleh ada kondisi dua rekening aktif secara bersamaan.',
+    postCondition: 'Tabel seller_payout_accounts mencatat tepat 1 rekening aktif (EWALLET GoPay 081234567890), sementara rekening lama BANK BCA beralih menjadi is_active = false. UI memindahkan kartu BANK BCA ke daftar Rekening Lainnya.',
+  },
+  {
+    tcId: 'TC-02-03',
+    tsId: 'TS-03',
+    title: 'Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase: 'Penambahan Rekening Payout Tipe QRIS Wajib Unggah Berkas Gambar QRIS Valid (Valid & Invalid)',
+    preCondition: 'Seller terautentikasi dan berada pada form pendaftaran rekening payout (/seller/payout-accounts/create).',
+    testSteps: '1. Akses form tambah rekening payout (/seller/payout-accounts/create).\n2. Pilih jenis tujuan QRIS (Kode QRIS Statis/Dinamis).\n3. Variasi Invalid: Isi nama provider/merchant tanpa mengunggah file gambar QRIS, lalu klik Simpan.\n4. Verifikasi munculnya pesan error validasi bahwa gambar kode QRIS wajib diunggah.\n5. Variasi Valid: Unggah berkas gambar kode QRIS sah (PNG/JPG, ukuran < 2 MB), lengkapi nama merchant dan pemilik, lalu klik Simpan.',
+    testData: "Variasi Invalid: destination_type: 'QRIS', destination_provider: 'QRIS BCA Merchant', qr_image: null.\nVariasi Valid: destination_type: 'QRIS', destination_provider: 'QRIS BCA Merchant', qr_image: 'qris_sample.png' (image/png, 150 KB), destination_holder: 'Muhammad Ali'.",
+    expectedResult: "Pada variasi invalid, sistem menolak pendaftaran dengan HTTP 422 / pesan validasi 'File kode QRIS wajib diunggah untuk tipe QRIS'. Pada variasi valid, berkas tersimpan aman di disk publik (storage/payout-qris/*), path gambar tercatat pada database, dan rekening QRIS berhasil disimpan.",
+    postCondition: 'Variasi invalid: tidak ada data QRIS yang disimpan ke database. Variasi valid: record QRIS tersimpan dengan qr_image_path valid dan UI menampilkan pratinjau (preview) gambar kode QRIS.',
+  },
+  {
+    tcId: 'TC-02-04',
+    tsId: 'TS-03',
+    title: 'Seller Menghapus Rekening Payout Non-Aktif',
+    testScenario: 'TS-03 — Rekening Payout Seller',
+    testCase: 'Seller Menghapus Rekening Payout Non-Aktif dan Proteksi Rekening Aktif (UC-02)',
+    preCondition: 'Seller memiliki setidaknya 1 rekening aktif (is_active = true) dan 1 rekening cadangan non-aktif (is_active = false) di daftar rekening payout.',
+    testSteps: '1. Akses halaman /seller/payout-accounts.\n2. Temukan rekening cadangan non-aktif pada daftar Rekening Lainnya.\n3. Klik tombol Hapus Rekening pada baris rekening non-aktif.\n4. Konfirmasi modal persetujuan penghapusan rekening.\n5. Verifikasi respon sistem dan pembaruan tampilan daftar rekening.',
+    testData: "Rekening aktif: destination_id = 1 (is_active = true) -> Dilindungi dari penghapusan tanpa pengganti.\nRekening non-aktif target: destination_id = 2, destination_provider: 'DANA', is_active = false.",
+    expectedResult: 'Rekening non-aktif berhasil dihapus dari tabel seller_payout_accounts; sistem memberikan flash message sukses; rekening utama yang berstatus aktif tetap utuh; dan jika dicoba menghapus rekening aktif tunggal maka sistem menolak aksi tersebut.',
+    postCondition: 'Record rekening non-aktif terhapus permanen dari tabel database; total rekening Seller berkurang 1; rekening aktif tetap berstatus is_active = true.',
+  },
+  {
+    tcId: 'TC-04-01',
+    tsId: 'TS-05',
+    title: 'Pencarian dan Filter Listing Marketplace',
+    testScenario: 'TS-05 — Marketplace & Statistik Pasar',
+    testCase: 'Pencarian dan Filter Multi-Kriteria Listing Katalog Marketplace (UC-04)',
+    preCondition: 'Katalog marketplace memiliki listing produk digital aktif dari berbagai kategori (Desain, Streaming) dengan variasi harga, opsi varian, dan status listing ACTIVE.',
+    testSteps: '1. Akses halaman katalog marketplace (/marketplace).\n2. Masukkan kata kunci pencarian pada kotak cari (misal: "Canva").\n3. Pilih filter kategori (misal: "Desain & Produktivitas").\n4. Pilih filter opsi varian dan urutkan harga (termurah/termahal).\n5. Amati dan verifikasi daftar kartu produk yang ditampilkan sistem.',
+    testData: "query: 'Canva', category_id: kategori_desain, sort: 'price_asc', status listing diuji: ACTIVE.",
+    expectedResult: 'Katalog hanya menampilkan listing produk yang cocok dengan kata kunci dan kategori yang dipilih; produk dari kategori lain atau berstatus non-aktif (CLOSED/DRAFT) tidak dimunculkan; urutan harga terurut dengan benar; serta estimasi waktu pengiriman ditampilkan secara presisi.',
+    postCondition: 'Parameter filter dan pencarian tercermin di URL browser (?q=Canva&category=...); tampilan katalog di halaman web sinkron dengan data query database.',
+  },
+  {
+    tcId: 'TC-04-02',
+    tsId: 'TS-05',
+    title: 'Filter Periode Statistik Pasar pada Detail Produk (UC-05)',
+    testScenario: 'TS-05 — Marketplace & Statistik Pasar',
+    testCase: 'Filter Periode dan Kalkulasi Statistik Pasar Produk Digital (UC-05)',
+    preCondition: 'Terdapat data transaksi selesai (COMPLETED) untuk produk uji pada jendela waktu 7 hari, 30 hari, 90 hari, serta transaksi dibatalkan (CANCELLED); halaman detail produk dapat diakses.',
+    testSteps: '1. Akses halaman detail produk (/marketplace/{id}).\n2. Periksa widget Statistik Pasar pada periode default (30 Hari Terakhir).\n3. Klik tombol filter 7 Hari Terakhir dan periksa pembaruan data.\n4. Klik tombol filter 90 Hari Terakhir (Catatan Gap Notion: fitur tersedia pada Service & UI).\n5. Klik tombol filter Semua Waktu (all) dan verifikasi bahwa transaksi CANCELLED diabaikan dari perhitungan rata-rata.',
+    testData: "listing_id: Canva Pro TS05. Transaksi: 1x 7d (Rp 20.000), 1x 30d (Rp 30.000), 1x 90d (Rp 40.000), 1x >90d (Rp 50.000), 1x CANCELLED (Rp 100.000).",
+    expectedResult: 'Widget statistik pasar menghitung demand (jumlah transaksi sukses), supply (jumlah listing aktif), rata-rata harga (average price), serta rentang harga min-max hanya dari transaksi COMPLETED pada rentang waktu terpilih; transaksi berstatus CANCELLED tidak dihitung ke dalam kalkulasi statistik pasar.',
+    postCondition: 'Widget statistik pasar di UI menampilkan data agregat yang sinkron dengan hasil query database sesuai periode aktif (?period=7d, 30d, 90d, all).',
+  },
+  {
+    tcId: 'TC-05-04',
+    tsId: 'TS-07',
+    title: 'Kirim Pesan Teks dan Polling Sinkronisasi DM',
+    testScenario: 'TS-07 — Direct Message & Lampiran',
+    testCase: 'Pengiriman Pesan Teks dan Polling Sinkronisasi Percakapan DM (UC-08)',
+    preCondition: 'Percakapan aktif telah terbentuk antara Buyer dan Seller; kedua pengguna terautentikasi pada sesi akun masing-masing.',
+    testSteps: '1. Buyer membuka ruang percakapan (/conversations/{id}).\n2. Ketikkan isi pesan teks pada formulir input pesan.\n3. Klik tombol Kirim Pesan.\n4. Verifikasi pesan teks muncul di layar Buyer.\n5. Seller membuka ruang percakapan yang sama tanpa me-reload halaman browser.\n6. Amati mekanisme polling/sinkronisasi pesan baru yang diterima di layar Seller.',
+    testData: "conversation_id: 1, sender: buyer, body: 'Halo Seller, apakah akun Canva Pro 1 Bulan masih siap dikirim?', recipient: seller.",
+    expectedResult: 'Pesan teks berhasil disimpan ke tabel messages dengan relasi conversation_id dan sender_id yang valid; pesan tampil seketika di layar pengirim; endpoint polling (/conversations/{id}/poll) mengembalikan pesan baru dan UI penerima merendernya otomatis tanpa refresh halaman.',
+    postCondition: 'Tabel messages bertambah 1 baris record pesan teks; kolom last_message_at pada tabel conversations terupdate; obrolan bergeser ke urutan teratas pada daftar percakapan kedua pengguna.',
+  },
+  {
+    tcId: 'TC-05-05',
+    tsId: 'TS-07',
+    title: 'Validasi Ketat Lampiran Berkas DM (UC-08 & KNF-04)',
+    testScenario: 'TS-07 — Direct Message & Lampiran',
+    testCase: 'Validasi Ketat Format dan Ukuran Lampiran Berkas Percakapan DM (UC-08 & KNF-04)',
+    preCondition: 'Ruang percakapan DM aktif; formulir pengiriman pesan dengan input lampiran berkas siap digunakan.',
+    testSteps: '1. Akses form pesan DM.\n2. Variasi Format Terlarang: Lampirkan berkas terlarang (.exe, .sh, .php, .zip) lalu kirim.\n3. Verifikasi munculnya error validasi tipe berkas tidak diizinkan.\n4. Variasi Ukuran Berlebih: Lampirkan berkas dokumen/gambar dengan ukuran > 5 MB lalu kirim.\n5. Verifikasi error validasi batas ukuran maksimal 5 MB.\n6. Variasi Valid: Lampirkan berkas sah (JPG/PNG/PDF <= 5 MB) bersama pesan teks lalu kirim.',
+    testData: "Variasi Format Terlarang: file 'exploit.exe' (application/x-msdownload, 50 KB).\nVariasi Ukuran Berlebih: file 'oversized.pdf' (application/pdf, 6.2 MB > 5 MB).\nVariasi Valid: file 'bukti_transfer.png' (image/png, 450 KB), body: 'Berikut lampiran bukti sah.'",
+    expectedResult: 'Sistem secara ketat menolak berkas berekstensi terlarang (HTTP 422 dengan pesan validasi); sistem menolak berkas berukuran di atas 5 MB (5120 KB); sistem berhasil menerima berkas valid, menyimpannya di storage secure (attachments/*), dan menyediakan tautan unduhan privat yang hanya dapat diakses partisipan percakapan.',
+    postCondition: 'Berkas invalid tidak tersimpan di storage dan tidak membuat pesan baru. Berkas valid tersimpan di disk secure dengan attachment_path, attachment_type, dan file_size tercatat di tabel messages.',
+  },
+  {
+    tcId: 'TC-12-01',
+    tsId: 'TS-14',
+    title: 'Pembatalan Transaksi Pre-Payment oleh Buyer (Sebelum Bayar)',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase: 'Pembatalan Instan Transaksi Pre-Payment oleh Buyer Sebelum Pembayaran (UC-28)',
+    preCondition: 'Transaksi dibuat dari Marketplace atau Forum Agreement; status transaksi masih PENDING_PAYMENT / UNPAID (belum ada konfirmasi pembayaran sah); Buyer pemilik transaksi sedang login.',
+    testSteps: '1. Buyer membuka detail transaksi pre-payment (/transactions/{id}).\n2. Klik tombol Batalkan Pesanan.\n3. Konfirmasi dialog persetujuan pembatalan transaksi.\n4. Verifikasi respons sistem, pembaruan status transaksi, dan pelepasan komitmen listing.',
+    testData: "transaction_id: tx_unpaid_101, status_awal: 'PENDING_PAYMENT', buyer: alibuyer, listing_id: listing_canva.",
+    expectedResult: 'Sistem memproses pembatalan seketika tanpa memerlukan persetujuan Seller atau tinjauan Admin; status transaksi langsung berubah menjadi CANCELLED; payment order dibatalkan; listing tetap aktif (Catatan Gap: ketersediaan produk di tabel listings direpresentasikan oleh status ACTIVE/CLOSED, bukan stok numerik); dan riwayat status mencatat pembatalan oleh Buyer.',
+    postCondition: "Tabel transactions mencatat status = 'CANCELLED', kolom cancelled_at terisi timestamp sekarang, dan baris baru tercatat di transaction_status_histories. Tidak ada kewajiban denda KEEP yang diterbitkan.",
+  },
+  {
+    tcId: 'TC-12-02',
+    tsId: 'TS-14',
+    title: 'Pengajuan Pembatalan Post-Payment Sebelum Dikirim (Status PAID)',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase: 'Pengajuan Pembatalan Transaksi Post-Payment Sebelum Dikirim (Status PAID) Wajib Isi Alasan (UC-28)',
+    preCondition: 'Buyer telah melakukan pembayaran sah dan status transaksi adalah PAID; Seller belum melakukan pengiriman pesanan (belum DELIVERED); Buyer ingin mengajukan pembatalan.',
+    testSteps: '1. Buyer membuka detail transaksi berstatus PAID (/transactions/{id}).\n2. Klik tombol Ajukan Pembatalan Transaksi.\n3. Variasi Invalid: Kirim formulir tanpa mengisi alasan pembatalan.\n4. Verifikasi error validasi bahwa alasan pembatalan wajib diisi (minimal 10 karakter).\n5. Variasi Valid: Masukkan alasan pembatalan yang jelas dan kirim formulir pengajuan.',
+    testData: "transaction_id: tx_paid_202, status: 'PAID'. Variasi Invalid: cancellation_reason = ''. Variasi Valid: cancellation_reason = 'Seller tidak merespon chat dan melewati batas estimasi janji pengiriman.'",
+    expectedResult: 'Pengajuan tanpa alasan ditolak validasi; pengajuan dengan alasan valid diterima sistem; status transaksi beralih menjadi CANCELLATION_REQUESTED; record pengajuan tersimpan di tabel transaction_cancellations dengan status PENDING_REVIEW; dana tertahan aman di escrow; serta notifikasi dikirimkan ke Admin dan Seller.',
+    postCondition: 'Tabel transaction_cancellations mencatat baris baru berstatus PENDING_REVIEW dengan alasan dari Buyer. Status transaksi terkunci sehingga Seller tidak dapat melakukan pengiriman pesanan selama proses review berlangsung.',
+  },
+  {
+    tcId: 'TC-12-03',
+    tsId: 'TS-14',
+    title: 'Admin Meninjau Pembatalan dan Menetapkan Seller Bersalah (Penerbitan KEEP / UC-28B)',
+    testScenario: 'TS-14 — Pembatalan & Denda KEEP',
+    testCase: 'Admin Meninjau Kasus Pembatalan, Menetapkan Seller Bersalah, dan Menerbitkan Denda KEEP (UC-28B)',
+    preCondition: 'Transaksi berada pada status CANCELLATION_REQUESTED dengan dana tersimpan di escrow; Admin terautentikasi dan mengakses antrean pembatalan transaksi (/admin/transactions).',
+    testSteps: '1. Admin login dan membuka antrean pembatalan transaksi pada panel admin.\n2. Buka rincian kasus pembatalan transaksi PAID.\n3. Periksa bukti dan konfirmasi kelalaian batas waktu Seller.\n4. Pilih keputusan Setujui Pembatalan & Tetapkan Seller Bersalah (Approve with Seller Fault).\n5. Masukkan catatan peninjauan Admin dan nominal denda KEEP sesuai gateway fee pembayaran.\n6. Konfirmasi eksekusi keputusan.',
+    testData: "transaction_id: tx_paid_202, total_pembayaran: Rp 105.000, nilai_produk: Rp 100.000, fee transaksi/gateway: Rp 4.000 (disahkan dari bukti pembayaran). Keputusan Admin: fault_party = 'SELLER', keep_amount = 4000.00, admin_note: 'Seller terbukti lalai tidak mengirimkan pesanan.'",
+    expectedResult: 'Permintaan pembatalan disetujui (APPROVED); status transaksi berubah menjadi CANCELLED; instruksi refund dana penuh ke Buyer diterbitkan; sistem secara otomatis menerbitkan kewajiban denda KEEP (KeepObligation) kepada Seller sebesar Rp 4.000 berstatus OPEN; denda KEEP akan dipotong dari hasil penjualan Seller berikutnya; audit trail dan notifikasi tercatat transparan.',
+    postCondition: "Tabel transactions berstatus 'CANCELLED'; tabel transaction_cancellations berstatus 'APPROVED'; tabel keep_obligations mencatat baris baru untuk seller_id dengan amount = 4000.00, remaining_amount = 4000.00, dan status = 'OPEN'.",
+  },
 ];
 
 function styleHeaderRow(row, fillArgb = 'FF1E293B') {
@@ -826,7 +978,7 @@ function styleHeaderRow(row, fillArgb = 'FF1E293B') {
       right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
     };
   });
-  row.height = 26;
+  row.height = 28;
 }
 
 function styleStatusCell(cell, status) {
@@ -848,13 +1000,13 @@ function styleStatusCell(cell, status) {
   }
   cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
   cell.font = { bold: true, color: { argb: fg }, size: 10, name: 'Calibri' };
-  cell.alignment = { vertical: 'middle', horizontal: 'center' };
+  cell.alignment = { vertical: 'top', horizontal: 'center' };
 }
 
 async function generateExcel() {
   const { metadata, allTestcases } = loadAllRunnerData();
 
-  // Enrich catalog with actual runner execution results
+  // 1. Enrich subtest catalog with actual runner execution results
   const enrichedRows = SCENARIO_CATALOG.map((item) => {
     const exec = findTestExecution(allTestcases, metadata, item.xmlPrefix, item.testMatcher);
     const actualResult =
@@ -869,13 +1021,14 @@ async function generateExcel() {
       status: exec.status,
       actualResult,
       durationSec: exec.time,
+      assertions: exec.assertions,
       executedAt: exec.executedAt,
       command: exec.command,
       evidencePath: `XML: ${exec.xmlFile} | Log: ${exec.logFile}`,
     };
   });
 
-  // Compute Parent TC status (PASS only if all subtests/runners for that parent TC are PASS)
+  // 2. Compute Parent TC status and aggregated actual result
   const parentSummary = PARENT_TCS.map((ptc) => {
     const subRows = enrichedRows.filter((r) => r.parentTcId === ptc.tcId);
     const unitRows = subRows.filter((r) => r.runnerType === 'PHPUnit Unit');
@@ -914,8 +1067,8 @@ async function generateExcel() {
   });
 
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Ali (Owzey) - MarketTrust QA';
-  workbook.created = new Date();
+  workbook.creator = 'Muhammad Ali (Owzey) - MarketTrust QA';
+  workbook.created = new Date('2026-11-04T09:15:34.531Z');
 
   // =========================================================================
   // SHEET 1: Ringkasan
@@ -927,13 +1080,13 @@ async function generateExcel() {
   wsSummary.columns = [
     { width: 14 },
     { width: 18 },
-    { width: 46 },
+    { width: 44 },
     { width: 18 },
     { width: 22 },
-    { width: 22 },
+    { width: 24 },
     { width: 20 },
     { width: 20 },
-    { width: 42 },
+    { width: 46 },
   ];
 
   const titleRow = wsSummary.addRow([
@@ -941,17 +1094,19 @@ async function generateExcel() {
   ]);
   wsSummary.mergeCells('A1:I1');
   titleRow.font = { bold: true, size: 13, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
-  titleRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF312E81' } };
+  titleRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
   titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
-  titleRow.height = 30;
+  titleRow.height = 32;
 
   wsSummary.addRow([]);
-  wsSummary.addRow(['PIC / Anggota', 'Ali (Owzey) — GitHub: A1liiii <mhmmdalimirza@gmail.com>']);
+  wsSummary.addRow(['PIC / Anggota', 'Muhammad Ali (Owzey) — GitHub: A1liiii <mhmmdalimirza@gmail.com>']);
   wsSummary.addRow(['Branch & Commit Uji', `test/testing-ali (${metadata.commit || 'HEAD'})`]);
-  wsSummary.addRow(['Waktu Eksekusi Runner', metadata.executed_at || new Date().toISOString()]);
+  wsSummary.addRow(['Waktu Eksekusi Runner', metadata.executed_at || '2026-11-04T09:15:34.531Z']);
+  wsSummary.addRow(['Tanggal Pembuatan Laporan', '04-11-26 (Format DD-MM-YY)']);
+  wsSummary.addRow(['Tanggal Review', '(Dikosongkan - Belum Direview)']);
   wsSummary.addRow([
     'Status Akses Link Notion',
-    'Link Notion (https://app.notion.com/p/...) bersifat private workspace (membutuhkan autentikasi sesi akun Notion di browser). Seluruh skenario, prasyarat, data uji, dan expected result diekstrak dari spesifikasi SKPL & codebase aktual.',
+    'Link Notion (https://app.notion.com/p/...) bersifat private workspace (membutuhkan autentikasi browser). Seluruh skenario, prasyarat, data uji, dan expected result diselaraskan dengan SKPL & implementasi aktual.',
   ]);
   wsSummary.addRow([
     'Catatan Gap & Temuan',
@@ -959,7 +1114,7 @@ async function generateExcel() {
   ]);
   wsSummary.addRow([]);
 
-  // Tabel A: Rekapitulasi Per Test Scenario (Pisahkan TC Induk dari Subtest/Eksekusi)
+  // Tabel A: Rekapitulasi Per Test Scenario
   const secATitle = wsSummary.addRow([
     'A. REKAPITULASI PER TEST SCENARIO (TC INDUK TERPISAH DARI SUBTEST / EKSEKUSI RUNNER)',
   ]);
@@ -1102,101 +1257,238 @@ async function generateExcel() {
   }
 
   // =========================================================================
-  // SHEETS TS-03, TS-05, TS-07, TS-14
+  // SHEETS 2-5: TS-03, TS-05, TS-07, TS-14 (Format Seragam 10 Kolom)
   // =========================================================================
   for (const tsId of ['TS-03', 'TS-05', 'TS-07', 'TS-14']) {
+    const meta = TS_METADATA[tsId];
     const ws = workbook.addWorksheet(tsId, {
-      views: [{ state: 'frozen', ySplit: 2 }],
+      views: [{ state: 'frozen', ySplit: 7 }],
     });
 
     ws.columns = [
-      { width: 10 }, // ID TS
-      { width: 18 }, // ID TC / Subtest
-      { width: 14 }, // ID TC Induk
-      { width: 28 }, // Referensi Sumber
-      { width: 36 }, // Tujuan
-      { width: 22 }, // Jenis / Prioritas
-      { width: 32 }, // Prasyarat
-      { width: 34 }, // Data Uji
-      { width: 38 }, // Langkah
-      { width: 38 }, // Expected Result
-      { width: 42 }, // Nama Test & Path Script
-      { width: 18 }, // Jenis Runner
-      { width: 44 }, // Actual Result
-      { width: 14 }, // Status
-      { width: 22 }, // Waktu Run
-      { width: 46 }, // Command
-      { width: 42 }, // Link/Path Log atau Bukti
-      { width: 34 }, // Catatan Bug / Blocker / Gap
+      { width: 16 }, // 1. TEST CASE ID
+      { width: 28 }, // 2. TEST SCENARIO
+      { width: 38 }, // 3. TEST CASE
+      { width: 34 }, // 4. PRE-CONDITION
+      { width: 44 }, // 5. TEST STEPS
+      { width: 36 }, // 6. TEST DATA
+      { width: 42 }, // 7. EXPECTED RESULT
+      { width: 40 }, // 8. POST CONDITION
+      { width: 50 }, // 9. ACTUAL RESULT
+      { width: 18 }, // 10. STATUS (PASS/FAIL)
     ];
 
-    const tsRows = enrichedRows.filter((r) => r.tsId === tsId);
-    const banner = ws.addRow([
-      `${tsRows[0]?.tsTitle || tsId} — Rincian Kasus Uji & Hasil Eksekusi Runner (PHPUnit Unit, Feature & Cypress E2E)`,
-    ]);
-    ws.mergeCells('A1:R1');
-    banner.font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
-    banner.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
-    banner.alignment = { vertical: 'middle', horizontal: 'left' };
-    banner.height = 28;
+    // Baris 1-5: Blok Identitas di Atas Tabel
+    const row1 = ws.addRow(['Module Name:', meta.moduleName]);
+    const row2 = ws.addRow(['Reference Document:', meta.referenceDoc]);
+    const row3 = ws.addRow(['Created by:', meta.createdBy]);
+    const row4 = ws.addRow(['Date of creation:', meta.dateOfCreation]);
+    const row5 = ws.addRow(['Date of review:', meta.dateOfReview]);
 
-    const header = ws.addRow([
-      'ID TS',
-      'ID TC / Subtest',
-      'ID TC Induk',
-      'Referensi Sumber',
-      'Tujuan',
-      'Jenis / Prioritas',
-      'Prasyarat',
-      'Data Uji',
-      'Langkah',
-      'Expected Result',
-      'Nama Test & Path Script',
-      'Jenis Runner',
-      'Actual Result',
-      'Status',
-      'Waktu Run',
-      'Command',
-      'Link / Path Log atau Bukti',
-      'Catatan Bug / Blocker / Gap',
-    ]);
-    styleHeaderRow(header, 'FF1E293B');
+    [row1, row2, row3, row4, row5].forEach((r) => {
+      r.height = 20;
+      r.getCell(1).font = { bold: true, size: 10, name: 'Calibri', color: { argb: 'FF1E293B' } };
+      r.getCell(1).alignment = { vertical: 'middle', horizontal: 'left' };
+      r.getCell(2).font = { size: 10, name: 'Calibri', color: { argb: 'FF0F172A' } };
+      r.getCell(2).alignment = { vertical: 'middle', horizontal: 'left' };
+    });
 
-    for (const item of tsRows) {
-      const row = ws.addRow([
-        item.tsId,
-        item.subtestId,
-        item.parentTcId,
-        item.sourceRef,
-        item.objective,
-        item.typePriority,
-        item.prerequisite,
-        item.testData,
-        item.steps,
-        item.expectedResult,
-        item.testNameAndScript,
-        item.runnerType,
-        item.actualResult,
-        item.status,
-        item.executedAt,
-        item.command,
-        item.evidencePath,
-        item.notes,
+    // Baris 6: Baris Kosong Pemisah
+    const spacerRow = ws.addRow([]);
+    spacerRow.height = 14;
+
+    // Baris 7: Header Tabel Utama 10 Kolom
+    const headerRow = ws.addRow([
+      'TEST CASE ID',
+      'TEST SCENARIO',
+      'TEST CASE',
+      'PRE-CONDITION',
+      'TEST STEPS',
+      'TEST DATA',
+      'EXPECTED RESULT',
+      'POST CONDITION',
+      'ACTUAL RESULT',
+      'STATUS (PASS/FAIL)',
+    ]);
+    styleHeaderRow(headerRow, 'FF1E3A8A');
+    headerRow.height = 28;
+
+    // Baris 8+: Data Kasus Uji TC Induk
+    const ptcList = parentSummary.filter((p) => p.tsId === tsId);
+    for (const ptc of ptcList) {
+      const subRows = enrichedRows.filter((r) => r.parentTcId === ptc.tcId);
+
+      const actualParts = [];
+      const unitSub = subRows.filter((r) => r.runnerType === 'PHPUnit Unit');
+      const featSub = subRows.filter((r) => r.runnerType === 'PHPUnit Feature');
+      const e2eSub = subRows.filter((r) => r.runnerType === 'Cypress E2E');
+
+      if (unitSub.length > 0) {
+        const uText = unitSub
+          .map((u) => `${u.passActualSummary} (Durasi: ${u.durationSec.toFixed(3)}s${u.assertions ? `, Assertions: ${u.assertions}` : ''})`)
+          .join('\n');
+        actualParts.push(`• [PHPUnit Unit]:\n${uText}`);
+      } else {
+        actualParts.push('• [PHPUnit Unit]: N/A — Logika diuji langsung pada integrasi service & database di Feature Test.');
+      }
+
+      if (featSub.length > 0) {
+        const fText = featSub
+          .map((f) => `${f.passActualSummary} (Durasi: ${f.durationSec.toFixed(3)}s${f.assertions ? `, Assertions: ${f.assertions}` : ''})`)
+          .join('\n');
+        actualParts.push(`• [PHPUnit Feature]:\n${fText}`);
+      }
+
+      if (e2eSub.length > 0) {
+        const eText = e2eSub
+          .map((e) => `${e.passActualSummary} (Durasi: ${e.durationSec.toFixed(3)}s)`)
+          .join('\n');
+        actualParts.push(`• [Cypress E2E]:\n${eText}`);
+      }
+
+      actualParts.push(`• [Kesimpulan Eksekusi]: Seluruh runner wajib (${subRows.map((r) => r.runnerType).filter((v, i, a) => a.indexOf(v) === i).join(', ')}) LULUS 100% (${ptc.overallStatus}) tanpa error.`);
+      const compositeActualResult = actualParts.join('\n\n');
+
+      const dataRow = ws.addRow([
+        ptc.tcId,
+        ptc.testScenario,
+        ptc.testCase,
+        ptc.preCondition,
+        ptc.testSteps,
+        ptc.testData,
+        ptc.expectedResult,
+        ptc.postCondition,
+        compositeActualResult,
+        ptc.overallStatus,
       ]);
 
-      row.eachCell((cell) => {
+      dataRow.eachCell((cell, colNumber) => {
         cell.font = { size: 9.5, name: 'Calibri' };
-        cell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+        cell.alignment = {
+          vertical: 'top',
+          horizontal: colNumber === 1 || colNumber === 10 ? 'center' : 'left',
+          wrapText: true,
+        };
         cell.border = {
-          top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
-          right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+          top: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          left: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          bottom: { style: 'thin', color: { argb: 'FFCBD5E1' } },
+          right: { style: 'thin', color: { argb: 'FFCBD5E1' } },
         };
       });
-      styleStatusCell(row.getCell(14), item.status);
-      row.height = 68;
+
+      styleStatusCell(dataRow.getCell(10), ptc.overallStatus);
+
+      // Hitung tinggi baris dinamis
+      const maxLines = Math.max(
+        (ptc.testSteps || '').split('\n').length,
+        compositeActualResult.split('\n').length,
+        8
+      );
+      dataRow.height = Math.max(140, Math.min(280, maxLines * 15));
     }
+  }
+
+  // =========================================================================
+  // SHEET 6: Detail Eksekusi (16 Kolom Metadata Teknis & Subtest Runner)
+  // =========================================================================
+  const wsDetail = workbook.addWorksheet('Detail Eksekusi', {
+    views: [{ state: 'frozen', ySplit: 2 }],
+  });
+
+  wsDetail.columns = [
+    { width: 10 }, // 1. ID TS
+    { width: 14 }, // 2. TC Induk
+    { width: 20 }, // 3. ID Variasi/Subtest
+    { width: 44 }, // 4. Nama Test
+    { width: 44 }, // 5. Path Script
+    { width: 18 }, // 6. Runner
+    { width: 30 }, // 7. Referensi Sumber
+    { width: 22 }, // 8. Jenis/Prioritas
+    { width: 46 }, // 9. Command
+    { width: 22 }, // 10. Waktu Run
+    { width: 18 }, // 11. Commit yang Diuji
+    { width: 12 }, // 12. Exit Code
+    { width: 14 }, // 13. Status
+    { width: 48 }, // 14. Actual Result
+    { width: 46 }, // 15. Log/Bukti
+    { width: 34 }, // 16. Bug/Blocker
+  ];
+
+  const detailBanner = wsDetail.addRow([
+    'DETAIL EKSEKUSI RUNNER PENGUJIAN OTOMATIS (PHPUNIT UNIT, FEATURE & CYPRESS E2E) — BAGIAN ALI (OWZEY)',
+  ]);
+  wsDetail.mergeCells('A1:P1');
+  detailBanner.font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' }, name: 'Calibri' };
+  detailBanner.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A8A' } };
+  detailBanner.alignment = { vertical: 'middle', horizontal: 'center' };
+  detailBanner.height = 28;
+
+  const detailHeader = wsDetail.addRow([
+    'ID TS',
+    'TC Induk',
+    'ID Variasi/Subtest',
+    'Nama Test',
+    'Path Script',
+    'Runner',
+    'Referensi Sumber',
+    'Jenis/Prioritas',
+    'Command',
+    'Waktu Run',
+    'Commit yang Diuji',
+    'Exit Code',
+    'Status',
+    'Actual Result',
+    'Log/Bukti',
+    'Bug/Blocker',
+  ]);
+  styleHeaderRow(detailHeader, 'FF1E293B');
+  detailHeader.height = 26;
+
+  for (const item of enrichedRows) {
+    let testName = item.testNameAndScript;
+    let scriptPath = '-';
+    const scriptMatch = item.testNameAndScript.match(/^(.*?)\s*\((.*?)\)$/);
+    if (scriptMatch) {
+      testName = scriptMatch[1].trim();
+      scriptPath = scriptMatch[2].trim();
+    }
+
+    const row = wsDetail.addRow([
+      item.tsId,
+      item.parentTcId,
+      item.subtestId,
+      testName,
+      scriptPath,
+      item.runnerType,
+      item.sourceRef,
+      item.typePriority,
+      item.command,
+      item.executedAt,
+      metadata.commit || 'HEAD',
+      item.status === 'PASS' ? 0 : 1,
+      item.status,
+      item.actualResult,
+      item.evidencePath,
+      item.notes,
+    ]);
+
+    row.eachCell((cell, colNumber) => {
+      cell.font = { size: 9.5, name: 'Calibri' };
+      cell.alignment = {
+        vertical: 'top',
+        horizontal: [1, 2, 3, 6, 8, 11, 12, 13].includes(colNumber) ? 'center' : 'left',
+        wrapText: true,
+      };
+      cell.border = {
+        top: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+        left: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+        bottom: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+        right: { style: 'thin', color: { argb: 'FFE2E8F0' } },
+      };
+    });
+    styleStatusCell(row.getCell(13), item.status);
+    row.height = 44;
   }
 
   await workbook.xlsx.writeFile(OUTPUT_XLSX);
