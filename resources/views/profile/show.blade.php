@@ -94,15 +94,6 @@
                             </a>
                         @endif
 
-                        @if ($user->hasListings())
-                            <a href="{{ route('marketplace.index') }}" class="glass-btn-secondary text-xs sm:text-sm py-2 px-4 shadow-sm" data-cy="btn-profile-listings">
-                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                </svg>
-                                <span>Lihat Etalase Produk</span>
-                            </a>
-                        @endif
-
                         @auth
                             <button
                                 type="button"
@@ -143,15 +134,15 @@
                 </div>
                 <div class="pt-3 border-t border-slate-200/60 mt-3">
                     @if ($user->reputation_status === 'LEGIT')
-                        <span class="glass-badge glass-badge-success text-[10px]">
+                        <span class="glass-badge glass-badge-success text-[10px] whitespace-nowrap">
                             Terverifikasi (LEGIT)
                         </span>
                     @elseif ($user->reputation_status === 'PROBLEMATIC')
-                        <span class="glass-badge glass-badge-danger text-[10px]">
+                        <span class="glass-badge glass-badge-danger text-[10px] whitespace-nowrap">
                             Perlu Perhatian (PROBLEMATIC)
                         </span>
                     @else
-                        <span class="glass-badge glass-badge-neutral text-[10px]" title="Belum ada riwayat evaluasi transaksi atau keputusan admin">
+                        <span class="glass-badge glass-badge-neutral text-[10px] whitespace-nowrap" title="Belum ada riwayat evaluasi transaksi atau keputusan admin">
                             Belum Ditinjau
                         </span>
                     @endif
@@ -238,9 +229,9 @@
                             Pencatatan transparan seluruh peristiwa yang menambah atau mengurangi poin legitimasi akun ini.
                         </p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold text-slate-500">Total Akumulasi:</span>
-                        <span class="text-sm font-extrabold text-slate-900 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200">
+                    <div class="flex items-center gap-2 shrink-0 whitespace-nowrap">
+                        <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Total Akumulasi:</span>
+                        <span class="text-sm font-extrabold text-slate-900 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 whitespace-nowrap inline-flex items-center">
                             {{ $user->reputation_points > 0 ? '+' : '' }}{{ $user->reputation_points }} Poin
                         </span>
                     </div>
@@ -337,9 +328,9 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="glass-badge glass-badge-success text-[10px]">LEGIT</span>
-                                <span class="text-xs font-bold text-slate-800">Terverifikasi</span>
+                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
+                                <span class="glass-badge glass-badge-success text-[9px] px-1.5 py-0.5 shrink-0">LEGIT</span>
+                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Terverifikasi</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Diberikan kepada pengguna yang memiliki riwayat transaksi escrow lancar, tepat waktu, dan tingkat kepatuhan tinggi terhadap aturan platform.
@@ -349,9 +340,9 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="glass-badge glass-badge-danger text-[10px]">PROBLEMATIC</span>
-                                <span class="text-xs font-bold text-slate-800">Perlu Perhatian</span>
+                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
+                                <span class="glass-badge glass-badge-danger text-[9px] px-1.5 py-0.5 shrink-0">PROBLEMATIC</span>
+                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Perlu Perhatian</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Diberikan kepada akun yang memiliki riwayat pembatalan sepihak pasca-bayar, sanksi moderasi, atau pelanggaran kesepakatan transaksi yang telah terbukti sah.
@@ -361,9 +352,9 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="glass-badge glass-badge-neutral text-[10px]">UNREVIEWED</span>
-                                <span class="text-xs font-bold text-slate-800">Belum Ditinjau</span>
+                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
+                                <span class="glass-badge glass-badge-neutral text-[9px] px-1.5 py-0.5 shrink-0">UNREVIEWED</span>
+                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Belum Ditinjau</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Status bawaan untuk akun baru atau pengguna yang belum memiliki catatan transaksi atau evaluasi resmi dari moderator MarketTrust.
@@ -373,9 +364,9 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="glass-badge glass-badge-primary text-[10px]">+ / - Poin</span>
-                                <span class="text-xs font-bold text-slate-800">Poin Dinamis</span>
+                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
+                                <span class="glass-badge glass-badge-primary text-[9px] px-1.5 py-0.5 shrink-0">+ / - Poin</span>
+                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Poin Dinamis</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Skor reputasi dihitung secara dinamis dari akumulasi seluruh peristiwa transaksi berhasil (+poin) dan pengurangan akibat sanksi atau komplain (-poin).
@@ -386,7 +377,7 @@
             </div>
         </div>
 
-        <!-- Section Catatan Kepatuhan Transaksi & KEEP (Hanya Ringkasan Sah Sesuai Kewenangan) -->
+        <!-- Section Catatan Kepatuhan Transaksi (Hanya Ringkasan Sah Sesuai Kewenangan) -->
         <div class="pt-8 relative z-10">
             <div class="glass-card p-6 sm:p-8">
                 <div class="flex items-center gap-2 mb-4">
@@ -396,12 +387,12 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Catatan Kepatuhan Transaksi & KEEP</h3>
-                        <p class="text-xs text-slate-500">Hasil tinjauan resmi pembatalan pasca-bayar dan pemenuhan kewajiban biaya platform.</p>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Catatan Kepatuhan Transaksi</h3>
+                        <p class="text-xs text-slate-500">Hasil tinjauan resmi pembatalan pasca-bayar yang disetujui moderator dan dibebankan ke pihak terkait.</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="max-w-xl">
                     <!-- Kepatuhan Pembatalan Pasca-Bayar -->
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Tinjauan Pembatalan Pasca-Bayar</h4>
@@ -425,42 +416,6 @@
                             <p class="text-[11px] text-slate-400 pt-1 border-t border-slate-100">
                                 Hanya menampilkan pembatalan pasca-bayar yang telah disetujui admin dan dibebankan pihak terkait.
                             </p>
-                        </div>
-                    </div>
-
-                    <!-- Kepatuhan Kewajiban KEEP -->
-                    <div class="p-4 rounded-2xl bg-white/60 border border-white/80">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Kewajiban Penggantian Fee (KEEP)</h4>
-                        <div class="space-y-2 text-xs">
-                            @if ($openKeepCount > 0)
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Status Kewajiban:</span>
-                                    <span class="font-bold text-amber-600">{{ $openKeepCount }} Tagihan Terbuka</span>
-                                </div>
-                                @if ($isOwnProfile)
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-slate-600">Sisa Tagihan Anda:</span>
-                                        <span class="font-bold text-rose-600">Rp {{ number_format($openKeepAmount, 0, ',', '.') }}</span>
-                                    </div>
-                                    <div class="pt-2">
-                                        <a href="{{ route('sellers.keep-ledger', $user->user_id) }}" class="text-xs font-bold text-indigo-600 hover:underline">
-                                            Buka Ledger KEEP Seller &rarr;
-                                        </a>
-                                    </div>
-                                @else
-                                    <p class="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                                        Penjual memiliki kewajiban kompensasi gateway fee yang sedang diselesaikan melalui sistem pemotongan otomatis.
-                                    </p>
-                                @endif
-                            @else
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Status Kewajiban:</span>
-                                    <span class="font-semibold text-emerald-600">Lunas / Tidak Ada Tunggakan</span>
-                                </div>
-                                <p class="text-[11px] text-slate-400 pt-1 border-t border-slate-100">
-                                    Tidak ada catatan tunggakan kompensasi fee platform.
-                                </p>
-                            @endif
                         </div>
                     </div>
                 </div>

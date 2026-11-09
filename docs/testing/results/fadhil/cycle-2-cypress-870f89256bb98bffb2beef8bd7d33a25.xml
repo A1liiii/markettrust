@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="106.434" tests="10" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-09T11:16:33" tests="0" file="cypress\e2e\markettrust\cycle-2-fadhil.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller)" timestamp="2026-11-09T11:16:33" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Kelola Listing" timestamp="2026-11-09T11:16:35" tests="3" time="45.044" failures="0">
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Kelola Listing TC-C2-LS-01: Pembuatan Listing Baru Tanpa Foto Berhasil (Status ACTIVE)" time="20.003" classname="TC-C2-LS-01: Pembuatan Listing Baru Tanpa Foto Berhasil (Status ACTIVE)">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Kelola Listing TC-C2-LS-02: Pembuatan Listing Baru Dengan Foto Berhasil via Fallback Storage" time="15.737" classname="TC-C2-LS-02: Pembuatan Listing Baru Dengan Foto Berhasil via Fallback Storage">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Kelola Listing TC-C2-LS-03: Validasi Form Listing Menolak Nominal di Bawah Batas Minimum" time="11.371" classname="TC-C2-LS-03: Validasi Form Listing Menolak Nominal di Bawah Batas Minimum">
+    </testcase>
+  </testsuite>
+  <testsuite name="Login dan Registrasi (Desktop Non-Scrollable)" timestamp="2026-11-09T11:17:20" tests="2" time="10.072" failures="0">
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Login dan Registrasi (Desktop Non-Scrollable) TC-C2-AUTH-01: Tampilan Desktop Login Muat 1 Layar Penuh Bebas Scroll" time="4.806" classname="TC-C2-AUTH-01: Tampilan Desktop Login Muat 1 Layar Penuh Bebas Scroll">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Login dan Registrasi (Desktop Non-Scrollable) TC-C2-AUTH-02: Tampilan Desktop Registrasi Muat 1 Layar Penuh Bebas Scroll" time="5.236" classname="TC-C2-AUTH-02: Tampilan Desktop Registrasi Muat 1 Layar Penuh Bebas Scroll">
+    </testcase>
+  </testsuite>
+  <testsuite name="Profil Seller &amp; Riwayat Legitimasi" timestamp="2026-11-09T11:17:31" tests="5" time="49.195" failures="0">
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Profil Seller &amp; Riwayat Legitimasi TC-C2-PROF-01: Akses Profil Seller Melalui Tombol di Detail Produk Marketplace" time="12.687" classname="TC-C2-PROF-01: Akses Profil Seller Melalui Tombol di Detail Produk Marketplace">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Profil Seller &amp; Riwayat Legitimasi TC-C2-PROF-02: Hapus Button &quot;Lihat Etalase Produk&quot;" time="9.744" classname="TC-C2-PROF-02: Hapus Button &quot;Lihat Etalase Produk&quot;">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Profil Seller &amp; Riwayat Legitimasi TC-C2-PROF-03: Total Akumulasi Reputasi dan Nilai Poin Berada dalam Satu Baris" time="9.017" classname="TC-C2-PROF-03: Total Akumulasi Reputasi dan Nilai Poin Berada dalam Satu Baris">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Profil Seller &amp; Riwayat Legitimasi TC-C2-PROF-04: Optimalisasi Judul Panduan Indikator Reputasi Menjadi Satu Baris" time="8.611" classname="TC-C2-PROF-04: Optimalisasi Judul Panduan Indikator Reputasi Menjadi Satu Baris">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login &amp; Registrasi, Profil Seller) Profil Seller &amp; Riwayat Legitimasi TC-C2-PROF-05: Hapus Bagian KEEP dan Pertahankan Tinjauan Pembatalan Pasca-Bayar" time="9.004" classname="TC-C2-PROF-05: Hapus Bagian KEEP dan Pertahankan Tinjauan Pembatalan Pasca-Bayar">
+    </testcase>
+  </testsuite>
+</testsuites>
