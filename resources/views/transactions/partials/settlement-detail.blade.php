@@ -63,7 +63,7 @@
                         </span>
                     </h2>
                     <p class="text-xs text-slate-500">
-                        {{ $isPayout ? 'Penyaluran dana escrow hasil penjualan produk' : 'Pengembalian dana escrow kepada pembeli atas pembatalan / putusan sengketa' }}
+                        {{ $isPayout ? 'Penyaluran dana rekber hasil penjualan produk' : 'Pengembalian dana rekber kepada pembeli atas pembatalan / putusan sengketa' }}
                     </p>
                 </div>
             </div>
@@ -159,7 +159,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs bg-slate-50/80 p-3 rounded-xl border border-slate-200/60">
             <div>
                 <span class="font-bold text-slate-700">Catatan Administratif:</span>
-                <span class="text-slate-600">{{ $settlement->note ?: 'Settlement diproses secara tertib sesuai SOP Escrow MarketTrust.' }}</span>
+                <span class="text-slate-600">{{ $settlement->note ?: 'Settlement diproses secara tertib sesuai SOP Rekber MarketTrust.' }}</span>
                 @if ($settlement->completed_at)
                     <div class="text-[10px] text-slate-400 mt-0.5">
                         Selesai pada {{ $settlement->completed_at->translatedFormat('d F Y, H:i') }} WIB &bull; Dicatat oleh Admin: <strong>@<span>{{ $settlement->recordedBy?->username ?? 'Admin' }}</span></strong>

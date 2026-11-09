@@ -12,7 +12,7 @@
                 <div class="inline-flex items-center gap-2 mb-1">
                     <span class="glass-badge glass-badge-primary text-[11px] py-0.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
-                        Katalog Terverifikasi Escrow
+                        Katalog Terverifikasi Rekber
                     </span>
                     <span class="text-xs font-semibold text-slate-500">
                         {{ $totalActiveListings }} Listing Aktif

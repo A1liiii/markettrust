@@ -13,7 +13,7 @@
                 </svg>
             </div>
             <h2 class="text-2xl font-bold tracking-tight text-slate-900">Masuk ke Akun Anda</h2>
-            <p class="text-sm text-slate-600 mt-1.5">Akses marketplace, forum jual-beli, dan transaksi escrow Anda</p>
+            <p class="text-sm text-slate-600 mt-1.5">Akses marketplace, forum jual-beli, dan transaksi rekber Anda</p>
         </div>
 
         <!-- Google OAuth Button -->

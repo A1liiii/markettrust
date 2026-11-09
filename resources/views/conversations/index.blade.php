@@ -3,7 +3,7 @@
 @section('title', 'Pesan Langsung (DM)')
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full max-w-full overflow-x-hidden">
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -58,14 +58,14 @@
                 <a href="{{ route('conversations.show', $conversation->conversation_id) }}"
                    data-open-dm-drawer
                    data-conversation-id="{{ $conversation->conversation_id }}"
-                   class="dm-bubble-pop-card block p-4 sm:p-5 transition">
-                    <div class="flex items-start gap-4">
+                   class="dm-bubble-pop-card block p-3.5 sm:p-5 transition w-full max-w-full min-w-0 overflow-hidden">
+                    <div class="flex items-start gap-3 sm:gap-4 min-w-0 w-full">
                         <!-- User Avatar -->
                         <div class="shrink-0">
                             @if($otherUser && $otherUser->avatar_url)
-                                <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-12 h-12 rounded-2xl object-cover border border-white/80 shadow-xs">
+                                <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl object-cover border border-white/80 shadow-xs">
                             @else
-                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white flex items-center justify-center font-bold text-base shadow-md shadow-indigo-500/20">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white flex items-center justify-center font-bold text-sm sm:text-base shadow-md shadow-indigo-500/20">
                                     {{ $otherUser ? strtoupper(substr($otherUser->username, 0, 1)) : '?' }}
                                 </div>
                             @endif
@@ -73,42 +73,42 @@
 
                         <!-- Conversation Details -->
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <div class="flex items-center gap-2 truncate">
+                            <div class="flex items-baseline justify-between gap-2 mb-1.5 min-w-0 w-full">
+                                <div class="flex items-center gap-1.5 min-w-0 truncate flex-1">
                                     <h2 class="text-sm sm:text-base font-semibold text-slate-900 truncate">
                                         @<span>{{ $otherUser ? $otherUser->username : 'Pengguna' }}</span>
                                     </h2>
                                     @if($otherUser && $otherUser->account_status === 'ACTIVE')
-                                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500" title="Aktif"></span>
+                                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Aktif"></span>
                                     @endif
                                 </div>
-                                <span class="text-xs text-slate-400 shrink-0">
+                                <span class="text-[11px] sm:text-xs text-slate-400 shrink-0 text-right">
                                     {{ $latestMsg ? $latestMsg->sent_at->diffForHumans() : $conversation->created_at->diffForHumans() }}
                                 </span>
                             </div>
 
                             <!-- Context Pill -->
-                            <div class="mb-2 flex flex-wrap items-center gap-1.5">
-                                @if($conversation->listing)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                                        <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                        </svg>
-                                        Listing: {{ Str::limit($conversation->listing->title, 28) }}
-                                    </span>
-                                @elseif($conversation->post)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200/60">
-                                        <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                        </svg>
-                                        Forum: {{ Str::limit($conversation->post->title, 28) }}
-                                    </span>
-                                @elseif($conversation->agreement)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/60">
-                                        <svg class="w-3 h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="mb-2 flex flex-wrap items-center gap-1.5 min-w-0">
+                                @if($conversation->agreement)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/60 max-w-full truncate">
+                                        <svg class="w-3 h-3 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>
-                                        Agreement #{{ $conversation->agreement_id }}
+                                        <span class="truncate">Kesepakatan #{{ $conversation->agreement_id }}</span>
+                                    </span>
+                                @elseif($conversation->listing)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60 max-w-full truncate">
+                                        <svg class="w-3 h-3 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                        </svg>
+                                        <span class="truncate">Listing: {{ Str::limit($conversation->listing->title, 28) }}</span>
+                                    </span>
+                                @elseif($conversation->post)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200/60 max-w-full truncate">
+                                        <svg class="w-3 h-3 text-purple-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                        </svg>
+                                        <span class="truncate">Forum: {{ Str::limit($conversation->post->title, 28) }}</span>
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60">

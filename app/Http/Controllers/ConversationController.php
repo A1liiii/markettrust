@@ -47,7 +47,7 @@ class ConversationController extends Controller
                     $contextTitle = $conv->post->title;
                 } elseif ($conv->agreement) {
                     $contextType = 'AGREEMENT';
-                    $contextTitle = 'Agreement #'.$conv->agreement->agreement_id;
+                    $contextTitle = 'Kesepakatan #'.$conv->agreement->agreement_id;
                 }
 
                 return [

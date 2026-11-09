@@ -3,12 +3,12 @@
 @section('title', 'Percakapan dengan @' . ($otherUser ? $otherUser->username : 'Pengguna'))
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full max-w-full overflow-x-hidden min-w-0">
     <!-- Top Bar: Back & Opponent Info -->
-    <div class="glass-panel p-4 mb-4 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
+    <div class="glass-panel p-3 sm:p-4 mb-4 flex items-center justify-between gap-2.5 sm:gap-4 w-full max-w-full min-w-0 overflow-hidden">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <a href="{{ route('conversations.index') }}"
-               class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/60 transition border border-transparent hover:border-white/60"
+               class="p-1.5 sm:p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white/60 transition border border-transparent hover:border-white/60 shrink-0"
                title="Kembali ke Kotak Masuk">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -16,39 +16,40 @@
             </a>
 
             <!-- Other User Avatar & Info -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                 @if($otherUser && $otherUser->avatar_url)
-                    <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-10 h-10 rounded-full object-cover border border-white/80 shadow-xs">
+                    <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->username }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white/80 shadow-xs shrink-0">
                 @else
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-xs shrink-0">
                         {{ $otherUser ? strtoupper(substr($otherUser->username, 0, 1)) : '?' }}
                     </div>
                 @endif
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                        <h2 class="text-xs sm:text-base font-bold text-slate-900 leading-tight truncate">
                             @<span>{{ $otherUser ? $otherUser->username : 'Pengguna' }}</span>
                         </h2>
                         @if($otherUser)
-                            <span class="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded-full {{ $otherUser->account_status === 'ACTIVE' ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-500/20' : 'bg-rose-500/15 text-rose-700 border border-rose-500/20' }}">
+                            <span class="text-[9px] sm:text-[10px] uppercase font-bold px-1.5 py-0.2 rounded-full shrink-0 {{ $otherUser->account_status === 'ACTIVE' ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-500/20' : 'bg-rose-500/15 text-rose-700 border border-rose-500/20' }}">
                                 {{ $otherUser->account_status }}
                             </span>
                         @endif
                     </div>
-                    <p class="text-[11px] text-slate-500">Percakapan Pribadi Terverifikasi</p>
+                    <p class="text-[10px] sm:text-[11px] text-slate-500 truncate">Percakapan Pribadi Terverifikasi</p>
                 </div>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
             <button type="button"
                     data-open-dm-drawer
                     data-conversation-id="{{ $conversation->conversation_id }}"
-                    class="dm-floating-launcher text-white text-xs font-bold py-1.5 px-3 rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="dm-floating-launcher text-white text-[11px] sm:text-xs font-bold py-1.5 px-2.5 sm:px-3 rounded-xl flex items-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition shrink-0"
+                    title="Buka di Side Panel">
+                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                 </svg>
-                <span>Buka di Side Panel</span>
+                <span class="hidden xs:inline">Side Panel</span>
             </button>
             <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -59,17 +60,17 @@
 
     <!-- Context Banner (Listing / Forum Post) -->
     @if($conversation->listing)
-        <div class="glass-card p-3 sm:p-4 mb-4 border-l-4 border-l-emerald-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-center gap-3">
+        <div class="glass-card p-3 sm:p-4 mb-4 border-l-4 border-l-emerald-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full min-w-0 overflow-hidden">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
                 <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
                 </div>
-                <div>
+                <div class="min-w-0 flex-1">
                     <div class="text-[11px] uppercase tracking-wider font-bold text-emerald-700">Konteks: Produk Marketplace</div>
-                    <h3 class="text-sm font-semibold text-slate-900">{{ $conversation->listing->title }}</h3>
-                    <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                    <h3 class="text-sm font-semibold text-slate-900 truncate" title="{{ $conversation->listing->title }}">{{ $conversation->listing->title }}</h3>
+                    <div class="text-xs text-slate-500 flex flex-wrap items-center gap-2 mt-0.5">
                         <span class="font-bold text-slate-800">Rp {{ number_format($conversation->listing->price, 0, ',', '.') }}</span>
                         <span>&bull;</span>
                         <span>Metode: {{ $conversation->listing->delivery_method }}</span>
@@ -81,16 +82,16 @@
             </div>
         </div>
     @elseif($conversation->post)
-        <div class="glass-card p-3 sm:p-4 mb-4 border-l-4 border-l-purple-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-center gap-3">
+        <div class="glass-card p-3 sm:p-4 mb-4 border-l-4 border-l-purple-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full min-w-0 overflow-hidden">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
                 <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-700 flex items-center justify-center shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                     </svg>
                 </div>
-                <div>
+                <div class="min-w-0 flex-1">
                     <div class="text-[11px] uppercase tracking-wider font-bold text-purple-700">Konteks: Thread Forum ({{ $conversation->post->category_code }})</div>
-                    <h3 class="text-sm font-semibold text-slate-900">{{ $conversation->post->title }}</h3>
+                    <h3 class="text-sm font-semibold text-slate-900 truncate" title="{{ $conversation->post->title }}">{{ $conversation->post->title }}</h3>
                     @if($conversation->post->price_offer)
                         <div class="text-xs text-slate-600 mt-0.5">
                             Penawaran: <span class="font-bold text-slate-800">Rp {{ number_format($conversation->post->price_offer, 0, ',', '.') }}</span>
@@ -101,193 +102,8 @@
         </div>
     @endif
 
-    <!-- Lembar Kesepakatan Transaksi Escrow (Agreement Sheet Card) -->
-    @if($conversation->agreement)
-        @php
-            $agr = $conversation->agreement;
-            $agrStatus = $agr->status instanceof \App\Enums\AgreementStatus ? $agr->status->value : (string) $agr->status;
-            $isBuyer = auth()->id() === $agr->buyer_id;
-            $isSeller = auth()->id() === $agr->seller_id;
-            $myAccepted = ($isBuyer && $agr->buyer_accepted_at) || ($isSeller && $agr->seller_accepted_at);
-        @endphp
-
-        <div class="glass-card p-4 sm:p-5 mb-4 border-l-4 {{ $agrStatus === 'FINALIZED' ? 'border-l-emerald-500' : ($agrStatus === 'REJECTED' ? 'border-l-rose-500' : 'border-l-indigo-600') }} shadow-sm">
-            <!-- Header Card -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-200/80">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl {{ $agrStatus === 'FINALIZED' ? 'bg-emerald-500/15 text-emerald-700' : ($agrStatus === 'REJECTED' ? 'bg-rose-500/15 text-rose-700' : 'bg-indigo-600/15 text-indigo-700') }} flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">Lembar Kesepakatan Transaksi</h3>
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $agrStatus === 'FINALIZED' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : ($agrStatus === 'REJECTED' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200') }}">
-                                {{ $agrStatus }}
-                            </span>
-                            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                                Rev #{{ $agr->revision_no }}
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-500 mt-0.5">{{ $agr->item_title }}</p>
-                    </div>
-                </div>
-
-                <!-- Action Buttons Header -->
-                <div class="flex items-center gap-2 shrink-0">
-                    @if($agrStatus === 'DRAFT')
-                        @if(!$myAccepted)
-                            <button type="button"
-                                    id="btn-open-accept-modal"
-                                    class="glass-btn-primary text-xs py-1.5 px-3 rounded-xl font-bold inline-flex items-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                <span>Setujui (Rev #{{ $agr->revision_no }})</span>
-                            </button>
-                            <button type="button"
-                                    id="btn-open-revise-modal"
-                                    class="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-xs font-semibold text-slate-700 transition cursor-pointer">
-                                ✎ Revisi
-                            </button>
-                            <button type="button"
-                                    id="btn-open-reject-modal"
-                                    class="px-2.5 py-1.5 rounded-xl border border-rose-200 hover:border-rose-400 hover:bg-rose-50 text-xs font-semibold text-rose-700 transition cursor-pointer">
-                                ✕ Tolak
-                            </button>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                Menunggu persetujuan @<span>{{ $otherUser?->username }}</span>
-                            </span>
-                            <button type="button"
-                                    id="btn-open-revise-modal"
-                                    class="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-xs font-semibold text-slate-700 transition cursor-pointer">
-                                ✎ Perbarui Revisi
-                            </button>
-                        @endif
-                    @elseif($agrStatus === 'FINALIZED')
-                        @if($agr->transaction)
-                            <a href="{{ route('transactions.show', $agr->transaction) }}"
-                               class="glass-btn-primary text-xs py-1.5 px-3 rounded-xl font-bold inline-flex items-center gap-1.5 shadow-xs hover:scale-105 transition">
-                                <span>Lihat Transaksi #{{ $agr->transaction->transaction_id }}</span>
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                            </a>
-                        @else
-                            <span class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                Snapshot Terkunci
-                            </span>
-                        @endif
-                    @elseif($agrStatus === 'REJECTED')
-                        <button type="button"
-                                id="btn-open-revise-modal"
-                                class="glass-btn-primary text-xs py-1.5 px-3 rounded-xl font-bold inline-flex items-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            <span>Ajukan Revisi Baru</span>
-                        </button>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Card Body / Detail Information -->
-            <div class="mt-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                <!-- Kolom 1: Peran & Katalog -->
-                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1">
-                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pihak Transaksi</div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Pembeli:</span>
-                        <span class="font-bold">@<span>{{ $agr->buyer?->username }}</span> {{ $isBuyer ? '(Anda)' : '' }}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Penjual:</span>
-                        <span class="font-bold">@<span>{{ $agr->seller?->username }}</span> {{ $isSeller ? '(Anda)' : '' }}</span>
-                    </div>
-                    <div class="pt-1 border-t border-slate-200/60 text-slate-600 truncate">
-                        <span class="text-slate-400">Varian:</span> {{ $agr->variant?->product?->product_name }} &bull; {{ $agr->variant?->variant_name }}
-                    </div>
-                </div>
-
-                <!-- Kolom 2: Rincian Finansial & Fee -->
-                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Rincian Finansial</span>
-                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded {{ $agr->fee_type->value === 'EXCLUDE' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-purple-50 text-purple-700 border border-purple-200' }}">
-                            {{ $agr->fee_type->value }}
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Harga Dasar:</span>
-                        <span class="font-bold">Rp {{ number_format($agr->base_price, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Fee Layanan:</span>
-                        <span class="font-medium text-slate-600">Rp {{ number_format($agr->fee_amount, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="pt-1 border-t border-slate-200/60 flex items-center justify-between text-indigo-700 font-bold">
-                        <span>Total Pembeli:</span>
-                        <span>Rp {{ number_format($agr->buyer_total, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-emerald-700 font-semibold text-[11px]">
-                        <span>Hak Bersih Penjual:</span>
-                        <span>Rp {{ number_format($agr->seller_net, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-
-                <!-- Kolom 3: Penyerahan & Catatan -->
-                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1 sm:col-span-2 lg:col-span-1">
-                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Ketentuan Penyerahan</div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Metode:</span>
-                        <span class="font-medium text-slate-800">{{ $agr->deliveryMethodLabel() }}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-700">
-                        <span class="text-slate-500">Batas Waktu:</span>
-                        <span class="font-medium text-slate-800">{{ $agr->delivery_within_minutes }} Menit</span>
-                    </div>
-                    <div class="pt-1 border-t border-slate-200/60 text-slate-600">
-                        <span class="text-slate-400">Deskripsi:</span>
-                        <p class="text-[11px] text-slate-700 mt-0.5 line-clamp-2" title="{{ $agr->item_description }}">{{ $agr->item_description }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rejection Alert if REJECTED -->
-            @if($agrStatus === 'REJECTED')
-                <div class="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs flex items-start gap-2.5">
-                    <svg class="w-4 h-4 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <div>
-                        <div class="font-bold">Usulan kesepakatan ini ditolak oleh @<span>{{ $agr->rejectedByUser?->username ?? 'pihak lawan' }}</span></div>
-                        <p class="text-[11px] mt-0.5 text-rose-700"><span class="font-semibold">Alasan Penolakan:</span> {{ $agr->rejection_reason }}</p>
-                    </div>
-                </div>
-            @endif
-        </div>
-    @elseif(!$conversation->listing)
-        <!-- Propose Agreement Callout CTA Banner (Jika belum ada kesepakatan pada DM non-marketplace) -->
-        <div class="glass-card p-3.5 sm:p-4 mb-4 border border-indigo-200/60 bg-gradient-to-r from-indigo-50/60 via-white to-purple-50/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-700 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">Ingin bertransaksi dengan aman?</h4>
-                    <p class="text-[11px] text-slate-600">Ajukan lembar kesepakatan transaksi escrow agar dana pembayaran terlindungi sampai pesanan diserahkan.</p>
-                </div>
-            </div>
-            <button type="button"
-                    id="btn-open-propose-modal"
-                    class="glass-btn-primary text-xs py-2 px-3.5 rounded-xl font-bold inline-flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs hover:scale-105 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>Ajukan Kesepakatan</span>
-            </button>
-        </div>
-    @endif
-
-    <!-- Chat Stream Box -->
-    <div class="glass-panel p-4 sm:p-6 mb-4 flex flex-col min-h-[420px] max-h-[600px] overflow-y-auto" id="messages-container">
+    <!-- Chat Stream Box (Fixed Container without Horizontal Scroll) -->
+    <div class="glass-panel p-4 sm:p-6 mb-4 flex flex-col min-h-[420px] max-h-[600px] overflow-y-auto overflow-x-hidden w-full max-w-full" id="messages-container">
         @if($conversation->messages->isEmpty())
             <div class="m-auto text-center py-12 text-slate-400" id="empty-state">
                 <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
@@ -298,39 +114,39 @@
                 <p class="text-sm font-medium">Belum ada pesan di percakapan ini.</p>
                 <p class="text-xs text-slate-400 mt-1">Kirim pesan pertama atau gunakan template pesan singkat untuk memulai.</p>
             </div>
-            <div class="space-y-4 hidden" id="message-list"></div>
+            <div class="space-y-4 hidden w-full max-w-full min-w-0 overflow-hidden" id="message-list"></div>
         @else
-            <div class="space-y-4" id="message-list">
+            <div class="space-y-4 w-full max-w-full min-w-0 overflow-hidden" id="message-list">
                 @foreach($conversation->messages as $msg)
                     @php
                         $isMe = $msg->sender_id === auth()->user()->user_id;
                     @endphp
 
-                    <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}" data-message-id="{{ $msg->message_id }}">
-                        <div class="max-w-[85%] sm:max-w-[70%]">
+                    <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }} w-full min-w-0" data-message-id="{{ $msg->message_id }}">
+                        <div class="max-w-[85%] sm:max-w-[70%] min-w-0">
                             <!-- Sender name label for other user -->
                             @if(! $isMe)
-                                <div class="text-[11px] font-semibold text-slate-500 mb-1 ml-1">
+                                <div class="text-[11px] font-semibold text-slate-500 mb-1 ml-1 truncate">
                                     @<span>{{ $msg->sender ? $msg->sender->username : 'Peserta' }}</span>
                                 </div>
                             @endif
 
                             <!-- Message Bubble -->
-                            <div class="p-3.5 sm:p-4 rounded-2xl text-sm leading-relaxed shadow-xs {{ $isMe ? 'bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white rounded-tr-xs' : 'bg-white/85 backdrop-blur-md border border-slate-200/80 text-slate-800 rounded-tl-xs' }}">
+                            <div class="p-3.5 sm:p-4 rounded-2xl text-sm leading-relaxed shadow-xs min-w-0 break-words {{ $isMe ? 'bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white rounded-tr-xs' : 'bg-white/85 backdrop-blur-md border border-slate-200/80 text-slate-800 rounded-tl-xs' }}">
                                 @if($msg->content)
-                                    <div class="whitespace-pre-wrap break-words">{{ $msg->content }}</div>
+                                    <div class="whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0">{{ $msg->content }}</div>
                                 @endif
 
                                 <!-- Attachment Card (If exists) -->
                                 @if($msg->hasAttachment())
-                                    <div class="mt-2.5 p-2.5 rounded-xl {{ $isMe ? 'bg-indigo-700/50 text-white' : 'bg-slate-50 border border-slate-200 text-slate-800' }} flex items-center justify-between gap-3 text-xs">
-                                        <div class="flex items-center gap-2 overflow-hidden min-w-0">
+                                    <div class="mt-2.5 p-2.5 rounded-xl {{ $isMe ? 'bg-indigo-700/50 text-white' : 'bg-slate-50 border border-slate-200 text-slate-800' }} flex items-center justify-between gap-3 text-xs min-w-0 overflow-hidden">
+                                        <div class="flex items-center gap-2 overflow-hidden min-w-0 flex-1">
                                             <div class="w-8 h-8 rounded-lg {{ $isMe ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600' }} flex items-center justify-center shrink-0">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                                                 </svg>
                                             </div>
-                                            <div class="truncate">
+                                            <div class="truncate min-w-0 flex-1">
                                                 <div class="font-medium truncate text-xs">{{ $msg->attachment_name }}</div>
                                                 <div class="text-[10px] opacity-75">{{ $msg->formattedAttachmentSize() }}</div>
                                             </div>
@@ -378,6 +194,216 @@
         @endif
     </div>
 
+    <!-- Data Kesepakatan Transaksi (Agreement Card Diposisikan Persis di Atas Input Pesan) -->
+    @if($conversation->agreement)
+        @php
+            $agr = $conversation->agreement;
+            $agrStatus = $agr->status instanceof \App\Enums\AgreementStatus ? $agr->status->value : (string) $agr->status;
+            $isBuyer = auth()->id() === $agr->buyer_id;
+            $isSeller = auth()->id() === $agr->seller_id;
+            $myAccepted = ($isBuyer && $agr->buyer_accepted_at) || ($isSeller && $agr->seller_accepted_at);
+        @endphp
+
+        <div class="glass-card p-4 sm:p-5 mb-4 border-l-4 {{ $agrStatus === 'FINALIZED' ? 'border-l-emerald-500' : ($agrStatus === 'REJECTED' ? 'border-l-rose-500' : ($agrStatus === 'CANCELLED' ? 'border-l-slate-400' : 'border-l-indigo-600')) }} shadow-sm w-full min-w-0 overflow-hidden">
+            <!-- Header Card -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-200/80">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div class="w-10 h-10 rounded-xl {{ $agrStatus === 'FINALIZED' ? 'bg-emerald-500/15 text-emerald-700' : ($agrStatus === 'REJECTED' ? 'bg-rose-500/15 text-rose-700' : ($agrStatus === 'CANCELLED' ? 'bg-slate-200 text-slate-700' : 'bg-indigo-600/15 text-indigo-700')) }} flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">Data Kesepakatan Transaksi</h3>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $agrStatus === 'FINALIZED' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : ($agrStatus === 'REJECTED' ? 'bg-rose-100 text-rose-800 border border-rose-200' : ($agrStatus === 'CANCELLED' ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'bg-indigo-100 text-indigo-800 border border-indigo-200')) }}">
+                                {{ $agrStatus }}
+                            </span>
+                            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                Rev #{{ $agr->revision_no }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5 truncate" title="{{ $agr->item_title }}">{{ $agr->item_title }}</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons: Kedua Belah Pihak Diberi Setujui, Tolak, Akhiri Agreement, dan Revisi -->
+                <div class="grid grid-cols-2 gap-2 w-full sm:flex sm:flex-wrap sm:w-auto sm:items-center sm:shrink-0">
+                    @if($agrStatus === 'DRAFT')
+                        <button type="button"
+                                id="btn-open-accept-modal"
+                                class="glass-btn-primary text-xs py-2 sm:py-1.5 px-3 rounded-xl font-bold inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition w-full sm:w-auto"
+                                title="Periksa rincian dan konfirmasi kesepakatan">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="truncate">Setujui (Rev #{{ $agr->revision_no }})</span>
+                        </button>
+                        <button type="button"
+                                id="btn-open-revise-modal"
+                                class="px-2.5 py-2 sm:py-1.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 text-xs font-semibold text-slate-700 transition cursor-pointer text-center w-full sm:w-auto"
+                                title="Ubah ketentuan atau harga usulan kesepakatan">
+                            ✎ Revisi
+                        </button>
+                        <button type="button"
+                                id="btn-open-reject-modal"
+                                class="px-2.5 py-2 sm:py-1.5 rounded-xl border border-rose-200 hover:border-rose-400 hover:bg-rose-50 text-xs font-semibold text-rose-700 transition cursor-pointer text-center w-full sm:w-auto"
+                                title="Tolak usulan harga/klausul ini untuk negosiasi ulang">
+                            ✕ Tolak
+                        </button>
+                        <button type="button"
+                                id="btn-open-cancel-modal"
+                                class="px-2.5 py-2 sm:py-1.5 rounded-xl border border-slate-300 hover:border-rose-300 hover:bg-rose-50 text-xs font-semibold text-slate-600 hover:text-rose-700 transition cursor-pointer text-center w-full sm:w-auto"
+                                title="Batalkan/akhiri proses kesepakatan transaksi">
+                            ⊘ Akhiri Agreement
+                        </button>
+                    @elseif($agrStatus === 'FINALIZED')
+                        @if($agr->transaction)
+                            <a href="{{ route('transactions.show', $agr->transaction) }}"
+                               class="glass-btn-primary text-xs py-2 sm:py-1.5 px-3 rounded-xl font-bold inline-flex items-center justify-center gap-1.5 shadow-xs hover:scale-105 transition col-span-2 sm:col-span-1 w-full sm:w-auto">
+                                <span>Lihat Transaksi #{{ $agr->transaction->transaction_id }}</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        @else
+                            <span class="px-2.5 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 text-center col-span-2 sm:col-span-1">
+                                Snapshot Terkunci
+                            </span>
+                        @endif
+                    @elseif($agrStatus === 'REJECTED')
+                        <button type="button"
+                                id="btn-open-revise-modal"
+                                class="glass-btn-primary text-xs py-2 sm:py-1.5 px-3 rounded-xl font-bold inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition w-full sm:w-auto"
+                                title="Ajukan revisi harga atau ketentuan baru">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Ajukan Revisi Baru</span>
+                        </button>
+                        <button type="button"
+                                id="btn-open-cancel-modal"
+                                class="px-2.5 py-2 sm:py-1.5 rounded-xl border border-rose-200 hover:border-rose-400 hover:bg-rose-50 text-xs font-semibold text-rose-700 transition cursor-pointer text-center w-full sm:w-auto"
+                                title="Batalkan/akhiri proses kesepakatan transaksi">
+                            ⊘ Akhiri Agreement
+                        </button>
+                    @elseif($agrStatus === 'CANCELLED')
+                        @if(!$conversation->listing)
+                            <button type="button"
+                                    id="btn-open-propose-modal"
+                                    class="glass-btn-primary text-xs py-2 sm:py-1.5 px-3 rounded-xl font-bold inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer hover:scale-105 transition col-span-2 sm:col-span-1 w-full sm:w-auto">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                <span>Ajukan Kesepakatan Baru</span>
+                            </button>
+                        @endif
+                    @endif
+                </div>
+            </div>
+
+            <!-- Card Body / Detail Information -->
+            <div class="mt-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs w-full max-w-full min-w-0">
+                <!-- Kolom 1: Peran & Katalog -->
+                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1 min-w-0 overflow-hidden">
+                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pihak Transaksi</div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1.5 min-w-0">
+                        <span class="text-slate-500 shrink-0">Pembeli:</span>
+                        <span class="font-bold truncate ml-1 text-right">@<span>{{ $agr->buyer?->username }}</span> {{ $isBuyer ? '(Anda)' : '' }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1.5 min-w-0">
+                        <span class="text-slate-500 shrink-0">Penjual:</span>
+                        <span class="font-bold truncate ml-1 text-right">@<span>{{ $agr->seller?->username }}</span> {{ $isSeller ? '(Anda)' : '' }}</span>
+                    </div>
+                    <div class="pt-1 border-t border-slate-200/60 text-slate-600 min-w-0">
+                        <span class="text-slate-400">Varian:</span> <span class="break-words [overflow-wrap:anywhere]">{{ $agr->variant?->product?->product_name }} &bull; {{ $agr->variant?->variant_name }}</span>
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Rincian Finansial & Fee Rekber -->
+                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1 min-w-0 overflow-hidden">
+                    <div class="flex items-center justify-between gap-1">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider shrink-0">Rincian Finansial</span>
+                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded shrink-0 {{ $agr->fee_type->value === 'EXCLUDE' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-purple-50 text-purple-700 border border-purple-200' }}">
+                            {{ $agr->fee_type->value }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1">
+                        <span class="text-slate-500 shrink-0">Harga Dasar:</span>
+                        <span class="font-bold truncate text-right">Rp {{ number_format($agr->base_price, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1">
+                        <span class="text-slate-500 shrink-0">Fee Rekber:</span>
+                        <span class="font-medium text-slate-600 truncate text-right">Rp {{ number_format($agr->fee_amount, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="pt-1 border-t border-slate-200/60 flex items-center justify-between text-indigo-700 font-bold gap-1">
+                        <span class="shrink-0">Total Pembeli:</span>
+                        <span class="truncate text-right">Rp {{ number_format($agr->buyer_total, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-emerald-700 font-semibold text-[11px] gap-1">
+                        <span class="shrink-0">Hak Bersih Penjual:</span>
+                        <span class="truncate text-right">Rp {{ number_format($agr->seller_net, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+
+                <!-- Kolom 3: Penyerahan & Catatan -->
+                <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1 sm:col-span-2 lg:col-span-1 min-w-0 overflow-hidden">
+                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Ketentuan Penyerahan</div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1">
+                        <span class="text-slate-500 shrink-0">Metode:</span>
+                        <span class="font-medium text-slate-800 truncate text-right">{{ $agr->deliveryMethodLabel() }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-slate-700 gap-1">
+                        <span class="text-slate-500 shrink-0">Batas Waktu:</span>
+                        <span class="font-medium text-slate-800 shrink-0 text-right">{{ $agr->delivery_within_minutes }} Menit</span>
+                    </div>
+                    <div class="pt-1 border-t border-slate-200/60 text-slate-600 min-w-0">
+                        <span class="text-slate-400">Deskripsi:</span>
+                        <p class="text-[11px] text-slate-700 mt-0.5 line-clamp-2 break-words [overflow-wrap:anywhere]" title="{{ $agr->item_description }}">{{ $agr->item_description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejection Alert if REJECTED -->
+            @if($agrStatus === 'REJECTED')
+                <div class="mt-3 p-3 rounded-xl bg-rose-50 border border-rose-200/80 text-rose-800 text-xs flex items-start gap-2.5">
+                    <svg class="w-4 h-4 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold">Usulan kesepakatan ini ditolak oleh @<span>{{ $agr->rejectedByUser?->username ?? 'pihak lawan' }}</span></div>
+                        <p class="text-[11px] mt-0.5 text-rose-700 break-words"><span class="font-semibold">Alasan Penolakan:</span> {{ $agr->rejection_reason }}</p>
+                        <p class="text-[10px] mt-1 text-slate-500">💡 Penolakan bukan berarti transaksi berakhir. Anda dapat mengajukan revisi harga atau mengubah ketentuan lewat tombol Revisi.</p>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Cancellation Alert if CANCELLED -->
+            @if($agrStatus === 'CANCELLED')
+                <div class="mt-3 p-3 rounded-xl bg-slate-100 border border-slate-300 text-slate-700 text-xs flex items-start gap-2.5">
+                    <svg class="w-4 h-4 text-slate-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold">Proses kesepakatan ini telah diakhiri.</div>
+                        <p class="text-[11px] mt-0.5 text-slate-600 break-words"><span class="font-semibold">Keterangan:</span> {{ $agr->rejection_reason ?: 'Kesepakatan dibatalkan oleh salah satu pihak.' }}</p>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @elseif(!$conversation->listing)
+        <!-- Propose Agreement Callout CTA Banner (Diposisikan Persis di Atas Input Pesan) -->
+        <div class="glass-card p-3.5 sm:p-4 mb-4 border border-indigo-200/60 bg-gradient-to-r from-indigo-50/60 via-white to-purple-50/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full min-w-0 overflow-hidden">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 text-indigo-700 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">Ingin bertransaksi dengan aman?</h4>
+                    <p class="text-[11px] text-slate-600">Ajukan data kesepakatan transaksi rekber agar dana pembayaran terlindungi sampai pesanan diserahkan.</p>
+                </div>
+            </div>
+            <button type="button"
+                    id="btn-open-propose-modal"
+                    class="glass-btn-primary text-xs py-2 px-3.5 rounded-xl font-bold inline-flex items-center gap-1.5 shrink-0 cursor-pointer shadow-xs hover:scale-105 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>Ajukan Kesepakatan</span>
+            </button>
+        </div>
+    @endif
+
     <!-- Message Input Box with Template Dropdown & Attachment Picker -->
     <div class="glass-panel p-3 sm:p-4">
         <!-- Quick Message Templates (TC-DM-03) -->
@@ -405,8 +431,8 @@
                     <button type="button" class="quick-template-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition" data-text="Halo, bagaimana detail spesifikasi dan tata cara penyerahannya?">
                         "Bagaimana detail spesifikasi & penyerahannya?"
                     </button>
-                    <button type="button" class="quick-template-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition" data-text="Halo, saya ingin mengajukan lembar kesepakatan transaksi escrow untuk ini.">
-                        "Saya ingin ajukan kesepakatan escrow."
+                    <button type="button" class="quick-template-item w-full text-left px-3 py-2 text-xs rounded-lg text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition" data-text="Halo, saya ingin mengajukan data kesepakatan transaksi rekber untuk ini.">
+                        "Saya ingin ajukan kesepakatan rekber."
                     </button>
                 </div>
             </div>
@@ -921,6 +947,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnOpenReject) {
         btnOpenReject.addEventListener('click', () => openModal('modal-reject-agreement'));
     }
+
+    // 5. Cancel Modal (Akhiri Agreement)
+    const btnOpenCancel = document.getElementById('btn-open-cancel-modal');
+    if (btnOpenCancel) {
+        btnOpenCancel.addEventListener('click', () => openModal('modal-cancel-agreement'));
+    }
 });
 </script>
 
@@ -936,7 +968,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div>
                     <h3 class="text-sm sm:text-base font-bold text-slate-900">Ajukan Lembar Kesepakatan</h3>
-                    <p class="text-[11px] text-slate-500">Kesepakatan aman dilindungi rekening escrow MarketTrust</p>
+                    <p class="text-[11px] text-slate-500">Kesepakatan aman dilindungi rekening rekber MarketTrust</p>
                 </div>
             </div>
             <button type="button" data-close-modal="modal-propose-agreement" class="p-1 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer">
@@ -955,7 +987,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="radio" name="role" value="BUYER" checked class="text-indigo-600 focus:ring-indigo-500">
                         <div>
                             <div class="font-bold text-slate-800">Pembeli (Buyer)</div>
-                            <div class="text-[10px] text-slate-500">Membayar dana ke escrow</div>
+                            <div class="text-[10px] text-slate-500">Membayar dana ke rekber</div>
                         </div>
                     </label>
                     <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 cursor-pointer transition">
@@ -1270,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- ======================================================== -->
-<!-- MODAL 3: SETUJUI KESEPAKATAN (UC-11)                      -->
+<!-- MODAL 3: SETUJUI & KONFIRMASI KESEPAKATAN (UC-11)         -->
 <!-- ======================================================== -->
 <div id="modal-accept-agreement" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
@@ -1279,8 +1311,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div>
-                <h3 class="text-sm sm:text-base font-bold text-slate-900">Setujui Kesepakatan Final</h3>
-                <p class="text-[11px] text-slate-500">Membentuk 1 pesanan resmi escrow</p>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">Konfirmasi & Setujui Kesepakatan</h3>
+                <p class="text-[11px] text-slate-500">Periksa kembali data kesepakatan sebelum konfirmasi final</p>
             </div>
         </div>
 
@@ -1294,6 +1326,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>Harga Dasar:</span>
                 <span class="font-bold text-slate-800">Rp {{ number_format($conversation->agreement->base_price, 0, ',', '.') }}</span>
             </div>
+            <div class="flex items-center justify-between text-slate-600">
+                <span>Biaya Layanan (Rekber):</span>
+                <span class="font-bold text-slate-800">Rp {{ number_format($conversation->agreement->fee_amount, 0, ',', '.') }}</span>
+            </div>
             <div class="flex items-center justify-between text-indigo-700 font-bold pt-1 border-t border-slate-200">
                 <span>Total Bayar Pembeli:</span>
                 <span>Rp {{ number_format($conversation->agreement->buyer_total, 0, ',', '.') }}</span>
@@ -1302,9 +1338,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>Hak Bersih Penjual:</span>
                 <span>Rp {{ number_format($conversation->agreement->seller_net, 0, ',', '.') }}</span>
             </div>
+            <div class="flex items-center justify-between text-slate-600 pt-1 border-t border-slate-200">
+                <span>Metode & Batas Waktu:</span>
+                <span class="font-medium text-slate-800">{{ $conversation->agreement->deliveryMethodLabel() }} ({{ $conversation->agreement->delivery_within_minutes }} Menit)</span>
+            </div>
             <p class="text-[10px] text-slate-500 pt-2 border-t border-slate-200">
                 Setelah disetujui, kesepakatan akan berstatus <strong>FINALIZED</strong> dan otomatis membuat transaksi dengan batas pembayaran <strong>1 Jam</strong>.
             </p>
+
+            <div class="pt-2">
+                <label class="flex items-start gap-2.5 p-2.5 rounded-xl bg-indigo-50/70 border border-indigo-200/80 cursor-pointer">
+                    <input type="checkbox" id="accept-confirmation-check" required class="mt-0.5 rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-[11px] text-indigo-950 font-medium">Saya telah memeriksa ulang dan memastikan seluruh klausul, harga, dan ketentuan transaksi di atas sudah sesuai.</span>
+                </label>
+            </div>
         </div>
 
         <form action="{{ route('conversations.agreement.accept', $conversation->conversation_id) }}" method="POST">
@@ -1315,8 +1362,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="button" data-close-modal="modal-accept-agreement" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold cursor-pointer">
                     Batal
                 </button>
-                <button type="submit" class="glass-btn-primary py-2 px-4 font-bold rounded-xl cursor-pointer shadow-sm hover:scale-[1.02] transition">
-                    Ya, Setujui & Buat Transaksi
+                <button type="submit" id="btn-confirm-accept-submit" class="glass-btn-primary py-2 px-4 font-bold rounded-xl cursor-pointer shadow-sm hover:scale-[1.02] transition">
+                    Konfirmasi & Setujui
                 </button>
             </div>
         </form>
@@ -1341,6 +1388,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <form action="{{ route('conversations.agreement.reject', $conversation->conversation_id) }}" method="POST" class="mt-4 space-y-3.5 text-xs">
             @csrf
 
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-[11px] leading-relaxed">
+                💡 Menolak kesepakatan tidak langsung mengakhiri transaksi. Anda atau pihak lawan dapat mengajukan revisi harga atau ketentuan penyerahan setelah penolakan.
+            </div>
+
             <div>
                 <label for="rejection-reason" class="block font-bold text-slate-700 mb-1">Alasan Penolakan: <span class="text-rose-500">*</span></label>
                 <textarea name="rejection_reason"
@@ -1348,7 +1399,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           required
                           rows="3"
                           maxlength="500"
-                          placeholder="Jelaskan secara sopan alasan menolak usulan kesepakatan ini (harga tidak cocok, syarat penyerahan kurang jelas, dsb)..."
+                          placeholder="Jelaskan secara sopan alasan menolak usulan kesepakatan ini (harga ingin dinegosiasikan, durasi penyerahan kurang cocok, dsb)..."
                           class="glass-input text-xs w-full py-2 px-3 resize-none"></textarea>
                 <span class="text-[10px] text-slate-400 mt-0.5 block">Minimal 3 karakter, maksimal 500 karakter.</span>
             </div>
@@ -1359,6 +1410,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
                 <button type="submit" class="px-4 py-2 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white cursor-pointer shadow-sm transition">
                     Tolak Kesepakatan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL 5: AKHIRI KESEPAKATAN (CANCEL)                      -->
+<!-- ======================================================== -->
+<div id="modal-cancel-agreement" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200">
+        <div class="flex items-center gap-3 pb-3 border-b border-slate-200">
+            <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            </div>
+            <div>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900">Akhiri Kesepakatan Transaksi</h3>
+                <p class="text-[11px] text-slate-500">Proses transaksi untuk usulan ini akan dihentikan</p>
+            </div>
+        </div>
+
+        <form action="{{ route('conversations.agreement.cancel', $conversation->conversation_id) }}" method="POST" class="mt-4 space-y-3.5 text-xs">
+            @csrf
+
+            <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-800 text-[11px] leading-relaxed">
+                ⚠️ Mengakhiri kesepakatan akan membatalkan usulan kesepakatan ini secara permanen. Jika kedua belah pihak ingin bertransaksi lagi nantinya, kesepakatan baru harus diajukan kembali.
+            </div>
+
+            <div>
+                <label for="cancel-reason" class="block font-bold text-slate-700 mb-1">Alasan Mengakhiri (Opsional):</label>
+                <textarea name="cancel_reason"
+                          id="cancel-reason"
+                          rows="2"
+                          maxlength="500"
+                          placeholder="Jelaskan secara singkat alasan mengakhiri kesepakatan..."
+                          class="glass-input text-xs w-full py-2 px-3 resize-none"></textarea>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button type="button" data-close-modal="modal-cancel-agreement" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold cursor-pointer">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white cursor-pointer shadow-sm transition">
+                    Ya, Akhiri Kesepakatan
                 </button>
             </div>
         </form>

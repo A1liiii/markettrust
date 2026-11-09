@@ -11,12 +11,12 @@
             <div class="inline-flex items-center gap-2 mb-6">
                 <span class="glass-badge glass-badge-primary px-3.5 py-1.5 shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
-                    Platform Transaksi & Escrow Digital Terpercaya
+                    Platform Transaksi & Rekber Digital Terpercaya
                 </span>
             </div>
 
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                Marketplace & Forum Digital dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Escrow Terpercaya</span>
+                Marketplace & Forum Digital dengan <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Rekber Terpercaya</span>
             </h1>
 
             <p class="mt-5 sm:mt-6 text-sm sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
@@ -150,7 +150,7 @@
                             <div class="border-t border-slate-200/80 pt-3 flex justify-between items-center">
                                 <div>
                                     <span class="block text-xs font-bold text-slate-900">Total Dibayar Buyer:</span>
-                                    <span class="text-[10px] text-slate-500">Dana ditahan di escrow</span>
+                                    <span class="text-[10px] text-slate-500">Dana ditahan di rekber</span>
                                 </div>
                                 <span id="res-buyer-total" class="text-base font-extrabold text-slate-900">Rp 105.000</span>
                             </div>
@@ -165,7 +165,7 @@
                         </div>
 
                         <div class="mt-4 pt-3 border-t border-slate-200/60 text-[11px] text-slate-500 leading-relaxed">
-                            💡 Gunakan simulasi ini untuk menyepakati harga akhir di Forum atau percakapan DM sebelum membuat kesepakatan final.
+                            💡 Gunakan simulasi ini untuk menyepakati harga akhir di Forum atau percakapan DM sebelum membuat kesepakatan.
                         </div>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                     </div>
                     <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Forum Komunitas & Negosiasi</h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
-                        Ruang diskusi terbuka untuk WTB (Want to Buy), WTS (Want to Sell), dan General. Komentar, likes, dan tombol langsung beralih ke DM kesepakatan.
+                        Forum untuk WTB (Want to Buy), WTS (Want to Sell), dan Umum. Komentar, like, dan dapat berlangsung ke direct message untuk negosiasi
                     </p>
                 </div>
                 <div class="pt-4 border-t border-slate-200/60">
@@ -229,7 +229,7 @@
                 </div>
             </div>
 
-            <!-- Pillar 3: Escrow & Settlement -->
+            <!-- Pillar 3: Rekber & Settlement -->
             <div id="escrow" class="glass-card glass-card-interactive p-6 sm:p-8 flex flex-col justify-between">
                 <div>
                     <div class="flex items-start justify-between gap-3 mb-6">
@@ -243,14 +243,14 @@
                             Proteksi 100%
                         </span>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Escrow Rekber Otomatis</h3>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2">Rekber Otomatis</h3>
                     <p class="text-sm text-slate-600 leading-relaxed mb-6">
                         Dana pembeli ditahan aman di sistem hingga barang digital diperiksa. Pembayaran seller dicatat transparan ke Bank, E-Wallet, atau QRIS.
                     </p>
                 </div>
                 <div class="pt-4 border-t border-slate-200/60">
                     <a href="#simulasi-fee" class="glass-btn-secondary w-full text-xs py-2 px-3 text-center justify-center font-semibold text-slate-700 hover:text-indigo-600">
-                        Simulasi Biaya Escrow &rarr;
+                        Simulasi Biaya Rekber &rarr;
                     </a>
                 </div>
             </div>
@@ -267,24 +267,24 @@
                     Bagaimana Transaksi Aman Dilakukan di MarketTrust?
                 </h3>
                 <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-8">
-                    Setiap transaksi dilindungi oleh lembar kesepakatan (*Agreement Snapshot*) yang mengikat kedua belah pihak tanpa celah kecurangan.
+                    Setiap transaksi dilindungi oleh data kesepakatan yang mengikat kedua belah pihak tanpa celah kecurangan.
                 </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
                         <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-extrabold flex items-center justify-center text-xs mb-3 border border-indigo-400/20">1</span>
-                        <h4 class="font-bold text-white text-sm mb-1">Sepakati Klausul</h4>
+                        <h4 class="font-bold text-white text-sm mb-1">Kesepakatan</h4>
                         <p class="text-[12px] text-slate-300 leading-relaxed">Pembeli & penjual menyepakati harga, durasi pengiriman, dan penanggung fee via DM.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
                         <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-extrabold flex items-center justify-center text-xs mb-3 border border-indigo-400/20">2</span>
-                        <h4 class="font-bold text-white text-sm mb-1">Setor ke Escrow</h4>
+                        <h4 class="font-bold text-white text-sm mb-1">Buyer Payment</h4>
                         <p class="text-[12px] text-slate-300 leading-relaxed">Pembeli membayar total transaksi ke rekening bersama aman.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
                         <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-extrabold flex items-center justify-center text-xs mb-3 border border-indigo-400/20">3</span>
-                        <h4 class="font-bold text-white text-sm mb-1">Serah Item Digital</h4>
-                        <p class="text-[12px] text-slate-300 leading-relaxed">Penjual menyerahkan akun/item dan bukti digital melalui chat terenkripsi.</p>
+                        <h4 class="font-bold text-white text-sm mb-1">Deliver Item</h4>
+                        <p class="text-[12px] text-slate-300 leading-relaxed">Penjual menyerahkan item dan bukti digital melalui chat terenkripsi.</p>
                     </div>
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-sm">
                         <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 font-extrabold flex items-center justify-center text-xs mb-3 border border-indigo-400/20">4</span>

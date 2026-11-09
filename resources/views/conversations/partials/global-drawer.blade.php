@@ -139,7 +139,7 @@
                         </h3>
                         <span id="global-dm-thread-status" class="inline-block w-2 h-2 rounded-full bg-emerald-500 shadow-xs shrink-0" title="Akun Terverifikasi"></span>
                     </div>
-                    <p class="text-[10px] text-slate-400 truncate">Terverifikasi &bull; Escrow Trust</p>
+                    <p class="text-[10px] text-slate-400 truncate">Terverifikasi &bull; Rekber Trust</p>
                 </div>
             </div>
 
@@ -244,8 +244,8 @@
                         <button type="button" class="global-dm-template-item w-full text-left px-2 py-1 text-xs rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition font-medium" data-text="Halo, bagaimana spesifikasi dan ketentuan penyerahannya?">
                             "Bagaimana ketentuan penyerahannya?"
                         </button>
-                        <button type="button" class="global-dm-template-item w-full text-left px-2 py-1 text-xs rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition font-medium" data-text="Halo, saya ingin mengajukan lembar kesepakatan transaksi escrow untuk ini.">
-                            "Saya ingin ajukan kesepakatan escrow."
+                        <button type="button" class="global-dm-template-item w-full text-left px-2 py-1 text-xs rounded-xl text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition font-medium" data-text="Halo, saya ingin mengajukan lembar kesepakatan transaksi rekber untuk ini.">
+                            "Saya ingin ajukan kesepakatan rekber."
                         </button>
                     </div>
                 </div>
@@ -553,34 +553,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 const badgeBg = conv.context_type === 'MARKETPLACE' 
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' 
                     : (conv.context_type === 'FORUM' ? 'bg-purple-50 text-purple-700 border-purple-200/60' : 'bg-indigo-50 text-indigo-700 border-indigo-200/60');
+                const contextLabel = conv.context_type === 'AGREEMENT' ? 'KESEPAKATAN' : conv.context_type;
 
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                    <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs mt-0.5">
                             ${avatarLetter}
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="font-bold text-xs text-slate-900 truncate shrink-0">@${conv.other_user?.username || 'Pengguna'}</span>
+                            <div class="flex items-baseline justify-between gap-1.5 min-w-0 w-full mb-0.5">
+                                <span class="font-bold text-xs text-slate-900 truncate flex-1">@${conv.other_user?.username || 'Pengguna'}</span>
+                                <span class="text-[9px] text-slate-400 shrink-0 ml-1">${conv.updated_at || ''}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 min-w-0 mb-1">
                                 <span class="text-[8px] uppercase font-bold px-1.5 py-0.2 rounded border ${badgeBg} shrink-0">
-                                    ${conv.context_type}
+                                    ${contextLabel}
                                 </span>
                                 ${conv.context_title && conv.context_title !== 'Percakapan Pribadi' ? `
-                                    <span class="text-[9px] text-slate-500 font-medium truncate max-w-[105px] sm:max-w-[130px] inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/60 px-1.5 py-0.2 rounded transition shrink-0" title="${conv.context_title}">
-                                        <svg class="w-2.5 h-2.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                        </svg>
+                                    <span class="text-[9px] text-slate-500 font-medium truncate max-w-[130px] inline-flex items-center gap-1 bg-slate-100 border border-slate-200/60 px-1.5 py-0.2 rounded shrink-0" title="${conv.context_title}">
                                         <span class="truncate">${conv.context_title}</span>
                                     </span>
                                 ` : ''}
                             </div>
-                            <p class="text-[11px] text-slate-500 truncate mt-0.5 font-normal">${conv.last_message ? conv.last_message.content : 'Belum ada pesan.'}</p>
+                            <p class="text-[11px] text-slate-500 truncate font-normal">${conv.last_message ? conv.last_message.content : 'Belum ada pesan.'}</p>
                         </div>
                     </div>
-                    <div class="text-right shrink-0">
-                        <span class="text-[9px] text-slate-400 block mb-0.5">${conv.updated_at || ''}</span>
-                        ${unreadPill}
-                    </div>
+                    ${unreadPill ? `<div class="shrink-0 self-center ml-2">${unreadPill}</div>` : ''}
                 `;
 
                 item.addEventListener('click', function() {

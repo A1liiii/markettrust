@@ -57,9 +57,9 @@
                 </div>
                 <p class="text-xs text-slate-600">
                     @if ($latestCancellation->isBeforePayment())
-                        Transaksi dibatalkan sebelum pembayaran escrow terverifikasi. Tidak ada penalti reputasi dan akses pembayaran telah ditutup.
+                        Transaksi dibatalkan sebelum pembayaran rekber terverifikasi. Tidak ada penalti reputasi dan akses pembayaran telah ditutup.
                     @else
-                        Pembatalan pasca-pembayaran telah disetujui Admin. Dana transaksi sedang dipersiapkan untuk pengembalian (refund) sesuai kebijakan escrow.
+                        Pembatalan pasca-pembayaran telah disetujui Admin. Dana transaksi sedang dipersiapkan untuk pengembalian (refund) sesuai kebijakan rekber.
                     @endif
                 </p>
             </div>
@@ -107,7 +107,7 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="text-amber-800 font-bold text-xs uppercase tracking-wide">
-                                ⚖️ Kewajiban KEEP Ditetapkan (Biaya Pemeliharaan Escrow)
+                                ⚖️ Kewajiban KEEP Ditetapkan (Biaya Pemeliharaan Rekber)
                             </span>
                         </div>
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold {{ $latestCancellation->keepObligation->status === 'OPEN' ? 'bg-amber-200 text-amber-900' : 'bg-emerald-100 text-emerald-800' }}">
@@ -185,10 +185,10 @@
                         <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
-                        Ketentuan Pembatalan Pasca-Bayar (Escrow):
+                        Ketentuan Pembatalan Pasca-Bayar (Rekber):
                     </div>
                     <ul class="list-disc list-inside space-y-0.5 text-slate-600 pl-1 text-[11px]">
-                        <li>Dana escrow pembeli telah tersimpan di rekening penampung.</li>
+                        <li>Dana rekber pembeli telah tersimpan di rekening penampung.</li>
                         <li>Pengajuan ini akan masuk ke antrean peninjauan oleh <strong>Administrator</strong>.</li>
                         <li>Jika pembatalan disebabkan oleh <strong>Penjual</strong>, Penjual akan dikenakan kewajiban <strong>KEEP</strong> (Flat Rp 4.000 untuk Bank/VA atau 3x gateway fee) yang akan dipotong pada payout mendatang.</li>
                     </ul>

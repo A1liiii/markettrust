@@ -58,7 +58,7 @@
                             </div>
                             <div>
                                 <h3 class="text-base font-bold text-slate-900">Form Pengajuan Komplain Resmi</h3>
-                                <p class="text-[11px] text-slate-500">Komplain akan menghentikan pelepasan dana otomatis (Escrow Hold)</p>
+                                <p class="text-[11px] text-slate-500">Komplain akan menghentikan pelepasan dana otomatis (Rekber Hold)</p>
                             </div>
                         </div>
                         <button type="button" onclick="closeComplaintModal()" class="text-slate-400 hover:text-slate-600 p-1">
@@ -112,7 +112,7 @@
 
                         <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 leading-relaxed">
                             <strong>Konsekuensi Pengajuan:</strong>
-                            Transaksi akan berubah status menjadi <span class="font-bold uppercase text-amber-800">DISPUTED</span>. Dana escrow ditahan sampai sengketa diselesaikan. Penjual memiliki waktu 24 jam untuk menanggapi.
+                            Transaksi akan berubah status menjadi <span class="font-bold uppercase text-amber-800">DISPUTED</span>. Dana rekber ditahan sampai sengketa diselesaikan. Penjual memiliki waktu 24 jam untuk menanggapi.
                         </div>
 
                         <div class="flex items-center justify-end gap-2.5 pt-2">

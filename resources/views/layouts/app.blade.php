@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="overflow-x-hidden w-full max-w-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative">
+<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative overflow-x-hidden w-full max-w-full">
     <!-- Ambient Glassmorphism Glow Spheres -->
     <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
@@ -33,8 +33,6 @@
                             <span class="text-xl font-bold tracking-tight text-slate-900">Market<span class="text-indigo-600">Trust</span></span>
                             @if (auth()->check() && auth()->user()->isAdmin())
                                 <span class="hidden sm:inline-block glass-badge glass-badge-primary">Panel Admin</span>
-                            @else
-                                <span class="hidden sm:inline-block glass-badge glass-badge-primary">Digital Escrow</span>
                             @endif
                         </div>
                     </a>
@@ -87,7 +85,7 @@
                                 @endif
                             </a>
 
-                            <a href="{{ route('profile.show') }}" class="flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya" data-cy="nav-user-profile">
+                            <a href="{{ route('profile.show') }}" class="hidden sm:flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya" data-cy="nav-user-profile">
                                 @if (auth()->user()->avatar_url)
                                     <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->username }}" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover">
                                 @else
@@ -101,7 +99,7 @@
                                 </span>
                             </a>
 
-                            <form action="{{ route('logout') }}" method="POST" class="inline">
+                            <form action="{{ route('logout') }}" method="POST" class="hidden sm:inline">
                                 @csrf
                                 <button type="submit" class="glass-btn-danger text-xs sm:text-sm py-1.5 px-2.5 sm:px-3" data-cy="btn-logout">
                                     Keluar
@@ -162,6 +160,12 @@
                         Listing
                     </a>
                 @endif
+                <form action="{{ route('logout') }}" method="POST" class="pt-2 pb-1 border-t border-white/50">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-3 py-2 rounded-xl text-sm font-medium text-rose-600 hover:bg-rose-50 transition" data-cy="btn-logout-mobile">
+                        Keluar
+                    </button>
+                </form>
             @endauth
         </div>
     </header>
@@ -213,7 +217,7 @@
     </div>
 
     <!-- Main Content -->
-    <main class="flex-grow">
+    <main class="flex-grow w-full max-w-full overflow-x-hidden">
         @yield('content')
     </main>
 
@@ -221,12 +225,12 @@
     <footer class="mt-auto border-t border-white/60 bg-white/50 backdrop-blur-md py-8 text-slate-600 text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2 font-medium">
-                <span class="font-bold text-slate-900">Market<span class="text-indigo-600">Trust</span></span> &copy; 2026. Platform Marketplace & Escrow Digital Terpercaya.
+                <span class="font-bold text-slate-900">Market<span class="text-indigo-600">Trust</span></span> &copy; 2026. Platform Marketplace & Rekber Digital Terpercaya.
             </div>
             <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs text-slate-500">
-                <span class="glass-badge glass-badge-neutral">Transaksi Item Digital Aman</span>
-                <span class="glass-badge glass-badge-neutral">Escrow Rekber Otomatis</span>
-                <span class="glass-badge glass-badge-neutral">Resolusi Sengketa Terpercaya</span>
+                <span class="glass-badge glass-badge-neutral">Transaksi Item Aman</span>
+                <span class="glass-badge glass-badge-neutral">Rekber Otomatis</span>
+                <span class="glass-badge glass-badge-neutral">Komplain</span>
             </div>
         </div>
     </footer>

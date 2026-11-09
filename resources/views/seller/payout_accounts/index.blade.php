@@ -18,7 +18,7 @@
                     Pengaturan Rekening Payout
                 </h1>
                 <p class="text-sm text-slate-600 mt-1">
-                    Kelola rekening bank, akun e-wallet, dan QRIS untuk pencairan dana hasil penjualan produk escrow digital.
+                    Kelola rekening bank, akun e-wallet, dan QRIS untuk pencairan dana hasil penjualan produk rekber digital.
                 </p>
             </div>
 
@@ -115,7 +115,7 @@
                     <div>
                         <h4 class="text-sm font-bold text-amber-900">Belum Ada Rekening Payout Aktif</h4>
                         <p class="text-xs text-amber-800 mt-0.5 leading-relaxed">
-                            Dana penjualan transaksi escrow Anda akan tertahan sementara hingga Anda mendaftarkan dan mengaktifkan setidaknya satu tujuan pencairan dana yang valid.
+                            Dana penjualan transaksi rekber Anda akan tertahan sementara hingga Anda mendaftarkan dan mengaktifkan setidaknya satu tujuan pencairan dana yang valid.
                         </p>
                     </div>
                 </div>

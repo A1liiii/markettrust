@@ -195,7 +195,7 @@
                             <div class="bg-white/90 p-3 rounded-xl border border-indigo-100/60 shadow-xs">
                                 <span class="block text-[10px] text-indigo-600 uppercase font-bold tracking-wider">2. Fee MarketTrust</span>
                                 <span id="preview_fee_amount" class="text-sm font-black text-indigo-600 mt-1 block">+ Rp 0</span>
-                                <span class="text-[10px] text-slate-400">Layanan escrow platform</span>
+                                <span class="text-[10px] text-slate-400">Layanan rekber platform</span>
                             </div>
 
                             <div class="bg-emerald-50/90 p-3 rounded-xl border border-emerald-200/70 shadow-xs">
@@ -226,7 +226,7 @@
                 <div class="space-y-5 pt-4 border-t border-slate-200/80">
                     <div class="flex items-center gap-2 pb-2 border-b border-slate-200/80">
                         <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold border border-indigo-100">3</span>
-                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Penyerahan & Estimasi Durasi Escrow</h2>
+                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Penyerahan & Estimasi Durasi Rekber</h2>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

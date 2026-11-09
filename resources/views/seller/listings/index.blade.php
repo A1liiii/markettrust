@@ -18,7 +18,7 @@
                     Kelola Penawaran Listing
                 </h1>
                 <p class="text-sm text-slate-600 mt-1">
-                    Atur stok akun game, item digital, dan lisensi Anda dengan sistem penyerahan escrow yang aman.
+                    Atur stok akun game, item digital, dan lisensi Anda dengan sistem penyerahan rekber yang aman.
                 </p>
             </div>
 
