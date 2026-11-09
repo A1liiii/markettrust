@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -24,62 +25,73 @@ class SupabaseStorageService
     }
 
     /**
-     * Upload an uploaded file to Supabase Storage.
+     * Upload an uploaded file to Supabase Storage with automatic fallback to local public disk.
      *
      * @throws RuntimeException
      */
     public function uploadFile(UploadedFile $file, ?string $bucket = null): string
     {
-        if (empty($this->supabaseUrl) || empty($this->supabaseKey)) {
-            throw new RuntimeException('Konfigurasi Supabase Storage (SUPABASE_URL / SUPABASE_SECRET_KEY) belum disetel.');
-        }
-
         $targetBucket = $bucket ?: $this->defaultBucket;
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-        $extension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'jpg';
-        $filename = Str::uuid()->toString().'.'.$extension;
-        $uploadUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$filename}";
 
-        $mimeType = $file->getMimeType() ?: 'application/octet-stream';
-        $contents = file_get_contents($file->getRealPath());
+        // 1. Coba unggah ke Supabase Storage jika kredensial tersedia
+        if (! empty($this->supabaseUrl) && ! empty($this->supabaseKey)) {
+            $extension = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $extension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'jpg';
+            $filename = Str::uuid()->toString().'.'.$extension;
+            $uploadUrl = "{$this->supabaseUrl}/storage/v1/object/{$targetBucket}/{$filename}";
 
-        if ($contents === false) {
-            throw new RuntimeException('Gagal membaca isi file yang diunggah.');
+            $mimeType = $file->getMimeType() ?: 'application/octet-stream';
+            $contents = file_get_contents($file->getRealPath());
+
+            if ($contents !== false) {
+                try {
+                    $response = Http::withHeaders($this->getHeaders())
+                        ->withBody($contents, $mimeType)
+                        ->timeout(8)
+                        ->post($uploadUrl);
+
+                    if ($response->successful()) {
+                        return "{$this->supabaseUrl}/storage/v1/object/public/{$targetBucket}/{$filename}";
+                    }
+
+                    Log::warning('Supabase storage upload unsuccessful, falling back to local public disk', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::warning('Exception during Supabase storage upload, falling back to local public disk', [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
         }
 
+        // 2. Fallback tangguh ke penyimpanan lokal disk public Laravel
         try {
-            $response = Http::withHeaders($this->getHeaders())
-                ->withBody($contents, $mimeType)
-                ->post($uploadUrl);
+            $folder = $bucket ?: 'listings';
+            $path = $file->store($folder, 'public');
 
-            if ($response->successful()) {
-                return "{$this->supabaseUrl}/storage/v1/object/public/{$targetBucket}/{$filename}";
-            }
+            return Storage::url($path);
+        } catch (\Throwable $localErr) {
+            Log::error('Local storage upload failed: '.$localErr->getMessage());
 
-            Log::error('Supabase storage upload failed', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            $message = $response->json('message') ?: $response->body() ?: 'HTTP '.$response->status();
-
-            throw new RuntimeException("Gagal mengunggah gambar ke Supabase Storage: {$message}");
-        } catch (RuntimeException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::error('Exception during Supabase storage upload', [
-                'error' => $e->getMessage(),
-            ]);
-
-            throw new RuntimeException('Terjadi kesalahan koneksi saat mengunggah gambar ke Supabase Storage: '.$e->getMessage(), 0, $e);
+            throw new RuntimeException('Gagal mengunggah gambar ke sistem penyimpanan: '.$localErr->getMessage(), 0, $localErr);
         }
     }
 
     /**
-     * Delete a file from Supabase storage.
+     * Delete a file from Supabase storage or local disk.
      */
     public function deleteFile(string $url, ?string $bucket = null): bool
     {
+        // 1. Hapus jika URL berasal dari local storage
+        if (str_starts_with($url, '/storage/') || str_contains($url, '/storage/')) {
+            $localPath = preg_replace('#^.*?/storage/#', '', $url);
+            if (! empty($localPath)) {
+                return Storage::disk('public')->delete($localPath);
+            }
+        }
+
         $targetBucket = $bucket ?: $this->defaultBucket;
 
         if (empty($this->supabaseUrl) || empty($this->supabaseKey)) {

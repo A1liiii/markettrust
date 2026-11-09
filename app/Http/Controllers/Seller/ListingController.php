@@ -167,7 +167,9 @@ class ListingController extends Controller
                 $this->storageService->deleteFile($url);
             }
 
-            throw $e;
+            return back()->withInput()->withErrors([
+                'images' => 'Gagal memproses atau mengunggah lampiran foto: '.$e->getMessage().'. Silakan periksa file dan coba kembali.',
+            ]);
         } finally {
             optional($lock)->release();
         }
@@ -235,7 +237,10 @@ class ListingController extends Controller
                 foreach ($newUploadedUrls as $url) {
                     $this->storageService->deleteFile($url);
                 }
-                throw $e;
+
+                return back()->withInput()->withErrors([
+                    'images' => 'Gagal mengunggah foto tambahan: '.$e->getMessage().'. Silakan coba kembali.',
+                ]);
             }
         }
 

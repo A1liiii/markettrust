@@ -104,11 +104,9 @@ class Listing extends Model
      */
     public function getCoverImageUrlAttribute(): ?string
     {
-        if (is_array($this->image_urls) && ! empty($this->image_urls)) {
-            return $this->image_urls[0];
-        }
+        $all = $this->all_image_urls;
 
-        return null;
+        return ! empty($all) ? $all[0] : null;
     }
 
     /**
@@ -118,7 +116,21 @@ class Listing extends Model
      */
     public function getAllImageUrlsAttribute(): array
     {
-        return is_array($this->image_urls) ? array_values($this->image_urls) : [];
+        if (! is_array($this->image_urls) || empty($this->image_urls)) {
+            return [];
+        }
+
+        return array_values(array_map(function ($url) {
+            $url = trim((string) $url);
+            if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://') || str_starts_with($url, '//')) {
+                return $url;
+            }
+            if (str_starts_with($url, '/')) {
+                return $url;
+            }
+
+            return '/storage/'.ltrim($url, '/');
+        }, $this->image_urls));
     }
 
     /**
