@@ -96,7 +96,15 @@ class ForumPostController extends Controller
             'variant.product',
             'likes',
             'comments' => function ($q) {
-                $q->with(['author', 'likes'])->oldest('created_at');
+                $q->whereNull('parent_comment_id')
+                    ->with([
+                        'author',
+                        'likes',
+                        'replies' => function ($rq) {
+                            $rq->with(['author', 'likes', 'replies.author', 'replies.likes'])->oldest('created_at');
+                        },
+                    ])
+                    ->oldest('created_at');
             },
         ])->loadCount(['likes', 'comments']);
 

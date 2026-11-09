@@ -50,12 +50,19 @@
     </span>
 
     @if (! $canViewSellerBreakdown)
-        {{-- Tampilan Ringkas Buyer: hanya Harga Produk & Total Pembayaran (buyer_total) --}}
+        {{-- Tampilan Ringkas Buyer: Harga Dasar Produk, Fee Layanan Platform, dan Total Pembayaran --}}
         <div class="bg-white/70 rounded-xl p-4 border border-slate-200/80 space-y-2 text-xs sm:text-sm" data-cy="financial-buyer-card">
             <div class="flex justify-between text-slate-600">
-                <span>Harga Produk:</span>
+                <span>Harga Dasar Produk:</span>
                 <span class="font-semibold text-slate-900" data-cy="buyer-product-price">
-                    Rp {{ number_format((float) $agreement->buyer_total, 0, ',', '.') }}
+                    Rp {{ number_format((float) $agreement->base_price, 0, ',', '.') }}
+                </span>
+            </div>
+
+            <div class="flex justify-between text-slate-600">
+                <span>Biaya Layanan Platform (Fee):</span>
+                <span class="font-semibold text-indigo-600" data-cy="buyer-fee-amount">
+                    + Rp {{ number_format((float) $agreement->fee_amount, 0, ',', '.') }}
                 </span>
             </div>
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\laragon\www\markettrust\phpunit.xml" tests="6" assertions="36" errors="0" failures="0" skipped="0" time="0.961222">
+    <testsuite name="Feature" tests="6" assertions="36" errors="0" failures="0" skipped="0" time="0.961222">
+      <testsuite name="Tests\Feature\MarketTrust\Meet1RioScenarioTest" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" tests="6" assertions="36" errors="0" failures="0" skipped="0" time="0.961222">
+        <testcase name="test_marketplace_index_uses_12_per_page_and_shows_new_badge" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="30" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="5" time="0.722087"/>
+        <testcase name="test_informasi_pasar_standalone_page_and_navbar_link" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="57" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="6" time="0.036401"/>
+        <testcase name="test_marketplace_show_does_not_contain_market_stats_widget" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="79" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="3" time="0.037843"/>
+        <testcase name="test_checkout_simplified_payment_breakdown_and_bayar_button" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="104" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="8" time="0.060660"/>
+        <testcase name="test_forum_feed_uses_10_per_page_and_ps5_switcher" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="134" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="4" time="0.042334"/>
+        <testcase name="test_forum_nested_threaded_replies" file="C:\laragon\www\markettrust\tests\Feature\MarketTrust\Meet1RioScenarioTest.php" line="161" class="Tests\Feature\MarketTrust\Meet1RioScenarioTest" classname="Tests.Feature.MarketTrust.Meet1RioScenarioTest" assertions="10" time="0.061897"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

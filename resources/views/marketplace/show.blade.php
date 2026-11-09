@@ -4,88 +4,87 @@
 
 @section('content')
 <div class="pt-4 pb-12 sm:pt-4 sm:pb-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        <!-- Top Section: Breadcrumbs Navigation -->
+        <nav class="flex items-center gap-2 text-xs text-slate-500 overflow-x-auto pb-1" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
+            <span>&rsaquo;</span>
+            <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition">Marketplace</a>
+            <span>&rsaquo;</span>
+            <a href="{{ route('marketplace.index', ['category_id' => $listing->variant?->product?->category_id]) }}" class="hover:text-indigo-600 transition">
+                {{ $listing->variant?->product?->category?->category_name ?? 'Kategori' }}
+            </a>
+            <span>&rsaquo;</span>
+            <span class="text-slate-800 font-semibold truncate max-w-[200px]">{{ $listing->title }}</span>
+        </nav>
 
-            <!-- Left Column: Breadcrumb, Preview Alert, Gallery, Specs, & Market Insights (8 Cols) -->
-            <div class="lg:col-span-8 space-y-6">
+        <!-- Preview Mode Alert Banner -->
+        @if ($isPreview ?? false)
+            <div class="glass-alert glass-alert-warning" data-cy="alert-preview-mode">
+                <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <div class="text-sm font-medium">
+                    <strong>Mode Pratinjau Seller:</strong> Listing ini berstatus <span class="uppercase font-bold underline">{{ $listing->status }}</span> dan tidak terlihat oleh publik.
+                </div>
+            </div>
+        @endif
 
-                <!-- Breadcrumbs Navigation -->
-                <nav class="flex items-center gap-2 text-xs text-slate-500 overflow-x-auto pb-1" aria-label="Breadcrumb">
-                    <a href="{{ route('home') }}" class="hover:text-indigo-600 transition">Beranda</a>
-                    <span>&rsaquo;</span>
-                    <a href="{{ route('marketplace.index') }}" class="hover:text-indigo-600 transition">Marketplace</a>
-                    <span>&rsaquo;</span>
-                    <a href="{{ route('marketplace.index', ['category_id' => $listing->variant?->product?->category_id]) }}" class="hover:text-indigo-600 transition">
-                        {{ $listing->variant?->product?->category?->category_name ?? 'Kategori' }}
-                    </a>
-                    <span>&rsaquo;</span>
-                    <span class="text-slate-800 font-semibold truncate max-w-[200px]">{{ $listing->title }}</span>
-                </nav>
+        <!-- Image Gallery Component (Top Hero) -->
+        <div class="glass-card p-4 sm:p-6 overflow-hidden border border-white/80 shadow-sm" id="listing-gallery">
+            @php
+                $images = $listing->all_image_urls;
+            @endphp
 
-                <!-- Preview Mode Alert Banner -->
-                @if ($isPreview ?? false)
-                    <div class="glass-alert glass-alert-warning" data-cy="alert-preview-mode">
-                        <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            <!-- Main Image View -->
+            <div class="relative aspect-video max-h-[440px] w-full rounded-2xl bg-slate-900 overflow-hidden flex items-center justify-center border border-slate-100">
+                @if (!empty($images))
+                    <img
+                        id="gallery-main-image"
+                        src="{{ $images[0] }}"
+                        alt="{{ $listing->title }}"
+                        class="w-full h-full object-contain transition-all duration-300"
+                        data-cy="gallery-main-image"
+                    >
+                @else
+                    <div class="flex flex-col items-center justify-center text-slate-400 p-8 text-center">
+                        <svg class="w-16 h-16 mb-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <div class="text-sm font-medium">
-                            <strong>Mode Pratinjau Seller:</strong> Listing ini berstatus <span class="uppercase font-bold underline">{{ $listing->status }}</span> dan tidak terlihat oleh publik.
-                        </div>
+                        <span class="text-xs font-semibold text-slate-400">Tidak ada lampiran foto untuk listing ini</span>
                     </div>
                 @endif
 
-                <!-- Image Gallery Component -->
-                <div class="glass-card p-4 sm:p-6 overflow-hidden border border-white/80 shadow-sm" id="listing-gallery">
-                    @php
-                        $images = $listing->all_image_urls;
-                    @endphp
+                <span class="absolute top-3 left-3 glass-badge glass-badge-primary">
+                    {{ $listing->variant?->product?->product_name ?? 'Produk Digital' }}
+                </span>
+            </div>
 
-                    <!-- Main Image View -->
-                    <div class="relative aspect-video rounded-2xl bg-slate-900 overflow-hidden flex items-center justify-center border border-slate-100">
-                        @if (!empty($images))
-                            <img
-                                id="gallery-main-image"
-                                src="{{ $images[0] }}"
-                                alt="{{ $listing->title }}"
-                                class="w-full h-full object-contain transition-all duration-300"
-                                data-cy="gallery-main-image"
-                            >
-                        @else
-                            <div class="flex flex-col items-center justify-center text-slate-400 p-8 text-center">
-                                <svg class="w-16 h-16 mb-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="text-xs font-semibold text-slate-400">Tidak ada lampiran foto untuk listing ini</span>
-                            </div>
-                        @endif
-
-                        <span class="absolute top-3 left-3 glass-badge glass-badge-primary">
-                            {{ $listing->variant?->product?->product_name ?? 'Produk Digital' }}
-                        </span>
-                    </div>
-
-                    <!-- Thumbnails Strip (if multiple images) -->
-                    @if (count($images) > 1)
-                        <div class="mt-4 flex gap-3 overflow-x-auto pb-2" id="gallery-thumbnails">
-                            @foreach ($images as $index => $imgUrl)
-                                <button
-                                    type="button"
-                                    class="gallery-thumb-btn w-20 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 {{ $index === 0 ? 'border-indigo-600 scale-102 ring-2 ring-indigo-500/20' : 'border-transparent opacity-70 hover:opacity-100' }}"
-                                    data-full-src="{{ $imgUrl }}"
-                                    aria-label="Lihat gambar {{ $index + 1 }}"
-                                >
-                                    <img src="{{ $imgUrl }}" alt="Thumbnail {{ $index + 1 }}" class="w-full h-full object-cover">
-                                </button>
-                            @endforeach
-                        </div>
-                    @endif
+            <!-- Thumbnails Strip (if multiple images) -->
+            @if (count($images) > 1)
+                <div class="mt-4 flex gap-3 overflow-x-auto pb-2" id="gallery-thumbnails">
+                    @foreach ($images as $index => $imgUrl)
+                        <button
+                            type="button"
+                            class="gallery-thumb-btn w-20 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 {{ $index === 0 ? 'border-indigo-600 scale-102 ring-2 ring-indigo-500/20' : 'border-transparent opacity-70 hover:opacity-100' }}"
+                            data-full-src="{{ $imgUrl }}"
+                            aria-label="Lihat gambar {{ $index + 1 }}"
+                        >
+                            <img src="{{ $imgUrl }}" alt="Thumbnail {{ $index + 1 }}" class="w-full h-full object-cover">
+                        </button>
+                    @endforeach
                 </div>
+            @endif
+        </div>
 
-                <!-- Product Specifications & Description -->
-                <div class="glass-card p-6 sm:p-8 space-y-6 border border-white/80 shadow-sm">
+        <!-- Aligned Two-Column Section: Detail Card (Left 8 Cols) & Product Pricing/Seller (Right 4 Cols) Sejajar -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+
+            <!-- Left Column: Product Specifications & Description Card (8 Cols) -->
+            <div class="lg:col-span-8 space-y-6">
+                <div class="glass-card p-6 sm:p-8 space-y-6 border border-white/80 shadow-sm" id="card-detail-produk">
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">
@@ -133,129 +132,13 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Product Market Insights Widget -->
-                <div class="glass-card p-6 sm:p-8 space-y-6 border border-white/80 shadow-sm relative overflow-hidden" id="widget-informasi-pasar" data-cy="widget-informasi-pasar">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200/60 gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-600 flex items-center justify-center font-bold border border-violet-500/20 shadow-2xs shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                                    Informasi Pasar Produk
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Statistik supply, demand, dan harga transaksi nyata pada varian: <strong>{{ $listing->variant?->variant_name }}</strong>
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Period Filters & Active Indicator -->
-                        <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-                            <span class="glass-badge glass-badge-primary text-[10px]" data-cy="market-stat-period-label">
-                                Periode: {{ $marketStats['period_label'] }}
-                            </span>
-
-                            @php
-                                $currentPeriod = $marketStats['period'] ?? '30d';
-                                $periodOptions = [
-                                    '7d' => '7 Hari',
-                                    '30d' => '30 Hari',
-                                    '90d' => '90 Hari',
-                                    'all' => 'Semua',
-                                ];
-                                $currentRoute = ($isPreview ?? false) ? 'seller.listings.preview' : 'marketplace.show';
-                            @endphp
-
-                            <div class="inline-flex items-center gap-0.5 bg-slate-100/80 p-0.5 rounded-xl border border-slate-200/70 text-xs">
-                                @foreach ($periodOptions as $key => $title)
-                                    <a href="{{ route($currentRoute, array_merge(['listing' => $listing->listing_id], request()->except('period'), ['period' => $key])) }}"
-                                       class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition {{ $currentPeriod === $key ? 'bg-white text-indigo-700 shadow-2xs' : 'text-slate-500 hover:text-slate-900' }}"
-                                       data-cy="market-stat-filter-{{ $key }}">
-                                        {{ $title }}
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3 Core Market Indicators Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <!-- Demand Indicator -->
-                        <div class="bg-white/70 p-4 rounded-xl border border-white/90 shadow-2xs">
-                            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                                Demand (Permintaan)
-                            </span>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl font-black text-indigo-600" data-cy="market-stat-demand">
-                                    {{ $marketStats['demand'] }}
-                                </span>
-                                <span class="text-xs font-semibold text-slate-600">WTB Aktif</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400 mt-1.5 leading-tight">
-                                Jumlah pembeli yang aktif mencari varian ini di Forum.
-                            </p>
-                        </div>
-
-                        <!-- Supply Indicator -->
-                        <div class="bg-white/70 p-4 rounded-xl border border-white/90 shadow-2xs">
-                            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                                Supply (Penawaran)
-                            </span>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-2xl font-black text-emerald-600" data-cy="market-stat-supply">
-                                    {{ $marketStats['supply'] }}
-                                </span>
-                                <span class="text-xs font-semibold text-slate-600">Penawaran</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400 mt-1.5 leading-tight">
-                                {{ $marketStats['active_listings_count'] }} listing aktif & {{ $marketStats['wts_count'] }} post WTS di forum.
-                            </p>
-                        </div>
-
-                        <!-- Average Price Indicator -->
-                        <div class="bg-white/70 p-4 rounded-xl border border-white/90 shadow-2xs">
-                            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                                Rata-Rata Transaksi Selesai
-                            </span>
-                            @if ($marketStats['has_price_data'])
-                                <div class="text-lg font-black text-slate-900 mt-0.5 truncate" data-cy="market-stat-avg-price">
-                                    Rp {{ number_format($marketStats['avg_price'], 0, ',', '.') }}
-                                </div>
-                                <p class="text-[11px] text-emerald-700 font-medium mt-1 leading-tight" data-cy="market-stat-sample-count">
-                                    ✓ Berdasarkan {{ $marketStats['sample_count'] }} transaksi selesai ({{ $marketStats['period_label'] }})
-                                </p>
-                            @else
-                                <div class="text-xs font-bold text-amber-700 mt-1.5" data-cy="market-stat-no-price">
-                                    Data harga belum tersedia
-                                </div>
-                                <p class="text-[11px] text-slate-400 mt-1 leading-tight">
-                                    Belum ada transaksi selesai pada varian ini dalam {{ strtolower($marketStats['period_label']) }}.
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="text-[11px] text-slate-400 leading-relaxed pt-2 border-t border-slate-100 flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>
-                            Statistik dihitung murni dari transaksi selesai (COMPLETED) dan penawaran aktif. Transaksi dibatalkan atau refund tidak diikutsertakan.
-                        </span>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- Right Column: Sticky Pricing, Actions, & Seller Profile (4 Cols) -->
-            <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-20 self-start">
+            <!-- Right Column: Card Produk (Harga/Aksi) & Card Informasi Penjual (4 Cols, Sejajar dengan Card Kiri) -->
+            <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-20 self-start" id="column-card-produk-penjual">
 
-                <!-- Pricing & Action Card -->
-                <div class="glass-card p-5 border border-white/90 shadow-md space-y-4">
+                <!-- Pricing & Action Card (Card Produk) -->
+                <div class="glass-card p-5 border border-white/90 shadow-md space-y-4" id="card-produk-harga">
                     <div>
                         <div class="flex items-center justify-between gap-2 mb-1.5">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Harga Produk</span>
@@ -332,8 +215,8 @@
                     </div>
                 </div>
 
-                <!-- Seller Profile Card -->
-                <div class="glass-card p-5 border border-white/80 shadow-sm space-y-3.5">
+                <!-- Seller Profile Card (Informasi Penjual) -->
+                <div class="glass-card p-5 border border-white/80 shadow-sm space-y-3.5" id="card-informasi-penjual">
                     <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         Informasi Penjual
                     </span>
@@ -402,47 +285,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (mainImg && thumbBtns.length > 0) {
         thumbBtns.forEach(btn => {
             btn.addEventListener('click', function () {
-                const targetSrc = this.getAttribute('data-full-src');
-                if (targetSrc) {
-                    mainImg.src = targetSrc;
+                const newSrc = this.getAttribute('data-full-src');
+                if (newSrc) {
+                    mainImg.src = newSrc;
                     thumbBtns.forEach(b => {
                         b.classList.remove('border-indigo-600', 'scale-102', 'ring-2', 'ring-indigo-500/20');
                         b.classList.add('border-transparent', 'opacity-70');
                     });
-                    this.classList.remove('border-transparent', 'opacity-70');
                     this.classList.add('border-indigo-600', 'scale-102', 'ring-2', 'ring-indigo-500/20');
+                    this.classList.remove('border-transparent', 'opacity-70');
                 }
             });
-        });
-    }
-
-    const contactBtn = document.getElementById('btn-contact-seller');
-    if (contactBtn) {
-        contactBtn.addEventListener('click', async function (e) {
-            e.preventDefault();
-            contactBtn.classList.add('opacity-70', 'pointer-events-none');
-
-            try {
-                const res = await fetch(contactBtn.href, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.conversation_id && window.openGlobalDmDrawer) {
-                        window.openGlobalDmDrawer(data.conversation_id);
-                        return;
-                    }
-                }
-                window.location.href = contactBtn.href;
-            } catch (err) {
-                window.location.href = contactBtn.href;
-            } finally {
-                contactBtn.classList.remove('opacity-70', 'pointer-events-none');
-            }
         });
     }
 });

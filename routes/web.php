@@ -44,6 +44,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
 Route::get('/marketplace/{listing}', [MarketplaceController::class, 'show'])->name('marketplace.show');
 
+// Informasi Pasar Produk (Publik)
+Route::get('/informasi-pasar', [MarketplaceController::class, 'marketStats'])->name('market-statistics.index');
+
 // Forum Komunitas (Publik)
 Route::get('/forum', [ForumPostController::class, 'index'])->name('forum.index');
 

@@ -17,6 +17,7 @@ class ForumComment extends Model
 
     protected $fillable = [
         'post_id',
+        'parent_comment_id',
         'author_id',
         'content',
     ];
@@ -29,6 +30,16 @@ class ForumComment extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id', 'user_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(ForumComment::class, 'parent_comment_id', 'comment_id');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(ForumComment::class, 'parent_comment_id', 'comment_id')->oldest('created_at');
     }
 
     public function likes(): HasMany

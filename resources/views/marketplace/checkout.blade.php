@@ -71,29 +71,20 @@
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
                         Rincian Pembayaran Transaksi
                     </h3>
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200/80 text-[11px] font-bold text-indigo-700 shadow-2xs w-fit" data-cy="checkout-fee-type-badge">
-                        <span>Mode Fee: EXCLUDE (Ditanggung Pembeli)</span>
-                    </span>
                 </div>
 
                 <div class="bg-white/50 rounded-2xl p-5 border border-slate-200/60 space-y-3.5 text-sm">
                     <!-- Harga Dasar Produk -->
                     <div class="flex justify-between items-center text-slate-600">
-                        <div>
-                            <span class="font-medium text-slate-800">Harga Dasar Produk:</span>
-                            <span class="block text-[11px] text-slate-400">Harga penawaran resmi dari penjual</span>
-                        </div>
+                        <span class="font-medium text-slate-800">Harga Dasar Produk:</span>
                         <span class="font-semibold text-slate-900" data-cy="checkout-item-base-price">
                             Rp {{ number_format($feeCalculation->basePrice, 0, ',', '.') }}
                         </span>
                     </div>
 
-                    <!-- Biaya Layanan Platform -->
+                    <!-- Fee (Biaya Layanan Platform) -->
                     <div class="flex justify-between items-center text-slate-600">
-                        <div>
-                            <span class="font-medium text-slate-800">Biaya Layanan Platform (Marketplace):</span>
-                            <span class="block text-[11px] text-slate-400">Sesuai tabel fee berjenjang SKPL (dibebankan ke Pembeli)</span>
-                        </div>
+                        <span class="font-medium text-slate-800">Fee:</span>
                         <span class="font-semibold text-indigo-600" data-cy="checkout-fee-amount">
                             + Rp {{ number_format($feeCalculation->feeAmount, 0, ',', '.') }}
                         </span>
@@ -107,14 +98,6 @@
                         </div>
                         <span class="text-xl sm:text-2xl font-black text-indigo-700" data-cy="checkout-buyer-total">
                             Rp {{ number_format($feeCalculation->buyerTotal, 0, ',', '.') }}
-                        </span>
-                    </div>
-
-                    <!-- Estimasi Hak Penerimaan Bersih Penjual -->
-                    <div class="border-t border-dashed border-slate-200 pt-2.5 flex justify-between items-center text-xs text-slate-500">
-                        <span>Hak Penerimaan Bersih Penjual (Net):</span>
-                        <span class="font-semibold text-emerald-700" data-cy="checkout-seller-net">
-                            Rp {{ number_format($feeCalculation->sellerNet, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
@@ -179,7 +162,7 @@
                         class="glass-btn-primary w-full sm:w-auto px-8 py-3 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
                         data-cy="btn-confirm-checkout"
                     >
-                        <span>Setuju & Mulai Transaksi</span>
+                        <span>Bayar</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>

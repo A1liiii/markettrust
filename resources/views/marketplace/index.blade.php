@@ -10,9 +10,9 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/60">
             <div>
                 <div class="inline-flex items-center gap-2 mb-1">
-                    <span class="glass-badge glass-badge-primary text-[11px] py-0.5">
+                    <span class="glass-badge glass-badge-primary text-[11px] py-0.5" data-cy="badge-katalog-terverifikasi">
                         <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
-                        Katalog Terverifikasi Rekber
+                        Katalog Marketplace Terverifikasi
                     </span>
                     <span class="text-xs font-semibold text-slate-500">
                         {{ $totalActiveListings }} Listing Aktif
@@ -26,7 +26,7 @@
                 </p>
             </div>
 
-            <!-- CTA Seller (Tanpa tombol +) -->
+            <!-- CTA Seller -->
             <div class="shrink-0">
                 <a href="{{ route('seller.listings.create') }}" class="glass-btn-primary py-2 px-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center shadow-sm" data-cy="btn-ingin-berjualan" id="marketplace-cta-jual">
                     <span>Ingin Berjualan?</span>
@@ -35,8 +35,13 @@
         </div>
 
         <!-- Filter & Search Toolbar Glass Panel -->
-        <div class="glass-panel p-3.5 sm:p-4 border border-white/80 shadow-sm" id="marketplace-filter-toolbar">
+        <div class="glass-panel p-3.5 sm:p-4 border border-white/80 shadow-sm relative z-20" id="marketplace-filter-toolbar">
             <form action="{{ route('marketplace.index') }}" method="GET" id="marketplace-search-form" class="space-y-3">
+                <!-- Hidden inputs for active product filters -->
+                <input type="hidden" name="category_id" id="hidden-category-id" value="{{ request('category_id') }}" data-cy="select-category">
+                <input type="hidden" name="product_id" id="hidden-product-id" value="{{ request('product_id') }}" data-cy="select-product">
+                <input type="hidden" name="variant_id" id="hidden-variant-id" value="{{ request('variant_id') }}" data-cy="select-variant">
+
                 <!-- Search Keyword -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -65,128 +70,220 @@
                     </button>
                 </div>
 
-                <!-- Hierarchical Filter Selectors dengan Custom Chevron Down & Padding Nyaman -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
-                    <!-- Kategori -->
-                    <div>
-                        <label for="filter-category" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                            Kategori Produk
-                        </label>
-                        <div class="relative">
-                            <select
-                                name="category_id"
-                                id="filter-category"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
-                                data-cy="select-category"
+                <!-- Unified Filter Row: Filter "Produk" (Cascading Dropdown) + Urutkan + Reset -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+                    
+                    <!-- Unified Filter Button "Produk" with Cascading Right Flyout -->
+                    <div class="relative flex-1">
+                        @php
+                            $activeFilterName = 'Semua Produk';
+                            if (request('variant_id')) {
+                                foreach ($categories as $cat) {
+                                    foreach ($cat->products as $p) {
+                                        foreach ($p->variants as $v) {
+                                            if ((string)$v->variant_id === (string)request('variant_id')) {
+                                                $activeFilterName = $p->product_name . ' › ' . $v->variant_name;
+                                                break 3;
+                                            }
+                                        }
+                                    }
+                                }
+                            } elseif (request('product_id')) {
+                                foreach ($categories as $cat) {
+                                    foreach ($cat->products as $p) {
+                                        if ((string)$p->product_id === (string)request('product_id')) {
+                                            $activeFilterName = $cat->category_name . ' › ' . $p->product_name;
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            } elseif (request('category_id')) {
+                                foreach ($categories as $cat) {
+                                    if ((string)$cat->category_id === (string)request('category_id')) {
+                                        $activeFilterName = 'Kategori: ' . $cat->category_name;
+                                        break;
+                                    }
+                                }
+                            }
+                        @endphp
+
+                        <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                id="btn-toggle-produk-filter"
+                                class="inline-flex items-center justify-between gap-2 w-full sm:w-auto min-w-[240px] px-4 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition shadow-2xs text-left"
+                                data-cy="btn-filter-produk"
+                                aria-expanded="false"
                             >
-                                <option value="">Semua Kategori</option>
-                                @foreach ($categories as $cat)
-                                    <option value="{{ $cat->category_id }}" @selected(request('category_id') == $cat->category_id)>
-                                        {{ $cat->category_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span class="flex items-center gap-2 truncate">
+                                    <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                                    </svg>
+                                    <span class="text-slate-400 font-normal">Filter:</span>
+                                    <span class="font-bold text-slate-900 truncate" id="label-active-product">{{ $activeFilterName }}</span>
+                                </span>
+                                <svg class="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200" id="icon-chevron-produk" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                 </svg>
-                            </div>
-                        </div>
-                    </div>
+                            </button>
 
-                    <!-- Produk -->
-                    <div>
-                        <label for="filter-product" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                            Produk Master
-                        </label>
-                        <div class="relative">
-                            <select
-                                name="product_id"
-                                id="filter-product"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
-                                data-cy="select-product"
-                            >
-                                <option value="">Semua Produk</option>
-                                @foreach ($categories as $cat)
-                                    @foreach ($cat->products as $prod)
-                                        <option
-                                            value="{{ $prod->product_id }}"
-                                            data-category="{{ $cat->category_id }}"
-                                            @selected(request('product_id') == $prod->product_id)
+                            @if (request('category_id') || request('product_id') || request('variant_id'))
+                                <button
+                                    type="button"
+                                    onclick="clearProductFilter()"
+                                    class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                                    title="Bersihkan filter produk"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+
+                        <!-- Dropdown Panel Multi-Level (Kategori -> Produk Master -> Varian ke Kanan) -->
+                        <div
+                            id="dropdown-produk-panel"
+                            class="hidden absolute top-full left-0 mt-2 w-full sm:w-[680px] max-w-[95vw] rounded-2xl bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl p-3 z-50 text-xs transition-all duration-200"
+                            data-cy="dropdown-produk-panel"
+                        >
+                            <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 px-2">
+                                <span class="font-bold text-slate-900 text-xs">Pilih Kategori, Produk & Varian</span>
+                                <button type="button" onclick="closeProductDropdown()" class="text-slate-400 hover:text-slate-600 text-xs">&times; Tutup</button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 h-72 sm:h-80">
+                                <!-- Kolom 1: Kategori Produk -->
+                                <div class="overflow-y-auto pr-1 border-r border-slate-100 space-y-1">
+                                    <div class="text-[10px] uppercase font-bold text-slate-400 px-2 py-1 sticky top-0 bg-white/90">
+                                        1. Kategori
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onclick="selectCategoryFilter('', 'Semua Kategori')"
+                                        class="w-full text-left px-2.5 py-2 rounded-lg transition font-medium hover:bg-indigo-50 hover:text-indigo-700 flex items-center justify-between {{ !request('category_id') && !request('product_id') && !request('variant_id') ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-700' }}"
+                                    >
+                                        <span>Semua Kategori</span>
+                                    </button>
+                                    @foreach ($categories as $cat)
+                                        <button
+                                            type="button"
+                                            onmouseenter="showCategoryProducts({{ $cat->category_id }})"
+                                            onclick="showCategoryProducts({{ $cat->category_id }})"
+                                            class="cat-item-btn w-full text-left px-2.5 py-2 rounded-lg transition font-medium hover:bg-indigo-50 hover:text-indigo-700 flex items-center justify-between text-slate-700 group"
+                                            data-cat-id="{{ $cat->category_id }}"
+                                            data-cat-name="{{ $cat->category_name }}"
+                                            data-cy="filter-cat-{{ $cat->category_id }}"
                                         >
-                                            {{ $cat->category_name }} &rsaquo; {{ $prod->product_name }}
-                                        </option>
+                                            <span class="truncate">{{ $cat->category_name }}</span>
+                                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                        </button>
                                     @endforeach
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+                                </div>
 
-                    <!-- Varian -->
-                    <div>
-                        <label for="filter-variant" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                            Varian Item
-                        </label>
-                        <div class="relative">
-                            <select
-                                name="variant_id"
-                                id="filter-variant"
-                                class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
-                                data-cy="select-variant"
-                            >
-                                <option value="">Semua Varian</option>
-                                @foreach ($categories as $cat)
-                                    @foreach ($cat->products as $prod)
-                                        @foreach ($prod->variants as $var)
-                                            <option
-                                                value="{{ $var->variant_id }}"
-                                                data-product="{{ $prod->product_id }}"
-                                                data-category="{{ $cat->category_id }}"
-                                                @selected(request('variant_id') == $var->variant_id)
+                                <!-- Kolom 2: Produk Master (Muncul di kanan saat kategori dipilih) -->
+                                <div class="overflow-y-auto px-1 border-r border-slate-100 space-y-1" id="container-products-col">
+                                    <div class="text-[10px] uppercase font-bold text-slate-400 px-2 py-1 sticky top-0 bg-white/90">
+                                        2. Produk Master
+                                    </div>
+                                    <div id="products-list-placeholder" class="text-[11px] text-slate-400 p-3 italic">
+                                        Sorot atau klik kategori di sebelah kiri untuk melihat produk.
+                                    </div>
+                                    @foreach ($categories as $cat)
+                                        <div id="cat-products-{{ $cat->category_id }}" class="hidden cat-product-group space-y-1">
+                                            <button
+                                                type="button"
+                                                onclick="selectCategoryFilter({{ $cat->category_id }}, '{{ $cat->category_name }}')"
+                                                class="w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] text-indigo-600 hover:bg-indigo-50 font-semibold mb-1"
                                             >
-                                                {{ $prod->product_name }} - {{ $var->variant_name }}
-                                            </option>
+                                                &bull; Semua di {{ $cat->category_name }}
+                                            </button>
+                                            @forelse ($cat->products as $prod)
+                                                <button
+                                                    type="button"
+                                                    onmouseenter="showProductVariants({{ $prod->product_id }})"
+                                                    onclick="showProductVariants({{ $prod->product_id }})"
+                                                    class="prod-item-btn w-full text-left px-2.5 py-2 rounded-lg transition font-medium hover:bg-indigo-50 hover:text-indigo-700 flex items-center justify-between text-slate-700 group"
+                                                    data-prod-id="{{ $prod->product_id }}"
+                                                    data-prod-name="{{ $prod->product_name }}"
+                                                    data-cy="filter-prod-{{ $prod->product_id }}"
+                                                >
+                                                    <span class="truncate">{{ $prod->product_name }}</span>
+                                                    <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                    </svg>
+                                                </button>
+                                            @empty
+                                                <div class="text-[11px] text-slate-400 p-2 italic">Belum ada produk.</div>
+                                            @endforelse
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Kolom 3: Varian Item (Muncul di kanan saat produk dipilih) -->
+                                <div class="overflow-y-auto pl-1 space-y-1" id="container-variants-col">
+                                    <div class="text-[10px] uppercase font-bold text-slate-400 px-2 py-1 sticky top-0 bg-white/90">
+                                        3. Varian Item
+                                    </div>
+                                    <div id="variants-list-placeholder" class="text-[11px] text-slate-400 p-3 italic">
+                                        Sorot atau klik produk di kolom tengah untuk memilih varian.
+                                    </div>
+                                    @foreach ($categories as $cat)
+                                        @foreach ($cat->products as $prod)
+                                            <div id="prod-variants-{{ $prod->product_id }}" class="hidden prod-variant-group space-y-1">
+                                                <button
+                                                    type="button"
+                                                    onclick="selectProductFilter({{ $cat->category_id }}, {{ $prod->product_id }}, '{{ $prod->product_name }}')"
+                                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] text-indigo-600 hover:bg-indigo-50 font-semibold mb-1"
+                                                >
+                                                    &bull; Semua di {{ $prod->product_name }}
+                                                </button>
+                                                @forelse ($prod->variants as $var)
+                                                    <button
+                                                        type="button"
+                                                        onclick="selectVariantFilter({{ $cat->category_id }}, {{ $prod->product_id }}, {{ $var->variant_id }}, '{{ $prod->product_name }} › {{ $var->variant_name }}')"
+                                                        class="var-item-btn w-full text-left px-2.5 py-2 rounded-lg transition font-medium hover:bg-indigo-600 hover:text-white text-slate-700 flex items-center justify-between"
+                                                        data-var-id="{{ $var->variant_id }}"
+                                                        data-var-name="{{ $var->variant_name }}"
+                                                        data-cy="filter-var-{{ $var->variant_id }}"
+                                                    >
+                                                        <span class="truncate">{{ $var->variant_name }}</span>
+                                                        <span class="text-[10px] opacity-75">Pilih &rsaquo;</span>
+                                                    </button>
+                                                @empty
+                                                    <div class="text-[11px] text-slate-400 p-2 italic">Belum ada varian.</div>
+                                                @endforelse
+                                            </div>
                                         @endforeach
                                     @endforeach
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Pengurutan & Aksi Reset -->
-                    <div class="flex items-end gap-2">
-                        <div class="flex-1">
-                            <label for="filter-sort" class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                                Urutkan
-                            </label>
-                            <div class="relative">
-                                <select
-                                    name="sort"
-                                    id="filter-sort"
-                                    class="w-full appearance-none pl-3.5 pr-9 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
-                                    data-cy="select-sort"
-                                >
-                                    <option value="latest" @selected(request('sort') === 'latest' || !request('sort'))>Terbaru</option>
-                                    <option value="price_asc" @selected(request('sort') === 'price_asc')>Harga Terendah</option>
-                                    <option value="price_desc" @selected(request('sort') === 'price_desc')>Harga Tertinggi</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </div>
+                    <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                        <div class="relative min-w-[150px]">
+                            <select
+                                name="sort"
+                                id="filter-sort"
+                                onchange="this.form.submit()"
+                                class="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition cursor-pointer"
+                                data-cy="select-sort"
+                            >
+                                <option value="latest" @selected(request('sort') === 'latest' || !request('sort'))>Terbaru</option>
+                                <option value="price_asc" @selected(request('sort') === 'price_asc')>Harga Terendah</option>
+                                <option value="price_desc" @selected(request('sort') === 'price_desc')>Harga Tertinggi</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-slate-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
                             </div>
                         </div>
+
                         <a
                             href="{{ route('marketplace.index') }}"
                             class="glass-btn-secondary py-2 px-3 text-xs font-semibold flex items-center justify-center shrink-0 h-[38px] rounded-xl"
@@ -200,7 +297,7 @@
             </form>
         </div>
 
-        <!-- Listing Grid Section (4 Kolom x 2 Baris = 8 Item) -->
+        <!-- Listing Grid Section (4 Kolom x 3 Baris = 12 Item per Halaman) -->
         <div>
             @if ($listings->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="marketplace-grid" data-cy="marketplace-grid">
@@ -263,7 +360,7 @@
                                     </p>
                                 </div>
 
-                                <!-- Price (Harga Total Pembeli) & Seller Footer -->
+                                <!-- Price & Seller Footer -->
                                 <div class="pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
                                     <div>
                                         <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Harga</span>
@@ -298,9 +395,9 @@
                     @endforeach
                 </div>
 
-                <!-- Pagination -->
-                <div class="mt-4 flex justify-center" data-cy="marketplace-pagination">
-                    {{ $listings->links() }}
+                <!-- Pagination (Warna Putih Elegan) -->
+                <div class="mt-8 flex justify-center" data-cy="marketplace-pagination">
+                    {{ $listings->links('vendor.pagination.tailwind') }}
                 </div>
             @else
                 <!-- Empty State -->
@@ -328,42 +425,125 @@
 </div>
 
 <script>
+let activeCatId = null;
+let activeProdId = null;
+
+function toggleProductDropdown() {
+    const panel = document.getElementById('dropdown-produk-panel');
+    const chevron = document.getElementById('icon-chevron-produk');
+    const btn = document.getElementById('btn-toggle-produk-filter');
+
+    if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+        btn.setAttribute('aria-expanded', 'true');
+    } else {
+        closeProductDropdown();
+    }
+}
+
+function closeProductDropdown() {
+    const panel = document.getElementById('dropdown-produk-panel');
+    const chevron = document.getElementById('icon-chevron-produk');
+    const btn = document.getElementById('btn-toggle-produk-filter');
+    if (panel) panel.classList.add('hidden');
+    if (chevron) chevron.classList.remove('rotate-180');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function showCategoryProducts(catId) {
+    activeCatId = catId;
+    // Highlight category button
+    document.querySelectorAll('.cat-item-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat-id') == catId) {
+            btn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        } else {
+            btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        }
+    });
+
+    // Hide all product groups
+    document.querySelectorAll('.cat-product-group').forEach(el => el.classList.add('hidden'));
+    const placeholder = document.getElementById('products-list-placeholder');
+    if (placeholder) placeholder.classList.add('hidden');
+
+    const targetGroup = document.getElementById('cat-products-' + catId);
+    if (targetGroup) targetGroup.classList.remove('hidden');
+
+    // Reset variant column
+    document.querySelectorAll('.prod-variant-group').forEach(el => el.classList.add('hidden'));
+    const varPlaceholder = document.getElementById('variants-list-placeholder');
+    if (varPlaceholder) varPlaceholder.classList.remove('hidden');
+}
+
+function showProductVariants(prodId) {
+    activeProdId = prodId;
+    // Highlight product button
+    document.querySelectorAll('.prod-item-btn').forEach(btn => {
+        if (btn.getAttribute('data-prod-id') == prodId) {
+            btn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        } else {
+            btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold');
+        }
+    });
+
+    // Hide all variant groups
+    document.querySelectorAll('.prod-variant-group').forEach(el => el.classList.add('hidden'));
+    const placeholder = document.getElementById('variants-list-placeholder');
+    if (placeholder) placeholder.classList.add('hidden');
+
+    const targetGroup = document.getElementById('prod-variants-' + prodId);
+    if (targetGroup) targetGroup.classList.remove('hidden');
+}
+
+function selectCategoryFilter(catId, catName) {
+    document.getElementById('hidden-category-id').value = catId;
+    document.getElementById('hidden-product-id').value = '';
+    document.getElementById('hidden-variant-id').value = '';
+    closeProductDropdown();
+    document.getElementById('marketplace-search-form').submit();
+}
+
+function selectProductFilter(catId, prodId, prodName) {
+    document.getElementById('hidden-category-id').value = catId;
+    document.getElementById('hidden-product-id').value = prodId;
+    document.getElementById('hidden-variant-id').value = '';
+    closeProductDropdown();
+    document.getElementById('marketplace-search-form').submit();
+}
+
+function selectVariantFilter(catId, prodId, varId, label) {
+    document.getElementById('hidden-category-id').value = catId;
+    document.getElementById('hidden-product-id').value = prodId;
+    document.getElementById('hidden-variant-id').value = varId;
+    closeProductDropdown();
+    document.getElementById('marketplace-search-form').submit();
+}
+
+function clearProductFilter() {
+    document.getElementById('hidden-category-id').value = '';
+    document.getElementById('hidden-product-id').value = '';
+    document.getElementById('hidden-variant-id').value = '';
+    document.getElementById('marketplace-search-form').submit();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const categorySelect = document.getElementById('filter-category');
-    const productSelect = document.getElementById('filter-product');
-    const variantSelect = document.getElementById('filter-variant');
-    const form = document.getElementById('marketplace-search-form');
-
-    // Auto-filter dependent options
-    if (categorySelect && productSelect) {
-        categorySelect.addEventListener('change', function () {
-            const selectedCat = this.value;
-            // Clear product and variant selection
-            productSelect.value = '';
-            if (variantSelect) variantSelect.value = '';
-            form.submit();
+    const toggleBtn = document.getElementById('btn-toggle-produk-filter');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleProductDropdown();
         });
     }
 
-    if (productSelect) {
-        productSelect.addEventListener('change', function () {
-            if (variantSelect) variantSelect.value = '';
-            form.submit();
-        });
-    }
-
-    if (variantSelect) {
-        variantSelect.addEventListener('change', function () {
-            form.submit();
-        });
-    }
-
-    const sortSelect = document.getElementById('filter-sort');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function () {
-            form.submit();
-        });
-    }
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        const panel = document.getElementById('dropdown-produk-panel');
+        const toggleBtn = document.getElementById('btn-toggle-produk-filter');
+        if (panel && !panel.contains(e.target) && toggleBtn && !toggleBtn.contains(e.target)) {
+            closeProductDropdown();
+        }
+    });
 });
 </script>
 @endsection
