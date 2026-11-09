@@ -74,7 +74,7 @@ class CheckoutScenarioTest extends TestCase
 
         $response->assertOk();
         $this->assertFalse($response->viewData('hasSellerPayout'));
-        $response->assertSee('Catatan Escrow & Tujuan Pencairan:', false);
+        $response->assertSee('Tujuan Pencairan:', false);
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\ProductVariant;
 use App\Models\ReputationEvent;
 use App\Models\User;
+use App\Services\SupabaseStorageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -71,6 +72,11 @@ class Cycle2ListingAuthProfileTest extends TestCase
     public function test_c2_ls_02_seller_can_create_listing_with_photos_using_storage_fallback(): void
     {
         Storage::fake('public');
+        config([
+            'services.supabase.url' => null,
+            'services.supabase.key' => null,
+        ]);
+        app()->instance(SupabaseStorageService::class, new SupabaseStorageService);
 
         $seller = User::factory()->create([
             'account_type' => 'USER',
