@@ -94,6 +94,7 @@ Route::middleware(['auth', 'active_account'])->group(function () {
     Route::put('/conversations/{conversation}/agreement', [AgreementController::class, 'update'])->name('conversations.agreement.update');
     Route::post('/conversations/{conversation}/agreement/accept', [AgreementController::class, 'accept'])->name('conversations.agreement.accept');
     Route::post('/conversations/{conversation}/agreement/reject', [AgreementController::class, 'reject'])->name('conversations.agreement.reject');
+    Route::post('/conversations/{conversation}/agreement/cancel', [AgreementController::class, 'cancel'])->name('conversations.agreement.cancel');
 
     // Checkout Marketplace & Detail Transaksi Kesepakatan
     Route::get('/marketplace/{listing}/checkout', [MarketplaceCheckoutController::class, 'review'])->name('marketplace.checkout.review');

@@ -19,7 +19,7 @@
                         Transaksi & Pesanan Saya
                     </h1>
                     <p class="text-sm text-slate-600 mt-1">
-                        Pantau status pembayaran escrow, proses penyerahan item, dan riwayat pesanan Anda secara aman.
+                        Pantau status pembayaran rekber, proses penyerahan item, dan riwayat pesanan Anda secara aman.
                     </p>
                 </div>
 
@@ -178,7 +178,7 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
-                                        Escrow Terverifikasi &bull; Penjual Menyiapkan Item
+                                        Rekber Terverifikasi &bull; Penjual Menyiapkan Item
                                     </span>
                                 @else
                                     <span>Status Terkini: <strong>{{ $tx->status->label() }}</strong></span>

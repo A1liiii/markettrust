@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contracts\Services\AgreementServiceInterface;
 use App\Contracts\Services\ConversationServiceInterface;
 use App\Http\Requests\Agreement\AcceptAgreementRequest;
+use App\Http\Requests\Agreement\CancelAgreementRequest;
 use App\Http\Requests\Agreement\ProposeAgreementRequest;
 use App\Http\Requests\Agreement\RejectAgreementRequest;
 use App\Http\Requests\Agreement\ReviseAgreementRequest;
@@ -191,6 +192,52 @@ class AgreementController extends Controller
 
             return redirect()->route('conversations.show', $conversation)
                 ->with('info', 'Usulan kesepakatan telah ditolak.');
+        } catch (InvalidArgumentException|LogicException $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->with('warning', $e->getMessage());
+        }
+    }
+
+    /**
+     * Akhiri lembar kesepakatan secara permanen (UC-11 variant).
+     */
+    public function cancel(CancelAgreementRequest $request, Conversation $conversation): JsonResponse|RedirectResponse
+    {
+        $user = auth()->user();
+
+        if (! $this->conversationService->isParticipant($conversation, $user)) {
+            abort(403, 'Anda tidak memiliki hak untuk mengakhiri kesepakatan pada percakapan ini.');
+        }
+
+        $agreement = $conversation->agreement;
+        if (! $agreement) {
+            abort(404, 'Lembar kesepakatan tidak ditemukan pada percakapan ini.');
+        }
+
+        try {
+            $reason = $request->validated('cancel_reason');
+            $this->agreementService->cancelProposal(
+                $agreement,
+                $user,
+                $reason ? (string) $reason : null
+            );
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Kesepakatan telah diakhiri.',
+                    'agreement_id' => $agreement->agreement_id,
+                ]);
+            }
+
+            return redirect()->route('conversations.show', $conversation)
+                ->with('info', 'Kesepakatan telah diakhiri.');
         } catch (InvalidArgumentException|LogicException $e) {
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([

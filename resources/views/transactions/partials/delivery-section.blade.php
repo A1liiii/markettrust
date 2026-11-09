@@ -26,7 +26,7 @@
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800">Khusus Penjual</span>
                         </h2>
                         <p class="text-xs text-slate-500">
-                            Pembayaran Buyer telah diamankan di Escrow. Silakan serahkan hasil pesanan beserta bukti penyerahan.
+                            Pembayaran Buyer telah diamankan di Rekber. Silakan serahkan hasil pesanan beserta bukti penyerahan.
                         </p>
                     </div>
                 </div>
@@ -151,7 +151,7 @@
                             Pembayaran Berhasil — Menunggu Penjual Menyerahkan Item
                         </div>
                         <div class="text-xs sm:text-sm text-slate-700 mt-0.5">
-                            Dana Anda aman tersimpan di sistem Escrow. Penjual sedang menyiapkan pesanan sesuai kesepakatan.
+                            Dana Anda aman tersimpan di sistem Rekber. Penjual sedang menyiapkan pesanan sesuai kesepakatan.
                         </div>
                     </div>
                 </div>
@@ -305,7 +305,7 @@
                             <span>Konfirmasi Hasil Pesanan</span>
                         </h3>
                         <p class="text-[11px] text-slate-600 mt-0.5">
-                            Pastikan Anda telah memeriksa hasil atau akun yang diberikan sebelum menyetujui pelepasan dana escrow.
+                            Pastikan Anda telah memeriksa hasil atau akun yang diberikan sebelum menyetujui pelepasan dana rekber.
                         </p>
                     </div>
 
@@ -415,7 +415,7 @@
                 </div>
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Konfirmasi Penerimaan Pesanan</h3>
-                    <p class="text-xs text-slate-500">Pelepasan dana escrow ke Penjual</p>
+                    <p class="text-xs text-slate-500">Pelepasan dana rekber ke Penjual</p>
                 </div>
             </div>
 
@@ -428,7 +428,7 @@
                     <svg class="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>Dana escrow akan dialokasikan ke antrean payout Penjual dan Anda tidak dapat lagi mengajukan komplain atas pesanan ini.</span>
+                    <span>Dana rekber akan dialokasikan ke antrean payout Penjual dan Anda tidak dapat lagi mengajukan komplain atas pesanan ini.</span>
                 </div>
             </div>
 

@@ -44,4 +44,9 @@ interface AgreementServiceInterface
      * Reject an agreement with reason.
      */
     public function rejectProposal(Agreement $agreement, User $rejector, string $reason): Agreement;
+
+    /**
+     * Cancel / terminate an agreement.
+     */
+    public function cancelProposal(Agreement $agreement, User $canceller, ?string $reason = null): Agreement;
 }

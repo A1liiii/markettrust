@@ -112,8 +112,10 @@ class AgreementService implements AgreementServiceInterface
                     throw new LogicException('Percakapan ini sudah memiliki kesepakatan yang berstatus FINALIZED.');
                 }
 
-                // If already has draft or rejected agreement, prompt user to revise
-                throw new LogicException('Percakapan ini sudah memiliki lembar kesepakatan. Silakan gunakan fitur revisi usulan.');
+                // If existing is not cancelled, prompt user to revise
+                if ($existing->status !== AgreementStatus::CANCELLED) {
+                    throw new LogicException('Percakapan ini sudah memiliki lembar kesepakatan. Silakan gunakan fitur revisi usulan.');
+                }
             }
         }
 
@@ -474,6 +476,56 @@ class AgreementService implements AgreementServiceInterface
                         "❌ Usulan kesepakatan (Rev #%d) DITOLAK oleh @%s.\nAlasan Penolakan: %s\nAnda dapat mengajukan revisi baru bila ingin menegosiasikan ulang.",
                         $lockedAgreement->revision_no,
                         $rejector->username,
+                        $lockedAgreement->rejection_reason
+                    )
+                );
+            }
+
+            return $lockedAgreement;
+        });
+    }
+
+    /**
+     * Cancel / terminate an agreement (UC-11 variant).
+     *
+     * @throws AuthorizationException
+     * @throws LogicException
+     */
+    public function cancelProposal(Agreement $agreement, User $canceller, ?string $reason = null): Agreement
+    {
+        return DB::transaction(function () use ($agreement, $canceller, $reason) {
+            $lockedAgreement = Agreement::with(['buyer', 'seller', 'conversation'])
+                ->where('agreement_id', $agreement->agreement_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedAgreement->status === AgreementStatus::FINALIZED || ! empty($lockedAgreement->finalized_at)) {
+                throw new LogicException('Kesepakatan yang sudah berstatus FINALIZED tidak dapat diakhiri.');
+            }
+
+            $isBuyer = ($canceller->user_id === $lockedAgreement->buyer_id);
+            $isSeller = ($canceller->user_id === $lockedAgreement->seller_id);
+
+            if (! $isBuyer && ! $isSeller) {
+                throw new AuthorizationException('Anda tidak memiliki hak untuk mengakhiri kesepakatan ini.');
+            }
+
+            $lockedAgreement->status = AgreementStatus::CANCELLED->value;
+            $lockedAgreement->rejected_by = $canceller->user_id;
+            $lockedAgreement->rejected_at = now();
+            $lockedAgreement->rejection_reason = $reason ? trim($reason) : 'Kesepakatan diakhiri oleh salah satu pihak.';
+            $lockedAgreement->save();
+
+            // Post cancellation message to conversation thread
+            $conversation = $lockedAgreement->conversation;
+            if ($conversation) {
+                $this->conversationService->sendMessage(
+                    $conversation,
+                    $canceller,
+                    sprintf(
+                        "🚫 Lembar kesepakatan (Rev #%d) telah DIAKHIRI oleh @%s.\nAlasan: %s\nProses transaksi untuk kesepakatan ini telah ditutup.",
+                        $lockedAgreement->revision_no,
+                        $canceller->username,
                         $lockedAgreement->rejection_reason
                     )
                 );

@@ -11,8 +11,14 @@
 
 Cypress.Commands.add('loginByForm', (login, password) => {
   cy.visit('/login');
-  cy.get('[data-cy="input-login"]').clear().type(login);
-  cy.get('[data-cy="input-password"]').clear().type(password);
+  cy.get('form[action*="login"]').should('be.visible');
+  cy.get('[data-cy="input-login"]').type(login);
+  cy.get('[data-cy="input-password"]').type(password);
+  cy.get('[data-cy="input-login"]').then(($input) => {
+    if ($input.val() !== login) {
+      cy.wrap($input).type(login);
+    }
+  });
   cy.get('[data-cy="btn-login"]').click();
   cy.url().should('not.include', '/login');
 });

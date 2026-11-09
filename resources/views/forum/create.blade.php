@@ -352,7 +352,7 @@
             if (formSubtitle) {
                 formSubtitle.textContent = category === 'WTB'
                     ? 'Ajukan permintaan pembelian item digital terverifikasi dengan kesepakatan harga dan rekber MarketTrust.'
-                    : 'Tawarkan produk digital akun, item, atau voucher terverifikasi dengan proteksi escrow MarketTrust.';
+                    : 'Tawarkan produk digital akun, item, atau voucher terverifikasi dengan proteksi rekber MarketTrust.';
             }
             if (submitBtnText) submitBtnText.textContent = 'Publikasikan Postingan';
         }
