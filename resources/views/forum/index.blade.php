@@ -38,224 +38,317 @@
             </div>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="glass-panel p-4 sm:p-5 mb-8">
-            <!-- Navbar Kategori (TC-FR-07: Hapus "Semua", Terpusat & Melebar, TC-FR-10: Pindah Tab Bersihkan Query) -->
-            <div class="grid grid-cols-3 gap-2 w-full max-w-lg mx-auto mb-5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/70 shadow-inner">
-                <a href="{{ route('forum.index', ['category' => 'GENERAL']) }}"
-                   class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'GENERAL' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
-                    Umum
-                </a>
-                <a href="{{ route('forum.index', ['category' => 'WTB']) }}"
-                   class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'WTB' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
-                    WTB (Beli)
-                </a>
-                <a href="{{ route('forum.index', ['category' => 'WTS']) }}"
-                   class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'WTS' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
-                    WTS (Jual)
-                </a>
-            </div>
-
-            <!-- Form Filter & Pencarian (TC-FR-08 & TC-FR-09) -->
-            <form action="{{ route('forum.index') }}" method="GET" class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-3">
-                <input type="hidden" name="category" value="{{ $category }}">
-
-                <!-- Variant Filter for WTB/WTS -->
-                @if (in_array($category, ['WTB', 'WTS']))
-                    <div class="sm:w-64 shrink-0">
-                        <select name="variant_id" onchange="this.form.submit()" class="glass-input w-full px-3 py-2 text-xs">
-                            <option value="">Semua Varian Produk</option>
-                            @foreach ($variants as $v)
-                                <option value="{{ $v->variant_id }}" {{ (string) $variantId === (string) $v->variant_id ? 'selected' : '' }}>
-                                    {{ $v->product->product_name ?? 'Produk' }} - {{ $v->variant_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                @endif
-
-                <!-- Keyword Search Input -->
-                <div class="flex-1 relative">
-                    <input type="text"
-                           name="q"
-                           value="{{ $search }}"
-                           placeholder="Cari judul atau isi postingan..."
-                           class="glass-input w-full pl-9 pr-4 py-2 text-xs sm:text-sm">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0">
-                    <button type="submit" class="glass-btn-primary text-xs py-2 px-4">
-                        Cari
-                    </button>
-
-                    <!-- TC-FR-09: Tombol Reset Khusus Varian Saja -->
-                    @if ($variantId)
-                        <a href="{{ route('forum.index', array_filter(['category' => $category, 'q' => $search])) }}"
-                           class="glass-btn-secondary text-xs py-2 px-3 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
-                           title="Hapus filter varian saja">
-                            Reset Varian
-                        </a>
-                    @endif
-
-                    @if ($search)
-                        <a href="{{ route('forum.index', array_filter(['category' => $category, 'variant_id' => $variantId])) }}"
-                           class="glass-btn-secondary text-xs py-2 px-3 text-slate-500 hover:text-slate-700"
-                           title="Hapus pencarian teks">
-                            Reset Cari
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </div>
-
-        <!-- Postings Feed (TC-FR-11: Card Kapsul Ramping Tanpa Foto) -->
         @if ($posts->count() > 0)
-            <div class="space-y-3.5">
-                @foreach ($posts as $post)
-                    @php
-                        $userLiked = auth()->check() && $post->likes->contains('user_id', auth()->id());
-                    @endphp
-                    <div class="glass-card glass-card-interactive p-4 sm:p-5 rounded-2xl transition hover:shadow-lg hover:border-indigo-300/60 cursor-pointer group"
-                         onclick="handleCardClick(event, '{{ route('forum.show', $post->post_id) }}')"
-                         id="post-card-{{ $post->post_id }}">
+            <!-- PS5 Style Vertical Switcher Scroll Container -->
+            <!-- Postingan pagination 10 tapi viewport tampil 2, scroll lewat di belakang filter & pagination (z-index) -->
+            <div id="forum-feed-scrollbox"
+                 tabindex="0"
+                 class="relative max-h-[580px] sm:max-h-[520px] overflow-y-auto snap-y snap-mandatory scroll-smooth rounded-3xl border border-slate-200/80 bg-slate-100/40 p-3 sm:p-4 shadow-inner focus:outline-none focus:ring-2 focus:ring-indigo-500/20 scrollbar-thin">
 
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <!-- Info Utama Postingan -->
-                            <div class="flex-1 min-w-0">
-                                <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                                    @if ($post->category_code === 'GENERAL')
-                                        <span class="glass-badge glass-badge-primary text-[11px] py-0.5 px-2">Umum</span>
-                                    @elseif ($post->category_code === 'WTB')
-                                        <span class="glass-badge glass-badge-warning text-[11px] py-0.5 px-2">WTB (Beli)</span>
-                                    @elseif ($post->category_code === 'WTS')
-                                        <span class="glass-badge glass-badge-success text-[11px] py-0.5 px-2">WTS (Jual)</span>
-                                    @endif
-
-                                    @if ($post->status === 'CLOSED')
-                                        <span class="glass-badge glass-badge-neutral text-[10px] py-0.5 px-1.5">Ditutup</span>
-                                    @endif
-
-                                    @if ($post->variant)
-                                        <span class="inline-flex items-center gap-1 text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/50 truncate max-w-[220px]">
-                                            {{ $post->variant->product->product_name ?? 'Produk' }} &bull; {{ $post->variant->variant_name }}
-                                        </span>
-                                    @endif
-
-                                    @if (!is_null($post->price_offer))
-                                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/50">
-                                            Rp {{ number_format($post->price_offer, 0, ',', '.') }}
-                                        </span>
-                                    @endif
-
-                                    <span class="text-[11px] text-slate-400 font-medium">
-                                        &bull; {{ $post->formatted_time ?: $post->created_at->diffForHumans() }}
-                                    </span>
-                                </div>
-
-                                <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight group-hover:text-indigo-600 transition truncate">
-                                    {{ $post->title }}
-                                </h2>
-
-                                <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-1 leading-relaxed">
-                                    {{ Str::limit(strip_tags($post->content), 160) }}
-                                </p>
-                            </div>
-
-                            <!-- Footer Kanan: Author & Interaksi (TC-FR-01: Like & Komentar Tanpa Buka Detail) -->
-                            <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                                <!-- Author Identity -->
-                                <div class="flex items-center gap-2">
-                                    @if ($post->author->avatar_url)
-                                        <img src="{{ $post->author->avatar_url }}" alt="{{ $post->author->username }}" class="w-6 h-6 rounded-full object-cover">
-                                    @else
-                                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">
-                                            {{ strtoupper(substr($post->author->username, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                    <span class="font-semibold text-slate-700 text-xs truncate max-w-[90px]">
-                                        @<span>{{ $post->author->username }}</span>
-                                    </span>
-                                </div>
-
-                                <!-- Action Buttons: Like & Toggle Comment Drawer -->
-                                <div class="flex items-center gap-2">
-                                    <!-- Tombol Like (TC-FR-01 & TC-FR-15: AJAX Toggle) -->
-                                    <button type="button"
-                                            onclick="toggleFeedLike(event, {{ $post->post_id }})"
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition text-xs font-semibold {{ $userLiked ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-white/70 border-slate-200/60 text-slate-600 hover:text-rose-600 hover:bg-rose-50/50' }}"
-                                            id="like-btn-{{ $post->post_id }}"
-                                            title="Suka Postingan">
-                                        <svg class="w-3.5 h-3.5 {{ $userLiked ? 'fill-rose-500 text-rose-500' : 'fill-none text-current' }}" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
-                                        <span id="like-count-{{ $post->post_id }}">{{ $post->likes_count ?? 0 }}</span>
-                                    </button>
-
-                                    <!-- Tombol Komentar (TC-FR-01: Buka Input Komentar Langsung) -->
-                                    <button type="button"
-                                            onclick="toggleCommentDrawer(event, {{ $post->post_id }})"
-                                            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200/60 bg-white/70 hover:bg-indigo-50/50 hover:text-indigo-600 text-slate-600 transition text-xs font-semibold"
-                                            title="Tulis Komentar Langsung">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                        </svg>
-                                        <span id="comment-count-{{ $post->post_id }}">{{ $post->comments_count ?? 0 }}</span>
-                                    </button>
-                                </div>
-                            </div>
+                <!-- Filter & Search Bar (Sticky Top, z-30: Kartu lewat di belakang bar ini) -->
+                <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-md mb-4">
+                    <!-- PS5 Switcher Header & Quick Navigation Buttons -->
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-indigo-600 text-white text-[10px] font-black tracking-wider uppercase shadow-xs">
+                                PS5 Switcher
+                            </span>
+                            <span class="text-xs font-bold text-slate-800 tracking-tight">Feed Postingan</span>
+                            <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">&bull; Tampil 2 postingan per viewport</span>
                         </div>
-
-                        <!-- Mini Drawer Input Komentar Langsung (TC-FR-01, TC-FR-15, TC-FR-16) -->
-                        <div id="comment-drawer-{{ $post->post_id }}"
-                             class="hidden mt-3 pt-3 border-t border-slate-200/60"
-                             onclick="event.stopPropagation()">
-                            @auth
-                                @if ($post->status === 'ACTIVE')
-                                    <form onsubmit="submitFeedComment(event, {{ $post->post_id }})" class="flex items-center gap-2">
-                                        <input type="text"
-                                               id="comment-input-{{ $post->post_id }}"
-                                               placeholder="Tulis komentar... (Tekan Enter untuk kirim)"
-                                               class="glass-input flex-1 px-3 py-1.5 text-xs sm:text-sm"
-                                               autocomplete="off"
-                                               required
-                                               onkeydown="handleFeedCommentKeyDown(event, {{ $post->post_id }})">
-                                        <button type="submit"
-                                                id="comment-submit-{{ $post->post_id }}"
-                                                class="glass-btn-primary text-xs py-1.5 px-3 shrink-0">
-                                            Kirim
-                                        </button>
-                                    </form>
-                                    <p class="text-[10px] text-slate-400 mt-1 pl-1">
-                                        Tekan <kbd class="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded text-[9px]">Enter</kbd> untuk mengirim.
-                                    </p>
-                                @else
-                                    <p class="text-xs text-slate-500 italic">
-                                        Postingan ini sudah ditutup sehingga tidak dapat menerima komentar baru.
-                                    </p>
-                                @endif
-                            @else
-                                <div class="text-xs text-slate-600 flex items-center justify-between">
-                                    <span>Masuk untuk menulis komentar langsung pada postingan ini.</span>
-                                    <a href="{{ route('login') }}" class="glass-btn-secondary text-[11px] py-1 px-2.5 text-indigo-600 font-semibold">
-                                        Masuk
-                                    </a>
-                                </div>
-                            @endauth
+                        <div class="flex items-center gap-1.5">
+                            <button type="button"
+                                    onclick="switchForumPost('up')"
+                                    class="p-1 rounded-lg border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition text-xs flex items-center gap-1 px-2 font-medium"
+                                    title="Postingan Sebelumnya (Ke Atas)">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                <span class="text-[11px] hidden sm:inline">Atas</span>
+                            </button>
+                            <button type="button"
+                                    onclick="switchForumPost('down')"
+                                    class="p-1 rounded-lg border border-slate-200 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition text-xs flex items-center gap-1 px-2 font-medium"
+                                    title="Postingan Berikutnya (Ke Bawah)">
+                                <span class="text-[11px] hidden sm:inline">Bawah</span>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
                         </div>
                     </div>
-                @endforeach
-            </div>
 
-            <!-- Pagination Links -->
-            <div class="mt-8">
-                {{ $posts->links() }}
+                    <!-- Navbar Kategori (TC-FR-07: Hapus "Semua", Terpusat & Melebar) -->
+                    <div class="grid grid-cols-3 gap-2 w-full max-w-lg mx-auto mb-4 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/70 shadow-inner">
+                        <a href="{{ route('forum.index', ['category' => 'GENERAL']) }}"
+                           class="text-xs sm:text-sm font-semibold text-center py-1.5 px-3 rounded-xl transition duration-200 {{ $category === 'GENERAL' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                            Umum
+                        </a>
+                        <a href="{{ route('forum.index', ['category' => 'WTB']) }}"
+                           class="text-xs sm:text-sm font-semibold text-center py-1.5 px-3 rounded-xl transition duration-200 {{ $category === 'WTB' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                            WTB (Beli)
+                        </a>
+                        <a href="{{ route('forum.index', ['category' => 'WTS']) }}"
+                           class="text-xs sm:text-sm font-semibold text-center py-1.5 px-3 rounded-xl transition duration-200 {{ $category === 'WTS' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                            WTS (Jual)
+                        </a>
+                    </div>
+
+                    <!-- Form Filter & Pencarian (TC-FR-08 & TC-FR-09) -->
+                    <form action="{{ route('forum.index') }}" method="GET" class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-3">
+                        <input type="hidden" name="category" value="{{ $category }}">
+
+                        <!-- Variant Filter for WTB/WTS -->
+                        @if (in_array($category, ['WTB', 'WTS']))
+                            <div class="sm:w-64 shrink-0">
+                                <select name="variant_id" onchange="this.form.submit()" class="glass-input w-full px-3 py-2 text-xs">
+                                    <option value="">Semua Varian Produk</option>
+                                    @foreach ($variants as $v)
+                                        <option value="{{ $v->variant_id }}" {{ (string) $variantId === (string) $v->variant_id ? 'selected' : '' }}>
+                                            {{ $v->product->product_name ?? 'Produk' }} - {{ $v->variant_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        <!-- Keyword Search Input -->
+                        <div class="flex-1 relative">
+                            <input type="text"
+                                   name="q"
+                                   value="{{ $search }}"
+                                   placeholder="Cari judul atau isi postingan..."
+                                   class="glass-input w-full pl-9 pr-4 py-2 text-xs sm:text-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="submit" class="glass-btn-primary text-xs py-2 px-4">
+                                Cari
+                            </button>
+
+                            @if ($variantId)
+                                <a href="{{ route('forum.index', array_filter(['category' => $category, 'q' => $search])) }}"
+                                   class="glass-btn-secondary text-xs py-2 px-3 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+                                   title="Hapus filter varian saja">
+                                    Reset Varian
+                                </a>
+                            @endif
+
+                            @if ($search)
+                                <a href="{{ route('forum.index', array_filter(['category' => $category, 'variant_id' => $variantId])) }}"
+                                   class="glass-btn-secondary text-xs py-2 px-3 text-slate-500 hover:text-slate-700"
+                                   title="Hapus pencarian teks">
+                                    Reset Cari
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Postings Feed (TC-FR-11: Card Kapsul Ramping, z-10: Berjalan di belakang Filter dan Pagination) -->
+                <div class="space-y-3.5 py-1" id="forum-cards-list">
+                    @foreach ($posts as $post)
+                        @php
+                            $userLiked = auth()->check() && $post->likes->contains('user_id', auth()->id());
+                        @endphp
+                        <div class="relative z-10 snap-start glass-card glass-card-interactive p-4 sm:p-5 rounded-2xl transition duration-200 hover:shadow-lg hover:border-indigo-300/60 cursor-pointer group forum-post-snap-item"
+                             style="min-height: 135px;"
+                             onclick="handleCardClick(event, '{{ route('forum.show', $post->post_id) }}')"
+                             id="post-card-{{ $post->post_id }}">
+
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <!-- Info Utama Postingan -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                        @if ($post->category_code === 'GENERAL')
+                                            <span class="glass-badge glass-badge-primary text-[11px] py-0.5 px-2">Umum</span>
+                                        @elseif ($post->category_code === 'WTB')
+                                            <span class="glass-badge glass-badge-warning text-[11px] py-0.5 px-2">WTB (Beli)</span>
+                                        @elseif ($post->category_code === 'WTS')
+                                            <span class="glass-badge glass-badge-success text-[11px] py-0.5 px-2">WTS (Jual)</span>
+                                        @endif
+
+                                        @if ($post->status === 'CLOSED')
+                                            <span class="glass-badge glass-badge-neutral text-[10px] py-0.5 px-1.5">Ditutup</span>
+                                        @endif
+
+                                        @if ($post->variant)
+                                            <span class="inline-flex items-center gap-1 text-[11px] text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/50 truncate max-w-[220px]">
+                                                {{ $post->variant->product->product_name ?? 'Produk' }} &bull; {{ $post->variant->variant_name }}
+                                            </span>
+                                        @endif
+
+                                        @if (!is_null($post->price_offer))
+                                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/50">
+                                                Rp {{ number_format($post->price_offer, 0, ',', '.') }}
+                                            </span>
+                                        @endif
+
+                                        <span class="text-[11px] text-slate-400 font-medium">
+                                            &bull; {{ $post->formatted_time ?: $post->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight group-hover:text-indigo-600 transition truncate">
+                                        {{ $post->title }}
+                                    </h2>
+
+                                    <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-1 leading-relaxed">
+                                        {{ Str::limit(strip_tags($post->content), 160) }}
+                                    </p>
+                                </div>
+
+                                <!-- Footer Kanan: Author & Interaksi (TC-FR-01: Like & Komentar Tanpa Buka Detail) -->
+                                <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                                    <!-- Author Identity -->
+                                    <div class="flex items-center gap-2">
+                                        @if ($post->author->avatar_url)
+                                            <img src="{{ $post->author->avatar_url }}" alt="{{ $post->author->username }}" class="w-6 h-6 rounded-full object-cover">
+                                        @else
+                                            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">
+                                                {{ strtoupper(substr($post->author->username, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                        <span class="font-semibold text-slate-700 text-xs truncate max-w-[90px]">
+                                            @<span>{{ $post->author->username }}</span>
+                                        </span>
+                                    </div>
+
+                                    <!-- Action Buttons: Like & Toggle Comment Drawer -->
+                                    <div class="flex items-center gap-2">
+                                        <!-- Tombol Like (TC-FR-01 & TC-FR-15: AJAX Toggle) -->
+                                        <button type="button"
+                                                onclick="toggleFeedLike(event, {{ $post->post_id }})"
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition text-xs font-semibold {{ $userLiked ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-white/70 border-slate-200/60 text-slate-600 hover:text-rose-600 hover:bg-rose-50/50' }}"
+                                                id="like-btn-{{ $post->post_id }}"
+                                                title="Suka Postingan">
+                                            <svg class="w-3.5 h-3.5 {{ $userLiked ? 'fill-rose-500 text-rose-500' : 'fill-none text-current' }}" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                            </svg>
+                                            <span id="like-count-{{ $post->post_id }}">{{ $post->likes_count ?? 0 }}</span>
+                                        </button>
+
+                                        <!-- Tombol Komentar (TC-FR-01: Buka Input Komentar Langsung) -->
+                                        <button type="button"
+                                                onclick="toggleCommentDrawer(event, {{ $post->post_id }})"
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200/60 bg-white/70 hover:bg-indigo-50/50 hover:text-indigo-600 text-slate-600 transition text-xs font-semibold"
+                                                title="Tulis Komentar Langsung">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                            </svg>
+                                            <span id="comment-count-{{ $post->post_id }}">{{ $post->comments_count ?? 0 }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mini Drawer Input Komentar Langsung (TC-FR-01, TC-FR-15, TC-FR-16) -->
+                            <div id="comment-drawer-{{ $post->post_id }}"
+                                 class="hidden mt-3 pt-3 border-t border-slate-200/60"
+                                 onclick="event.stopPropagation()">
+                                @auth
+                                    @if ($post->status === 'ACTIVE')
+                                        <form onsubmit="submitFeedComment(event, {{ $post->post_id }})" class="flex items-center gap-2">
+                                            <input type="text"
+                                                   id="comment-input-{{ $post->post_id }}"
+                                                   placeholder="Tulis komentar... (Tekan Enter untuk kirim)"
+                                                   class="glass-input flex-1 px-3 py-1.5 text-xs sm:text-sm"
+                                                   autocomplete="off"
+                                                   required
+                                                   onkeydown="handleFeedCommentKeyDown(event, {{ $post->post_id }})">
+                                            <button type="submit"
+                                                    id="comment-submit-{{ $post->post_id }}"
+                                                    class="glass-btn-primary text-xs py-1.5 px-3 shrink-0">
+                                                Kirim
+                                            </button>
+                                        </form>
+                                        <p class="text-[10px] text-slate-400 mt-1 pl-1">
+                                            Tekan <kbd class="px-1 py-0.5 bg-slate-100 border border-slate-200 rounded text-[9px]">Enter</kbd> untuk mengirim.
+                                        </p>
+                                    @else
+                                        <p class="text-xs text-slate-500 italic">
+                                            Postingan ini sudah ditutup sehingga tidak dapat menerima komentar baru.
+                                        </p>
+                                    @endif
+                                @else
+                                    <div class="text-xs text-slate-600 flex items-center justify-between">
+                                        <span>Masuk untuk menulis komentar langsung pada postingan ini.</span>
+                                        <a href="{{ route('login') }}" class="glass-btn-secondary text-[11px] py-1 px-2.5 text-indigo-600 font-semibold">
+                                            Masuk
+                                        </a>
+                                    </div>
+                                @endauth
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Sticky Bottom Pagination (Sticky Bottom, z-30: Kartu lewat di belakang bar ini) -->
+                <div class="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-md mt-4">
+                    {{ $posts->links('vendor.pagination.tailwind') }}
+                </div>
             </div>
         @else
+            <!-- Filter & Search Bar untuk Kondisi Kosong -->
+            <div class="glass-panel p-4 sm:p-5 mb-8">
+                <div class="grid grid-cols-3 gap-2 w-full max-w-lg mx-auto mb-5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/70 shadow-inner">
+                    <a href="{{ route('forum.index', ['category' => 'GENERAL']) }}"
+                       class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'GENERAL' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                        Umum
+                    </a>
+                    <a href="{{ route('forum.index', ['category' => 'WTB']) }}"
+                       class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'WTB' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                        WTB (Beli)
+                    </a>
+                    <a href="{{ route('forum.index', ['category' => 'WTS']) }}"
+                       class="text-xs sm:text-sm font-semibold text-center py-2 px-3 rounded-xl transition duration-200 {{ $category === 'WTS' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900 hover:bg-white/70' }}">
+                        WTS (Jual)
+                    </a>
+                </div>
+
+                <form action="{{ route('forum.index') }}" method="GET" class="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:gap-3">
+                    <input type="hidden" name="category" value="{{ $category }}">
+
+                    @if (in_array($category, ['WTB', 'WTS']))
+                        <div class="sm:w-64 shrink-0">
+                            <select name="variant_id" onchange="this.form.submit()" class="glass-input w-full px-3 py-2 text-xs">
+                                <option value="">Semua Varian Produk</option>
+                                @foreach ($variants as $v)
+                                    <option value="{{ $v->variant_id }}" {{ (string) $variantId === (string) $v->variant_id ? 'selected' : '' }}>
+                                        {{ $v->product->product_name ?? 'Produk' }} - {{ $v->variant_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
+                    <div class="flex-1 relative">
+                        <input type="text"
+                               name="q"
+                               value="{{ $search }}"
+                               placeholder="Cari judul atau isi postingan..."
+                               class="glass-input w-full pl-9 pr-4 py-2 text-xs sm:text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="submit" class="glass-btn-primary text-xs py-2 px-4">
+                            Cari
+                        </button>
+                        @if ($variantId || $search)
+                            <a href="{{ route('forum.index', ['category' => $category]) }}" class="glass-btn-secondary text-xs py-2 px-3">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
             <!-- Empty State (TC-FR-08: Keadaan Kosong Informatif) -->
             <div class="glass-card p-12 text-center max-w-lg mx-auto">
                 <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 shadow-xs">
@@ -292,11 +385,39 @@
     </div>
 </div>
 
-<!-- JavaScript Interaktivitas Feed (TC-FR-01, TC-FR-11, TC-FR-15, TC-FR-16) -->
+<!-- JavaScript Interaktivitas Feed & Switcher PS5 (TC-FR-01, TC-FR-11, TC-FR-15, TC-FR-16) -->
 <script>
+    // Switcher Kontrol PS5: Gulirkan postingan naik atau turun dengan halus
+    function switchForumPost(direction) {
+        const scrollbox = document.getElementById('forum-feed-scrollbox');
+        if (!scrollbox) return;
+        const scrollAmount = 156; // 1 kartu + gap
+        if (direction === 'down') {
+            scrollbox.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+        } else {
+            scrollbox.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+        }
+    }
+
+    // Keyboard Arrow Navigation untuk Switcher PS5 saat scrollbox terfokus
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollbox = document.getElementById('forum-feed-scrollbox');
+        if (scrollbox) {
+            scrollbox.addEventListener('keydown', (e) => {
+                if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    switchForumPost('down');
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    switchForumPost('up');
+                }
+            });
+        }
+    });
+
     // TC-FR-11: Klik card membuka detail postingan, kecuali jika klik elemen interaktif
     function handleCardClick(event, url) {
-        // Abaikan jika target klik adalah tombol, input, link, form, atau elemen di dalamnya
         if (event.target.closest('button') || event.target.closest('a') || event.target.closest('input') || event.target.closest('form')) {
             return;
         }

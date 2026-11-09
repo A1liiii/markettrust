@@ -34,7 +34,12 @@ class ForumCommentController extends Controller
                 ->with('warning', 'Postingan ini sudah tidak aktif sehingga tidak dapat menerima komentar baru.');
         }
 
-        $comment = $this->forumService->addComment($request->user(), $post, $request->validated('content'));
+        $comment = $this->forumService->addComment(
+            $request->user(),
+            $post,
+            $request->validated('content'),
+            $request->validated('parent_comment_id')
+        );
         $comment->load('author');
 
         if ($request->wantsJson()) {
@@ -43,6 +48,7 @@ class ForumCommentController extends Controller
                 'message' => 'Komentar berhasil dipublikasikan!',
                 'comment' => [
                     'comment_id' => $comment->comment_id,
+                    'parent_comment_id' => $comment->parent_comment_id,
                     'author_username' => $comment->author->username,
                     'author_avatar' => $comment->author->avatar_url,
                     'is_post_author' => $comment->author_id === $post->author_id,

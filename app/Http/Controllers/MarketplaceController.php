@@ -6,6 +6,7 @@ use App\Contracts\Services\MarketplaceServiceInterface;
 use App\Http\Requests\Marketplace\MarketplaceSearchRequest;
 use App\Models\Listing;
 use App\Models\ProductCategory;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -16,12 +17,12 @@ class MarketplaceController extends Controller
     ) {}
 
     /**
-     * Tampilkan katalog pencarian dan filter listing aktif di Marketplace.
+     * Tampilkan katalog pencarian dan filter listing aktif di Marketplace (3 baris x 4 kolom = 12 item).
      */
     public function index(MarketplaceSearchRequest $request): View
     {
         $validated = $request->validated();
-        $listings = $this->marketplaceService->searchListings($validated, 8);
+        $listings = $this->marketplaceService->searchListings($validated, 12);
 
         // Ambil pohon kategori -> produk -> varian aktif untuk dropdown filter
         $categories = ProductCategory::query()
@@ -47,7 +48,7 @@ class MarketplaceController extends Controller
     }
 
     /**
-     * Tampilkan halaman detail listing publik dan informasi pasar.
+     * Tampilkan halaman detail listing publik.
      */
     public function show(Request $request, Listing $listing): View
     {
@@ -67,6 +68,62 @@ class MarketplaceController extends Controller
             'listing' => $listing,
             'marketStats' => $marketStats,
             'isPreview' => $listing->status !== 'ACTIVE',
+        ]);
+    }
+
+    /**
+     * Tampilkan halaman utama Informasi Pasar Produk (Public Market Statistics).
+     */
+    public function marketStats(Request $request): View
+    {
+        $categories = ProductCategory::query()
+            ->where('is_active', true)
+            ->with(['products' => function ($pq) {
+                $pq->where('is_active', true)
+                    ->with(['variants' => function ($vq) {
+                        $vq->where('is_active', true)->orderBy('variant_name');
+                    }])
+                    ->orderBy('product_name');
+            }])
+            ->orderBy('category_name')
+            ->get();
+
+        $selectedVariantId = $request->query('variant_id') ? (int) $request->query('variant_id') : null;
+
+        if (! $selectedVariantId) {
+            $firstVariant = ProductVariant::query()
+                ->where('is_active', true)
+                ->whereHas('product', fn ($q) => $q->where('is_active', true))
+                ->first();
+            $selectedVariantId = $firstVariant?->variant_id;
+        }
+
+        $selectedVariant = $selectedVariantId
+            ? ProductVariant::with('product.category')->find($selectedVariantId)
+            : null;
+
+        $period = (string) $request->query('period', '30d');
+        $marketStats = $selectedVariantId
+            ? $this->marketplaceService->getProductMarketStats($selectedVariantId, $period)
+            : [
+                'demand' => 0,
+                'supply' => 0,
+                'active_listings_count' => 0,
+                'wts_count' => 0,
+                'avg_price' => null,
+                'sample_count' => 0,
+                'has_price_data' => false,
+                'period' => $period,
+                'period_label' => '30 Hari Terakhir',
+                'period_days' => 30,
+            ];
+
+        return view('marketplace.market-stats', [
+            'categories' => $categories,
+            'selectedVariant' => $selectedVariant,
+            'selectedVariantId' => $selectedVariantId,
+            'period' => $period,
+            'marketStats' => $marketStats,
         ]);
     }
 }

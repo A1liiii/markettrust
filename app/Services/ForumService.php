@@ -21,7 +21,7 @@ class ForumService
     /**
      * Retrieve paginated active forum posts with optional category, search, and variant filters.
      */
-    public function getFeedPosts(?string $category = 'GENERAL', ?string $search = null, ?int $variantId = null, int $perPage = 12): LengthAwarePaginator
+    public function getFeedPosts(?string $category = 'GENERAL', ?string $search = null, ?int $variantId = null, int $perPage = 10): LengthAwarePaginator
     {
         $selectedCategory = ($category && in_array($category, ['GENERAL', 'WTB', 'WTS'], true)) ? $category : 'GENERAL';
 
@@ -157,14 +157,24 @@ class ForumService
     /**
      * Add a comment to an active forum post.
      */
-    public function addComment(User $user, ForumPost $post, string $content): ForumComment
+    public function addComment(User $user, ForumPost $post, string $content, ?int $parentCommentId = null): ForumComment
     {
         if ($post->status !== 'ACTIVE') {
             throw new InvalidArgumentException('Tidak dapat menambahkan komentar pada postingan yang sudah tidak aktif.');
         }
 
+        if ($parentCommentId !== null) {
+            $parent = ForumComment::where('comment_id', $parentCommentId)
+                ->where('post_id', $post->post_id)
+                ->first();
+            if (! $parent) {
+                throw new InvalidArgumentException('Komentar rujukan tidak ditemukan pada postingan ini.');
+            }
+        }
+
         return ForumComment::create([
             'post_id' => $post->post_id,
+            'parent_comment_id' => $parentCommentId,
             'author_id' => $user->user_id,
             'content' => $content,
         ]);

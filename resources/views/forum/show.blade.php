@@ -262,75 +262,14 @@
                     </div>
                 @endauth
 
-                <!-- Comments List (TC-FR-03: <7 hari relatif, >=7 hari format lengkap) -->
+                <!-- Comments List (TC-FR-03 & Nested Replies Support) -->
                 <div id="comments-container" class="space-y-4 pt-2">
                     @forelse ($post->comments as $comment)
-                        <div class="glass-card p-4 rounded-xl flex flex-col justify-between group" id="comment-item-{{ $comment->comment_id }}">
-                            <!-- Comment Header -->
-                            <div class="flex items-start justify-between gap-3 mb-2">
-                                <div class="flex items-center gap-2.5">
-                                    @if ($comment->author->avatar_url)
-                                        <img src="{{ $comment->author->avatar_url }}" alt="{{ $comment->author->username }}" class="w-7 h-7 rounded-full object-cover">
-                                    @else
-                                        <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center text-xs font-bold">
-                                            {{ strtoupper(substr($comment->author->username, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <span class="font-bold text-slate-800 text-xs">@<span>{{ $comment->author->username }}</span></span>
-                                        @if ($comment->author_id === $post->author_id)
-                                            <span class="glass-badge glass-badge-primary text-[9px] py-0 px-1 ml-1">Penulis</span>
-                                        @endif
-                                        <span class="text-[11px] text-slate-400 ml-1" title="{{ $comment->exact_wib_time }}">&bull; {{ $comment->formatted_time }}</span>
-                                    </div>
-                                </div>
-
-                                <!-- Comment Delete Action -->
-                                @auth
-                                    @if (auth()->id() === $comment->author_id || auth()->user()->account_type === 'ADMIN')
-                                        <button type="button"
-                                                onclick="deleteCommentAjax({{ $comment->comment_id }})"
-                                                class="text-slate-400 hover:text-rose-600 text-xs transition p-1"
-                                                title="Hapus Komentar">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                        </button>
-                                    @endif
-                                @endauth
-                            </div>
-
-                            <!-- Comment Content -->
-                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line pl-9 mb-3">
-                                {{ $comment->content }}
-                            </p>
-
-                            <!-- Comment Like Action Footer (TC-FR-15: AJAX Toggle Like Comment) -->
-                            @php
-                                $userLikedComment = auth()->check() && $comment->likes->contains('user_id', auth()->id());
-                                $commentLikesCount = $comment->likes->count();
-                            @endphp
-                            <div class="pl-9 flex items-center gap-3 text-xs">
-                                @auth
-                                    <button type="button"
-                                            onclick="toggleCommentLikeAjax({{ $comment->comment_id }})"
-                                            id="comment-like-btn-{{ $comment->comment_id }}"
-                                            class="inline-flex items-center gap-1.5 text-xs font-semibold transition {{ $userLikedComment ? 'text-rose-600' : 'text-slate-500 hover:text-rose-600' }}">
-                                        <svg class="w-3.5 h-3.5 {{ $userLikedComment ? 'fill-rose-500 text-rose-500' : 'fill-none text-current' }}" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
-                                        <span id="comment-likes-count-{{ $comment->comment_id }}">{{ $commentLikesCount > 0 ? $commentLikesCount : 'Suka' }}</span>
-                                    </button>
-                                @else
-                                    <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-indigo-600">
-                                        <svg class="w-3.5 h-3.5 fill-none text-current" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
-                                        <span>{{ $commentLikesCount > 0 ? $commentLikesCount : 'Suka' }}</span>
-                                    </a>
-                                @endauth
-                            </div>
-                        </div>
+                        @include('forum.partials.comment-item', [
+                            'comment' => $comment,
+                            'post' => $post,
+                            'level' => 0
+                        ])
                     @empty
                         <div id="no-comments-placeholder" class="glass-card p-8 text-center text-slate-500 text-xs">
                             <svg class="w-8 h-8 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -643,6 +582,172 @@
         });
     }
 
+    // Toggle Replies Visibility
+    function toggleReplies(commentId) {
+        const container = document.getElementById('replies-container-' + commentId);
+        const arrow = document.getElementById('replies-arrow-' + commentId);
+        if (!container) return;
+
+        const isHidden = container.classList.contains('hidden');
+        if (isHidden) {
+            container.classList.remove('hidden');
+            if (arrow) arrow.style.transform = 'rotate(180deg)';
+        } else {
+            container.classList.add('hidden');
+            if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    // Toggle Reply Form Visibility
+    function toggleReplyForm(commentId) {
+        const formDiv = document.getElementById('reply-form-' + commentId);
+        if (!formDiv) return;
+
+        const isHidden = formDiv.classList.contains('hidden');
+        if (isHidden) {
+            formDiv.classList.remove('hidden');
+            const textarea = document.getElementById('reply-input-' + commentId);
+            if (textarea) textarea.focus();
+        } else {
+            formDiv.classList.add('hidden');
+        }
+    }
+
+    // Enter to submit reply (Shift+Enter for newline)
+    function handleReplyKeyDown(event, postId, commentId) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            submitCommentReply(event, postId, commentId);
+        }
+    }
+
+    // Submit Reply via AJAX
+    function submitCommentReply(event, postId, parentCommentId) {
+        if (event) event.preventDefault();
+        const textarea = document.getElementById('reply-input-' + parentCommentId);
+        const submitBtn = document.getElementById('reply-submit-btn-' + parentCommentId);
+        if (!textarea) return;
+
+        const content = textarea.value.trim();
+        if (content.length < 3) {
+            alert('Balasan minimal 3 karakter.');
+            textarea.focus();
+            return;
+        }
+
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        textarea.disabled = true;
+        if (submitBtn) submitBtn.disabled = true;
+
+        fetch('/forum/' + postId + '/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({
+                content: content,
+                parent_comment_id: parentCommentId
+            })
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(e => { throw new Error(e.message || 'Gagal mengirim balasan'); });
+            }
+            return res.json();
+        })
+        .then(data => {
+            textarea.value = '';
+            toggleReplyForm(parentCommentId);
+
+            document.getElementById('comments-header-count').textContent = data.comments_count;
+            document.getElementById('detail-comments-count-badge').textContent = data.comments_count;
+
+            appendNewReply(data.comment, parentCommentId);
+        })
+        .catch(err => {
+            alert('Terjadi kesalahan: ' + err.message);
+        })
+        .finally(() => {
+            textarea.disabled = false;
+            if (submitBtn) submitBtn.disabled = false;
+        });
+    }
+
+    function appendNewReply(comment, parentCommentId) {
+        let repliesContainer = document.getElementById('replies-container-' + parentCommentId);
+        if (!repliesContainer) return;
+
+        // Ensure visible
+        repliesContainer.classList.remove('hidden');
+        const arrow = document.getElementById('replies-arrow-' + parentCommentId);
+        if (arrow) arrow.style.transform = 'rotate(180deg)';
+
+        // Increment count
+        let currentCount = parseInt(repliesContainer.getAttribute('data-replies-count') || '0', 10);
+        currentCount += 1;
+        repliesContainer.setAttribute('data-replies-count', currentCount);
+
+        const counterText = document.getElementById('replies-counter-text-' + parentCommentId);
+        if (counterText) counterText.textContent = 'Reply (' + currentCount + ')';
+
+        const toggleBtn = document.getElementById('replies-toggle-btn-' + parentCommentId);
+        if (toggleBtn) {
+            toggleBtn.classList.remove('hidden');
+            toggleBtn.classList.add('inline-flex');
+        }
+
+        // Render card
+        const card = document.createElement('div');
+        card.className = 'glass-card p-3 sm:p-3.5 rounded-xl flex flex-col justify-between group transition bg-slate-50/70 border-slate-200/60';
+        card.id = 'comment-item-' + comment.comment_id;
+
+        const avatarInitial = comment.author_username ? comment.author_username.charAt(0).toUpperCase() : 'U';
+        const avatarHtml = comment.author_avatar
+            ? `<img src="${comment.author_avatar}" alt="${comment.author_username}" class="w-6 h-6 rounded-full object-cover">`
+            : `<div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center text-[10px] font-bold">${avatarInitial}</div>`;
+
+        const authorBadge = comment.is_post_author ? '<span class="glass-badge glass-badge-primary text-[9px] py-0 px-1 ml-1">Penulis</span>' : '';
+
+        card.innerHTML = `
+            <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="flex items-center gap-2.5">
+                    ${avatarHtml}
+                    <div>
+                        <span class="font-bold text-slate-800 text-xs">@<span>${comment.author_username}</span></span>
+                        ${authorBadge}
+                        <span class="text-[11px] text-slate-400 ml-1">&bull; ${comment.formatted_time}</span>
+                    </div>
+                </div>
+                <button type="button"
+                        onclick="deleteCommentAjax(${comment.comment_id})"
+                        class="text-slate-400 hover:text-rose-600 text-xs transition p-1"
+                        title="Hapus Komentar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line pl-8 mb-3">
+                ${comment.content}
+            </p>
+            <div class="pl-8 flex items-center gap-3 text-xs">
+                <button type="button"
+                        onclick="toggleCommentLikeAjax(${comment.comment_id})"
+                        id="comment-like-btn-${comment.comment_id}"
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold transition text-slate-500 hover:text-rose-600">
+                    <svg class="w-3.5 h-3.5 fill-none text-current" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span id="comment-likes-count-${comment.comment_id}">Suka</span>
+                </button>
+            </div>
+        `;
+
+        repliesContainer.appendChild(card);
+    }
+
     function appendNewComment(comment) {
         const container = document.getElementById('comments-container');
         const card = document.createElement('div');
@@ -688,6 +793,56 @@
                     </svg>
                     <span id="comment-likes-count-${comment.comment_id}">Suka</span>
                 </button>
+                <span class="text-slate-300">&bull;</span>
+                <button type="button"
+                        onclick="toggleReplyForm(${comment.comment_id})"
+                        class="text-xs font-semibold text-slate-600 hover:text-indigo-600 transition flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                    </svg>
+                    <span>Balas</span>
+                </button>
+                <button type="button"
+                        id="replies-toggle-btn-${comment.comment_id}"
+                        onclick="toggleReplies(${comment.comment_id})"
+                        class="hidden items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/70 transition">
+                    <svg class="w-3 h-3 transition-transform duration-200" id="replies-arrow-${comment.comment_id}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                    <span id="replies-counter-text-${comment.comment_id}">Reply (0)</span>
+                </button>
+            </div>
+            <div id="reply-form-${comment.comment_id}" class="hidden mt-3 pl-8 sm:pl-9 pt-3 border-t border-slate-100">
+                <form onsubmit="submitCommentReply(event, ${@json($post->post_id)}, ${comment.comment_id})" class="space-y-2">
+                    <div>
+                        <textarea id="reply-input-${comment.comment_id}"
+                                  rows="2"
+                                  required
+                                  maxlength="2000"
+                                  onkeydown="handleReplyKeyDown(event, ${@json($post->post_id)}, ${comment.comment_id})"
+                                  placeholder="Tulis balasan untuk @${comment.author_username}... (Enter kirim, Shift+Enter baris baru)"
+                                  class="glass-input w-full p-2.5 text-xs sm:text-sm leading-relaxed"></textarea>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-slate-400">Tekan Enter untuk kirim</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button"
+                                    onclick="toggleReplyForm(${comment.comment_id})"
+                                    class="glass-btn-secondary text-[11px] py-1 px-2.5">
+                                Batal
+                            </button>
+                            <button type="submit"
+                                    id="reply-submit-btn-${comment.comment_id}"
+                                    class="glass-btn-primary text-[11px] py-1 px-3">
+                                Kirim Balasan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="replies-container-${comment.comment_id}"
+                 class="hidden mt-3 pl-4 sm:pl-8 space-y-3 border-l-2 border-indigo-200/70"
+                 data-replies-count="0">
             </div>
         `;
 

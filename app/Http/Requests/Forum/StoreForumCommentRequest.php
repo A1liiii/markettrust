@@ -24,6 +24,7 @@ class StoreForumCommentRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'min:3', 'max:2000'],
+            'parent_comment_id' => ['nullable', 'integer', 'exists:forum_comments,comment_id'],
         ];
     }
 
