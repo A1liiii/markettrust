@@ -13,7 +13,7 @@ class NotificationController extends Controller
     /**
      * Tampilkan pusat notifikasi pengguna (semua, belum dibaca, atau sudah dibaca).
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $user = $request->user();
         $filter = (string) $request->query('filter', 'all');
@@ -33,6 +33,31 @@ class NotificationController extends Controller
         $unreadCount = $user->notifications()->unread()->count();
         $totalCount = $user->notifications()->count();
         $readCount = max(0, $totalCount - $unreadCount);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'unread_count' => $unreadCount,
+                'total_count' => $totalCount,
+                'read_count' => $readCount,
+                'current_filter' => $filter,
+                'notifications' => $notifications->map(function ($n) {
+                    return [
+                        'notification_id' => $n->notification_id,
+                        'event_type' => $n->event_type,
+                        'event_label' => $n->event_label,
+                        'badge_class' => $n->badge_class,
+                        'transaction_id' => $n->transaction_id,
+                        'transaction_url' => $n->transaction_id ? route('transactions.show', $n->transaction_id) : null,
+                        'message' => $n->message,
+                        'is_read' => $n->isRead(),
+                        'created_at_human' => $n->created_at->diffForHumans(),
+                        'created_at_exact' => $n->created_at->format('d M Y, H:i'),
+                        'read_at' => $n->read_at?->format('d M Y, H:i'),
+                    ];
+                }),
+            ]);
+        }
 
         return view('notifications.index', [
             'notifications' => $notifications,
@@ -99,7 +124,7 @@ class NotificationController extends Controller
     /**
      * Tandai seluruh notifikasi belum dibaca milik pengguna aktif sebagai sudah dibaca.
      */
-    public function markAllRead(Request $request): RedirectResponse
+    public function markAllRead(Request $request): RedirectResponse|JsonResponse
     {
         $user = $request->user();
         $updated = $user->notifications()->unread()->update(['read_at' => now()]);
@@ -107,6 +132,14 @@ class NotificationController extends Controller
         $message = $updated > 0
             ? "Sebanyak {$updated} notifikasi berhasil ditandai sebagai dibaca."
             : 'Tidak ada notifikasi baru yang perlu ditandai.';
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'updated_count' => $updated,
+                'message' => $message,
+            ]);
+        }
 
         return redirect()->back()->with('success', $message);
     }

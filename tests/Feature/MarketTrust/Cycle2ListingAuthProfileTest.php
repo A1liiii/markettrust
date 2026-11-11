@@ -287,7 +287,7 @@ class Cycle2ListingAuthProfileTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Panduan Indikator Reputasi & Legitimasi', false);
-        $response->assertSee('Perlu Perhatian');
+        $response->assertSee('PROBLEMATIC');
         $response->assertSee('Total Akumulasi:');
         $response->assertSee('whitespace-nowrap', false);
     }

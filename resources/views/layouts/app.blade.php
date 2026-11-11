@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html lang="id" class="overflow-x-hidden w-full max-w-full">
+<html lang="id" class="overflow-x-clip w-full max-w-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'MarketTrust') - Marketplace & Forum Digital Aman</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative overflow-x-hidden w-full max-w-full">
+<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative overflow-x-clip w-full max-w-full">
     <!-- Ambient Glassmorphism Glow Spheres -->
     <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
         <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-indigo-400/20 blur-3xl"></div>
@@ -25,8 +28,8 @@
                     <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
                             <svg class="w-6 h-6 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016A11.955 11.955 0 0112 2.944z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8.5v9M13.5 10h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.8a11.95 11.95 0 01-8.62 3.04A12.02 12.02 0 003 9c0 6.2 4.1 11.4 9 12.8 4.9-1.4 9-6.6 9-12.8 0-1.04-.13-2.05-.38-3.02A11.95 11.95 0 0112 2.8z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7.5v8.5M13.5 9.25h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
                             </svg>
                         </div>
                         <div class="flex items-center gap-2">
@@ -72,19 +75,28 @@
                         @endphp
                         <div class="flex items-center gap-2">
                             <!-- Notification Bell Icon (Desktop & Tablet) -->
-                            <a href="{{ route('notifications.index') }}" 
-                               class="relative p-2 rounded-xl text-slate-600 hover:text-indigo-600 hover:bg-white/80 transition flex items-center justify-center {{ request()->routeIs('notifications.*') ? 'text-indigo-600 bg-white/80 shadow-xs' : '' }}" 
-                               title="Pusat Notifikasi" 
-                               data-cy="nav-notifications">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                </svg>
-                                @if ($navbarUnreadNotifs > 0)
-                                    <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-tight text-white bg-rose-500 rounded-full flex items-center justify-center border-2 border-white shadow-xs" data-cy="nav-unread-badge">
-                                        {{ $navbarUnreadNotifs > 99 ? '99+' : $navbarUnreadNotifs }}
-                                    </span>
-                                @endif
-                            </a>
+                            <div class="relative" id="navbar-notif-wrapper">
+                                <a href="{{ route('notifications.index') }}"
+                                   id="nav-notif-toggle-btn"
+                                   onclick="return toggleNavbarNotifPopup(event)"
+                                   class="relative p-2 rounded-xl text-slate-600 hover:text-indigo-600 hover:bg-white/80 active:scale-95 transition-all duration-200 flex items-center justify-center cursor-pointer {{ request()->routeIs('notifications.*') ? 'text-indigo-600 bg-white/80 shadow-xs' : '' }}" 
+                                   title="Pusat Notifikasi" 
+                                   aria-label="Buka notifikasi"
+                                   aria-haspopup="dialog"
+                                   aria-expanded="false"
+                                   data-cy="nav-notifications">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    @if ($navbarUnreadNotifs > 0)
+                                        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-tight text-white bg-rose-500 rounded-full flex items-center justify-center border-2 border-white shadow-xs" data-cy="nav-unread-badge">
+                                            {{ $navbarUnreadNotifs > 99 ? '99+' : $navbarUnreadNotifs }}
+                                        </span>
+                                    @endif
+                                </a>
+
+                                @include('notifications.partials.navbar-popup')
+                            </div>
 
                             <a href="{{ route('profile.show') }}" class="hidden sm:flex items-center gap-2 glass-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-white/80 hover:bg-white/90 hover:scale-[1.02] transition" title="Lihat Profil Saya" data-cy="nav-user-profile">
                                 @if (auth()->user()->avatar_url)
@@ -179,7 +191,10 @@
                 <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <div class="text-sm font-medium">{{ session('success') }}</div>
+                <div class="text-sm font-medium flex-1">{{ session('success') }}</div>
+                <button type="button" onclick="dismissGlassAlert(this)" class="p-1 -mr-1 text-emerald-700/60 hover:text-emerald-900 hover:bg-emerald-100/50 rounded-lg transition-all active:scale-95 cursor-pointer" aria-label="Tutup pesan">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
 
@@ -188,7 +203,10 @@
                 <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
-                <div class="text-sm font-medium">{{ session('warning') }}</div>
+                <div class="text-sm font-medium flex-1">{{ session('warning') }}</div>
+                <button type="button" onclick="dismissGlassAlert(this)" class="p-1 -mr-1 text-amber-700/60 hover:text-amber-900 hover:bg-amber-100/50 rounded-lg transition-all active:scale-95 cursor-pointer" aria-label="Tutup pesan">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
 
@@ -197,7 +215,10 @@
                 <svg class="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <div class="text-sm font-medium">{{ session('info') }}</div>
+                <div class="text-sm font-medium flex-1">{{ session('info') }}</div>
+                <button type="button" onclick="dismissGlassAlert(this)" class="p-1 -mr-1 text-indigo-700/60 hover:text-indigo-900 hover:bg-indigo-100/50 rounded-lg transition-all active:scale-95 cursor-pointer" aria-label="Tutup pesan">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
 
@@ -214,6 +235,9 @@
                         @endforeach
                     </ul>
                 </div>
+                <button type="button" onclick="dismissGlassAlert(this)" class="p-1 -mr-1 text-rose-700/60 hover:text-rose-900 hover:bg-rose-100/50 rounded-lg transition-all active:scale-95 cursor-pointer" aria-label="Tutup pesan">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
     </div>
@@ -224,6 +248,7 @@
     </main>
 
     <!-- Glass Footer -->
+    @unless (View::hasSection('hide_footer'))
     <footer class="mt-auto border-t border-white/60 bg-white/50 backdrop-blur-md py-8 text-slate-600 text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2 font-medium">
@@ -236,12 +261,20 @@
             </div>
         </div>
     </footer>
+    @endunless
 
     @auth
         @include('conversations.partials.global-drawer')
     @endauth
 
     <script>
+    function dismissGlassAlert(btn) {
+        const alert = btn.closest('.glass-alert');
+        if (!alert) return;
+        alert.classList.add('is-dismissing');
+        setTimeout(() => alert.remove(), 240);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const mobileToggle = document.getElementById('mobile-menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');

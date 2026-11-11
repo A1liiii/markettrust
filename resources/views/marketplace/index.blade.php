@@ -298,7 +298,7 @@
         </div>
 
         <!-- Listing Grid Section (4 Kolom x 3 Baris = 12 Item per Halaman) -->
-        <div>
+        <div class="pb-24 sm:pb-28">
             @if ($listings->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="marketplace-grid" data-cy="marketplace-grid">
                     @foreach ($listings as $listing)
@@ -309,26 +309,30 @@
                         >
                             <!-- Image Header / Fallback Cover -->
                             <div class="relative aspect-[16/10] bg-gradient-to-tr from-slate-100 via-slate-50 to-indigo-50/40 border-b border-slate-100 flex items-center justify-center overflow-hidden">
+                                <!-- Centered Fallback Placeholder (Always present in background) -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-4 pt-7 pb-6 text-center pointer-events-none">
+                                    <div class="w-10 h-10 rounded-xl bg-indigo-50/80 border border-indigo-100 flex items-center justify-center mb-1 text-indigo-500 shadow-2xs">
+                                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider truncate max-w-[150px]">
+                                        {{ $listing->variant?->product?->product_name ?? 'Digital Item' }}
+                                    </span>
+                                </div>
+
                                 @if ($listing->cover_image_url)
                                     <img
                                         src="{{ $listing->cover_image_url }}"
                                         alt="{{ $listing->title }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        class="relative z-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         loading="lazy"
+                                        onerror="this.style.display='none';"
                                     >
-                                @else
-                                    <div class="flex flex-col items-center justify-center text-slate-400 p-3 text-center">
-                                        <svg class="w-8 h-8 mb-1 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                        </svg>
-                                        <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider truncate max-w-[140px]">
-                                            {{ $listing->variant?->product?->product_name ?? 'Digital Item' }}
-                                        </span>
-                                    </div>
                                 @endif
 
                                 <!-- Category & Delivery Badge Overlays -->
-                                <div class="absolute top-2 left-2 flex flex-wrap gap-1">
+                                <div class="absolute top-2 left-2 z-10 flex flex-wrap gap-1">
                                     <span class="px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm text-[10px] font-bold text-indigo-700 shadow-2xs border border-white/60">
                                         {{ $listing->variant?->product?->category?->category_name ?? 'Item' }}
                                     </span>
@@ -395,10 +399,12 @@
                     @endforeach
                 </div>
 
-                <!-- Pagination (Warna Putih Elegan) -->
-                <div class="mt-8 flex justify-center" data-cy="marketplace-pagination">
-                    {{ $listings->links('vendor.pagination.tailwind') }}
-                </div>
+                <!-- Pagination Mengambang di Tengah Bawah -->
+                @if ($listings->hasPages())
+                    <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 pointer-events-auto shadow-2xl rounded-2xl glass-panel p-1.5 border border-white/80 backdrop-blur-xl bg-white/95" data-cy="marketplace-pagination">
+                        {{ $listings->links('vendor.pagination.tailwind') }}
+                    </div>
+                @endif
             @else
                 <!-- Empty State -->
                 <div class="glass-card p-10 text-center max-w-xl mx-auto border border-white/80" data-cy="marketplace-empty-state">

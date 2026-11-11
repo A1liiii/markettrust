@@ -1,23 +1,24 @@
 @extends('layouts.app')
 
 @section('title', 'Daftar Akun MarketTrust')
+@section('hide_footer', true)
 
 @section('content')
-<div class="min-h-[calc(100vh-4.5rem)] flex items-center justify-center py-4 px-4 sm:px-6 lg:px-8 lg:py-3">
+<div class="h-[calc(100vh-4rem)] flex items-center justify-center p-3 sm:p-4 overflow-hidden">
     <div class="glass-panel max-w-lg w-full p-5 sm:p-6 lg:py-4.5 lg:px-7 relative shadow-xl">
         <!-- Header -->
-        <div class="text-center mb-3 lg:mb-2.5">
-            <div class="inline-flex items-center justify-center w-10 h-10 lg:w-9 lg:h-9 rounded-xl bg-indigo-500/10 text-indigo-600 mb-1.5 border border-indigo-500/20 shadow-xs">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center mb-3">
+            <div class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 mb-1.5 border border-indigo-500/20 shadow-xs">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                 </svg>
             </div>
             <h2 class="text-xl lg:text-2xl font-bold tracking-tight text-slate-900">Buat Akun MarketTrust</h2>
-            <p class="text-xs lg:text-sm text-slate-600 mt-0.5">Daftar untuk mulai jual-beli item digital secara aman</p>
+            <p class="text-xs text-slate-600 mt-0.5">Daftar untuk mulai jual-beli item digital secara aman</p>
         </div>
 
         <!-- Google OAuth Button -->
-        <div class="mb-3 lg:mb-2.5">
+        <div class="mb-4">
             <a href="{{ route('auth.google') }}" class="glass-btn-google w-full py-2 text-xs sm:text-sm">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -29,13 +30,13 @@
             </a>
         </div>
 
-        <div class="relative flex items-center justify-center my-3 lg:my-2.5">
+        <div class="relative flex items-center justify-center my-4">
             <div class="glass-divider w-full"></div>
-            <span class="glass-badge glass-badge-neutral px-2.5 py-0.5 uppercase text-[9px] tracking-wider absolute">Atau form pendaftaran</span>
+            <span class="glass-badge glass-badge-neutral px-3 py-0.5 uppercase text-[9px] tracking-wider absolute">Atau form pendaftaran</span>
         </div>
 
         <!-- Registration Form -->
-        <form action="{{ route('register') }}" method="POST" class="space-y-3 lg:space-y-2.5" data-cy="register-form">
+        <form action="{{ route('register') }}" method="POST" class="space-y-3 mt-4" data-cy="register-form">
             @csrf
 
             <!-- Grid Baris 1: Username & Email -->
@@ -110,7 +111,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="glass-btn-primary w-full py-2 sm:py-2.5 text-xs sm:text-sm mt-2" data-cy="btn-register">
+            <button type="submit" class="glass-btn-primary w-full py-2 sm:py-2.5 text-xs sm:text-sm mt-1" data-cy="btn-register">
                 <span>Daftar Akun Baru</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -118,7 +119,7 @@
             </button>
         </form>
 
-        <div class="text-center mt-3 lg:mt-2.5 text-xs sm:text-sm text-slate-600 pt-2 border-t border-slate-200/60">
+        <div class="text-center mt-3 text-xs sm:text-sm text-slate-600 pt-2 border-t border-slate-200/60">
             Sudah memiliki akun?
             <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-700 transition">
                 Masuk di sini

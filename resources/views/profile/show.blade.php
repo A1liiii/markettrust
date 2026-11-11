@@ -328,9 +328,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
-                                <span class="glass-badge glass-badge-success text-[9px] px-1.5 py-0.5 shrink-0">LEGIT</span>
-                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Terverifikasi</span>
+                            <div class="mb-2.5">
+                                <span class="glass-badge glass-badge-success text-xs font-bold px-2.5 py-1">LEGIT</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Diberikan kepada pengguna yang memiliki riwayat transaksi escrow lancar, tepat waktu, dan tingkat kepatuhan tinggi terhadap aturan platform.
@@ -340,9 +339,8 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
-                                <span class="glass-badge glass-badge-danger text-[9px] px-1.5 py-0.5 shrink-0">PROBLEMATIC</span>
-                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Perlu Perhatian</span>
+                            <div class="mb-2.5">
+                                <span class="glass-badge glass-badge-danger text-xs font-bold px-2.5 py-1">PROBLEMATIC</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Diberikan kepada akun yang memiliki riwayat pembatalan sepihak pasca-bayar, sanksi moderasi, atau pelanggaran kesepakatan transaksi yang telah terbukti sah.
@@ -352,9 +350,8 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
-                                <span class="glass-badge glass-badge-neutral text-[9px] px-1.5 py-0.5 shrink-0">UNREVIEWED</span>
-                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Belum Ditinjau</span>
+                            <div class="mb-2.5">
+                                <span class="glass-badge glass-badge-neutral text-xs font-bold px-2.5 py-1">UNREVIEWED</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Status bawaan untuk akun baru atau pengguna yang belum memiliki catatan transaksi atau evaluasi resmi dari moderator MarketTrust.
@@ -364,9 +361,8 @@
 
                     <div class="p-4 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex flex-col justify-between">
                         <div>
-                            <div class="flex items-center gap-1.5 mb-2 whitespace-nowrap overflow-hidden">
-                                <span class="glass-badge glass-badge-primary text-[9px] px-1.5 py-0.5 shrink-0">+ / - Poin</span>
-                                <span class="text-xs font-bold text-slate-800 whitespace-nowrap">Poin Dinamis</span>
+                            <div class="mb-2.5">
+                                <span class="glass-badge glass-badge-primary text-xs font-bold px-2.5 py-1">+ / - Poin</span>
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed">
                                 Skor reputasi dihitung secara dinamis dari akumulasi seluruh peristiwa transaksi berhasil (+poin) dan pengurangan akibat sanksi atau komplain (-poin).

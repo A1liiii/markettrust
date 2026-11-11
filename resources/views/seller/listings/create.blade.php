@@ -42,22 +42,27 @@
                             <span>Pilih Varian & Produk Master <span class="text-rose-500 font-bold">*</span></span>
                             <span class="text-[11px] text-slate-400 font-normal">Dari katalog master aktif</span>
                         </label>
-                        <select id="variant_id" name="variant_id" required class="glass-input w-full text-sm @error('variant_id') border-rose-400 ring-rose-200 @enderror">
-                            <option value="">-- Pilih Spesifikasi Varian Produk --</option>
-                            @foreach ($categories as $category)
-                                @foreach ($category->products as $product)
-                                    @if ($product->variants->isNotEmpty())
-                                        <optgroup label="{{ $product->product_name }} ({{ $category->category_name }})">
-                                            @foreach ($product->variants as $variant)
-                                                <option value="{{ $variant->variant_id }}" {{ old('variant_id') == $variant->variant_id ? 'selected' : '' }}>
-                                                    {{ $variant->variant_name }} &bull; {{ $product->product_name }}
-                                                </option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
+                        <div class="relative">
+                            <select id="variant_id" name="variant_id" required class="glass-input w-full text-xs sm:text-sm py-2.5 px-3.5 pr-10 appearance-none bg-white/90 border border-slate-200/90 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-medium @error('variant_id') border-rose-400 ring-rose-200 @enderror">
+                                <option value="">-- Pilih Spesifikasi Varian Produk --</option>
+                                @foreach ($categories as $category)
+                                    @foreach ($category->products as $product)
+                                        @if ($product->variants->isNotEmpty())
+                                            <optgroup label="{{ $product->product_name }} ({{ $category->category_name }})">
+                                                @foreach ($product->variants as $variant)
+                                                    <option value="{{ $variant->variant_id }}" {{ old('variant_id') == $variant->variant_id ? 'selected' : '' }}>
+                                                        {{ $variant->variant_name }} &bull; {{ $product->product_name }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endif
+                                    @endforeach
                                 @endforeach
-                            @endforeach
-                        </select>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </div>
+                        </div>
                         <p class="text-[11px] text-slate-500 mt-1">
                             Pilih varian game/aplikasi yang sesuai dengan item yang Anda jual.
                         </p>
@@ -74,7 +79,7 @@
                         </label>
                         <input type="text" id="title" name="title" value="{{ old('title') }}" required maxlength="150"
                                placeholder="Contoh: Akun ML Mythic Glory 80 Bintang Full Skin KOF & Collector"
-                               class="glass-input w-full text-sm @error('title') border-rose-400 ring-rose-200 @enderror">
+                               class="glass-input w-full text-xs sm:text-sm py-2.5 px-3.5 rounded-xl @error('title') border-rose-400 ring-rose-200 @enderror">
                         <p class="text-[11px] text-slate-500 mt-1">Buat judul ringkas dan menarik yang memuat poin keunggulan utama item digital Anda.</p>
                         @error('title')
                             <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
@@ -89,7 +94,7 @@
                         </label>
                         <textarea id="description" name="description" rows="5" required
                                   placeholder="Jelaskan detail akun/item: level, winrate, bind akun (Moonton/Google/dll), kelengkapan email, atau catatan khusus penyerahan..."
-                                  class="glass-input w-full text-sm @error('description') border-rose-400 ring-rose-200 @enderror">{{ old('description') }}</textarea>
+                                  class="glass-input w-full text-xs sm:text-sm p-3.5 rounded-xl @error('description') border-rose-400 ring-rose-200 @enderror">{{ old('description') }}</textarea>
                         <p class="text-[11px] text-slate-500 mt-1">Cantumkan semua informasi penting agar buyer mendapatkan gambaran akurat sebelum melakukan checkout.</p>
                         @error('description')
                             <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
@@ -102,15 +107,17 @@
                             <span>Unggah Foto / Screenshot Item (Opsional)</span>
                             <span class="text-[11px] text-slate-400 font-normal">Maks. 4 Gambar &bull; JPG, PNG, WEBP &bull; Maks. 3 MB/file</span>
                         </label>
-                        <input
-                            type="file"
-                            id="images"
-                            name="images[]"
-                            multiple
-                            accept=".jpg,.jpeg,.png,.webp"
-                            class="glass-input w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition cursor-pointer @error('images') border-rose-400 ring-rose-200 @enderror @error('images.*') border-rose-400 ring-rose-200 @enderror"
-                            data-cy="input-listing-images"
-                        >
+                        <div class="p-3 rounded-xl border border-dashed border-indigo-200/90 bg-indigo-50/20 hover:bg-indigo-50/40 transition">
+                            <input
+                                type="file"
+                                id="images"
+                                name="images[]"
+                                multiple
+                                accept=".jpg,.jpeg,.png,.webp"
+                                class="glass-input w-full text-xs text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 transition cursor-pointer @error('images') border-rose-400 ring-rose-200 @enderror @error('images.*') border-rose-400 ring-rose-200 @enderror"
+                                data-cy="input-listing-images"
+                            >
+                        </div>
                         <p class="text-[11px] text-slate-500 mt-1">Unggah bukti kepemilikan akun, screenshot skin/hero/item, atau bukti legalitas lainnya.</p>
                         @error('images')
                             <p class="text-rose-600 text-xs mt-1 font-medium">{{ $message }}</p>
@@ -286,22 +293,28 @@
 
                     <div>
                         <label class="glass-label">Pilih Status Penayangan <span class="text-rose-500 font-bold">*</span></label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
-                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white/70 hover:bg-white cursor-pointer transition">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1.5">
+                            <label class="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/90 bg-white/80 hover:bg-white hover:border-indigo-300 hover:shadow-xs cursor-pointer transition">
                                 <input type="radio" name="status" value="ACTIVE" {{ old('status', 'ACTIVE') === 'ACTIVE' ? 'checked' : '' }}
-                                       class="text-indigo-600 focus:ring-indigo-500">
+                                       class="mt-0.5 text-indigo-600 focus:ring-indigo-500 rounded-full">
                                 <div>
-                                    <span class="block text-xs font-bold text-slate-900">AKTIF (Publikasikan Langsung)</span>
-                                    <span class="block text-[11px] text-slate-500">Item langsung dapat dilihat dan dibeli oleh pengguna di marketplace.</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="block text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition">AKTIF (Publikasikan Langsung)</span>
+                                        <span class="glass-badge glass-badge-success text-[9px] py-0.2 px-1.5">Live</span>
+                                    </div>
+                                    <span class="block text-[11px] text-slate-500 mt-0.5">Item langsung dapat dilihat dan dibeli oleh pengguna di marketplace.</span>
                                 </div>
                             </label>
 
-                            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200/80 bg-white/70 hover:bg-white cursor-pointer transition">
+                            <label class="group flex items-start gap-3 p-3.5 rounded-xl border border-slate-200/90 bg-white/80 hover:bg-white hover:border-indigo-300 hover:shadow-xs cursor-pointer transition">
                                 <input type="radio" name="status" value="DRAFT" {{ old('status') === 'DRAFT' ? 'checked' : '' }}
-                                       class="text-indigo-600 focus:ring-indigo-500">
+                                       class="mt-0.5 text-indigo-600 focus:ring-indigo-500 rounded-full">
                                 <div>
-                                    <span class="block text-xs font-bold text-slate-900">DRAF (Simpan Pribadi)</span>
-                                    <span class="block text-[11px] text-slate-500">Item tersimpan secara privat dan belum dapat dibeli oleh siapa pun.</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="block text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition">DRAF (Simpan Pribadi)</span>
+                                        <span class="glass-badge glass-badge-neutral text-[9px] py-0.2 px-1.5">Privat</span>
+                                    </div>
+                                    <span class="block text-[11px] text-slate-500 mt-0.5">Item tersimpan secara privat dan belum dapat dibeli oleh siapa pun.</span>
                                 </div>
                             </label>
                         </div>

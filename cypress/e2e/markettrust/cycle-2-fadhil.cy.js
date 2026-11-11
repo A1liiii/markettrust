@@ -268,9 +268,8 @@ describe('Testing Cycle 2 — Bagian Fadhil Syahidan (Kelola Listing, Login & Re
       cy.contains('Panduan Indikator Reputasi & Legitimasi')
         .parents('.glass-card')
         .within(() => {
-          cy.contains('Perlu Perhatian')
-            .should('be.visible')
-            .should('have.class', 'whitespace-nowrap');
+          cy.contains('PROBLEMATIC')
+            .should('be.visible');
         });
     });
 

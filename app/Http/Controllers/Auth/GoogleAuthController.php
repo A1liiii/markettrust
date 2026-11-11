@@ -40,15 +40,30 @@ class GoogleAuthController extends Controller
      */
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
+        // Deteksi pembatalan login oleh pengguna dari dialog consent Google
+        if ($request->has('error') || $request->has('error_description')) {
+            return redirect()->route('login')->withErrors([
+                'login' => 'Anda membatalkan login dengan akun Google baru Anda.',
+            ]);
+        }
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Throwable $e) {
-            Log::error('Gagal mengautentikasi akun Google: '.$e->getMessage(), [
+            $message = $e->getMessage();
+
+            // Tangani jika terjadi error ketiadaan code saat token exchange atau pembatalan akses
+            if (str_contains($message, 'Missing required parameter: code') || str_contains($message, 'access_denied') || str_contains($message, 'invalid_request')) {
+                return redirect()->route('login')->withErrors([
+                    'login' => 'Anda membatalkan login dengan akun Google baru Anda.',
+                ]);
+            }
+
+            Log::error('Gagal mengautentikasi akun Google: '.$message, [
                 'exception' => $e,
                 'request' => $request->all(),
             ]);
 
-            $message = $e->getMessage();
             if (empty(trim((string) $message))) {
                 $message = $e instanceof InvalidStateException
                     ? 'Sesi OAuth tidak valid atau state kedaluwarsa. Silakan ulangi klik login Google.'

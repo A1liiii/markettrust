@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Control Panel') - MarketTrust</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen antialiased selection:bg-indigo-500 selection:text-white relative flex flex-col md:flex-row overflow-x-hidden">
+<body class="glass-canvas-bg text-slate-900 font-sans min-h-screen antialiased selection:bg-indigo-500 selection:text-white relative flex flex-col md:flex-row overflow-x-clip">
 
     <!-- Ambient Background Glow Spheres -->
     <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden" aria-hidden="true">
@@ -22,8 +24,8 @@
         <div class="flex items-center gap-2.5">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016A11.955 11.955 0 0112 2.944z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8.5v9M13.5 10h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.8a11.95 11.95 0 01-8.62 3.04A12.02 12.02 0 003 9c0 6.2 4.1 11.4 9 12.8 4.9-1.4 9-6.6 9-12.8 0-1.04-.13-2.05-.38-3.02A11.95 11.95 0 0112 2.8z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7.5v8.5M13.5 9.25h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
                 </svg>
             </div>
             <div>
@@ -48,8 +50,8 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 group min-w-0">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-bold shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016A11.955 11.955 0 0112 2.944z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8.5v9M13.5 10h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.8a11.95 11.95 0 01-8.62 3.04A12.02 12.02 0 003 9c0 6.2 4.1 11.4 9 12.8 4.9-1.4 9-6.6 9-12.8 0-1.04-.13-2.05-.38-3.02A11.95 11.95 0 0112 2.8z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7.5v8.5M13.5 9.25h-2.5a1.5 1.5 0 000 3h2a1.5 1.5 0 010 3h-2.5"/>
                         </svg>
                     </div>
                     <div class="min-w-0">

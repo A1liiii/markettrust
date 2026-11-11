@@ -40,6 +40,14 @@
 
             <!-- Main Image View -->
             <div class="relative aspect-video max-h-[440px] w-full rounded-2xl bg-slate-900 overflow-hidden flex items-center justify-center border border-slate-100">
+                <!-- Fallback Container (Always ready / revealed on error) -->
+                <div id="gallery-placeholder-fallback" class="{{ !empty($images) ? 'hidden' : '' }} flex flex-col items-center justify-center text-slate-400 p-8 text-center pointer-events-none">
+                    <svg class="w-16 h-16 mb-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="text-xs font-semibold text-slate-400">Tidak ada lampiran foto untuk listing ini</span>
+                </div>
+
                 @if (!empty($images))
                     <img
                         id="gallery-main-image"
@@ -47,14 +55,8 @@
                         alt="{{ $listing->title }}"
                         class="w-full h-full object-contain transition-all duration-300"
                         data-cy="gallery-main-image"
+                        onerror="this.style.display='none'; document.getElementById('gallery-placeholder-fallback')?.classList.remove('hidden');"
                     >
-                @else
-                    <div class="flex flex-col items-center justify-center text-slate-400 p-8 text-center">
-                        <svg class="w-16 h-16 mb-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <span class="text-xs font-semibold text-slate-400">Tidak ada lampiran foto untuk listing ini</span>
-                    </div>
                 @endif
 
                 <span class="absolute top-3 left-3 glass-badge glass-badge-primary">
@@ -72,7 +74,7 @@
                             data-full-src="{{ $imgUrl }}"
                             aria-label="Lihat gambar {{ $index + 1 }}"
                         >
-                            <img src="{{ $imgUrl }}" alt="Thumbnail {{ $index + 1 }}" class="w-full h-full object-cover">
+                            <img src="{{ $imgUrl }}" alt="Thumbnail {{ $index + 1 }}" class="w-full h-full object-cover" onerror="this.closest('button')?.remove();">
                         </button>
                     @endforeach
                 </div>
