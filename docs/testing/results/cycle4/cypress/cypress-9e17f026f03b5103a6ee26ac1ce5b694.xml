@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="14.803" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:31:38" tests="0" file="cypress/e2e/markettrust/ts-04-katalog-listing.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-04: Katalog Admin &amp; Listing Marketplace" timestamp="2026-11-12T23:31:38" tests="3" time="14.801" failures="0">
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang" time="10.413" classname="TC-03-01: Admin Menambah Kategori, Produk, dan Varian Baru secara berjenjang">
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)" time="3.329" classname="TC-03-02: Seller Membuat Listing Marketplace Baru dengan Status ACTIVE (Catatan: Gap DRAFT tercatat)">
+    </testcase>
+    <testcase name="TS-04: Katalog Admin &amp; Listing Marketplace TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)" time="0.997" classname="TC-03-03: Toggle Status Listing Seller (ACTIVE &lt;-&gt; INACTIVE/CLOSED)">
+    </testcase>
+  </testsuite>
+</testsuites>

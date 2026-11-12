@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="15.728" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:35:32" tests="0" file="cypress/e2e/markettrust/ts-16-moderasi-akun.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-16 — Pelaporan Akun &amp; Moderasi User" timestamp="2026-11-12T23:35:32" tests="3" time="15.725" failures="0">
+    <testcase name="TS-16 — Pelaporan Akun &amp; Moderasi User TC-14-01 — Pengguna Melaporkan Akun Lawan Transaksi (UC-30)" time="4.640" classname="TC-14-01 — Pengguna Melaporkan Akun Lawan Transaksi (UC-30)">
+    </testcase>
+    <testcase name="TS-16 — Pelaporan Akun &amp; Moderasi User TC-14-02 — Admin Meninjau Kasus Pelaporan dan Menutup Laporan Palsu (DISMISSED)" time="5.133" classname="TC-14-02 — Admin Meninjau Kasus Pelaporan dan Menutup Laporan Palsu (DISMISSED)">
+    </testcase>
+    <testcase name="TS-16 — Pelaporan Akun &amp; Moderasi User TC-14-03 — Admin Menjatuhkan Sanksi dan Mengubah Status Reputasi Menjadi PROBLEMATIC" time="5.715" classname="TC-14-03 — Admin Menjatuhkan Sanksi dan Mengubah Status Reputasi Menjadi PROBLEMATIC">
+    </testcase>
+  </testsuite>
+</testsuites>

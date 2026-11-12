@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="14.921" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:31:20" tests="0" file="cypress/e2e/markettrust/ts-03-rekening-payout.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-03 — Rekening Payout Seller" timestamp="2026-11-12T23:31:20" tests="4" time="14.919" failures="0">
+    <testcase name="TS-03 — Rekening Payout Seller TC-02-01: Penambahan Rekening Payout Tipe BANK berhasil disimpan dan menjadi tujuan utama aktif" time="4.820" classname="TC-02-01: Penambahan Rekening Payout Tipe BANK berhasil disimpan dan menjadi tujuan utama aktif">
+    </testcase>
+    <testcase name="TS-03 — Rekening Payout Seller TC-02-02: Aturan Atomik Hanya 1 Rekening Payout yang Aktif saat menambah EWALLET baru sebagai utama" time="3.714" classname="TC-02-02: Aturan Atomik Hanya 1 Rekening Payout yang Aktif saat menambah EWALLET baru sebagai utama">
+    </testcase>
+    <testcase name="TS-03 — Rekening Payout Seller TC-02-03: Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar (Validasi gagal tanpa gambar &amp; berhasil dengan gambar valid)" time="3.572" classname="TC-02-03: Penambahan Rekening Payout Tipe QRIS Wajib Unggah Gambar (Validasi gagal tanpa gambar &amp; berhasil dengan gambar valid)">
+    </testcase>
+    <testcase name="TS-03 — Rekening Payout Seller TC-02-04: Seller Menghapus Rekening Payout Non-Aktif melalui modal konfirmasi tanpa mengganggu rekening utama aktif" time="2.420" classname="TC-02-04: Seller Menghapus Rekening Payout Non-Aktif melalui modal konfirmasi tanpa mengganggu rekening utama aktif">
+    </testcase>
+  </testsuite>
+</testsuites>

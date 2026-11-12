@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="17.021" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:29:57" tests="0" file="cypress/e2e/markettrust/cycle2-kaye.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Testing Cycle 2 — Zinky (Kaye) UI, DM &amp; Kesepakatan" timestamp="2026-11-12T23:29:57" tests="4" time="17.016" failures="0">
+    <testcase name="Testing Cycle 2 — Zinky (Kaye) UI, DM &amp; Kesepakatan TC-C2-01: Verifikasi Tampilan Umum, Header (tanpa Digital Escrow) &amp; Footer Rekber" time="4.975" classname="TC-C2-01: Verifikasi Tampilan Umum, Header (tanpa Digital Escrow) &amp; Footer Rekber">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Zinky (Kaye) UI, DM &amp; Kesepakatan TC-C2-02: Verifikasi Homepage (Kalkulator Fee tanpa final, Copy Forum, Card Keamanan)" time="2.607" classname="TC-C2-02: Verifikasi Homepage (Kalkulator Fee tanpa final, Copy Forum, Card Keamanan)">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Zinky (Kaye) UI, DM &amp; Kesepakatan TC-C2-03: Verifikasi Percakapan / DM (Card Pesan Fix, Bebas Horizontal Overflow pada Mobile)" time="5.170" classname="TC-C2-03: Verifikasi Percakapan / DM (Card Pesan Fix, Bebas Horizontal Overflow pada Mobile)">
+    </testcase>
+    <testcase name="Testing Cycle 2 — Zinky (Kaye) UI, DM &amp; Kesepakatan TC-C2-04: Verifikasi Reposisi Kesepakatan (Di Atas Input Pesan, Aksi Setujui/Tolak/Akhiri/Revisi)" time="3.914" classname="TC-C2-04: Verifikasi Reposisi Kesepakatan (Di Atas Input Pesan, Aksi Setujui/Tolak/Akhiri/Revisi)">
+    </testcase>
+  </testsuite>
+</testsuites>
