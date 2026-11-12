@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="16.027" tests="2" failures="1">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:31:57" tests="0" file="cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-05 — Marketplace &amp; Statistik Pasar" timestamp="2026-11-12T23:31:57" tests="2" time="16.024" failures="1">
+    <testcase name="TS-05 — Marketplace &amp; Statistik Pasar TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga pada katalog Marketplace" time="4.692" classname="TC-04-01: Pencarian kata kunci, filter kategori/varian, dan pengurutan harga pada katalog Marketplace">
+    </testcase>
+    <testcase name="TS-05 — Marketplace &amp; Statistik Pasar TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (UC-05) untuk 7d, 30d, 90d (Gap Docs), dan Semua Waktu" time="0.000" classname="TC-04-02: Filter Periode Statistik Pasar pada Detail Produk (UC-05) untuk 7d, 30d, 90d (Gap Docs), dan Semua Waktu">
+      <failure message="Timed out retrying after 10000ms: Expected to find content: &apos;Informasi Pasar Produk&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find content: 'Informasi Pasar Produk' but never did.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-05-marketplace-statistik.cy.js:201:42)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

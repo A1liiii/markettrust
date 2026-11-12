@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="12.266" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:35:50" tests="0" file="cypress/e2e/markettrust/ts-17-notifikasi-audit.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-17 — Notifikasi &amp; Jejak Audit" timestamp="2026-11-12T23:35:50" tests="3" time="12.265" failures="0">
+    <testcase name="TS-17 — Notifikasi &amp; Jejak Audit TC-15-01 — Lonceng Notifikasi Navbar dan Halaman Notifikasi Pengguna" time="4.371" classname="TC-15-01 — Lonceng Notifikasi Navbar dan Halaman Notifikasi Pengguna">
+    </testcase>
+    <testcase name="TS-17 — Notifikasi &amp; Jejak Audit TC-15-02 — Fitur Tandai Semua Notifikasi Sudah Dibaca" time="3.201" classname="TC-15-02 — Fitur Tandai Semua Notifikasi Sudah Dibaca">
+    </testcase>
+    <testcase name="TS-17 — Notifikasi &amp; Jejak Audit TC-15-03 — Audit Trail Admin untuk Tindakan Kritis Sistem" time="4.555" classname="TC-15-03 — Audit Trail Admin untuk Tindakan Kritis Sistem">
+    </testcase>
+  </testsuite>
+</testsuites>

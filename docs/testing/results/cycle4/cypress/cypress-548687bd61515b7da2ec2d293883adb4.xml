@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="5.591" tests="6" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:31:12" tests="0" file="cypress/e2e/markettrust/ts-02-oauth-profil.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-02 — Google OAuth &amp; Profil" timestamp="2026-11-12T23:31:12" tests="6" time="5.587" failures="0">
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-01 (Turunan) — Tautan Login Google Tersedia di Form Login" time="0.361" classname="TC-02-01 (Turunan) — Tautan Login Google Tersedia di Form Login">
+    </testcase>
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-02 (Turunan) — Inisiasi Pengalihan Otentikasi Google OAuth" time="0.208" classname="TC-02-02 (Turunan) — Inisiasi Pengalihan Otentikasi Google OAuth">
+    </testcase>
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-03 (Turunan) — Penolakan Akses Callback Google OAuth Tanpa Sesi Sah" time="0.367" classname="TC-02-03 (Turunan) — Penolakan Akses Callback Google OAuth Tanpa Sesi Sah">
+    </testcase>
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-04 (Turunan) — Halaman Tautkan Akun Google dengan Akun Lokal" time="0.321" classname="TC-02-04 (Turunan) — Halaman Tautkan Akun Google dengan Akun Lokal">
+    </testcase>
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-05 (Turunan) — Halaman Pemilihan Username Registrasi Google Baru" time="0.359" classname="TC-02-05 (Turunan) — Halaman Pemilihan Username Registrasi Google Baru">
+    </testcase>
+    <testcase name="TS-02 — Google OAuth &amp; Profil TC-02-06 (Turunan) — Pembaruan Profil Pengguna Melalui UI" time="3.700" classname="TC-02-06 (Turunan) — Pembaruan Profil Pengguna Melalui UI">
+    </testcase>
+  </testsuite>
+</testsuites>

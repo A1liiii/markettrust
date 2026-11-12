@@ -1,0 +1,50 @@
+
+================================================================================
+
+  (Run Starting)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        16.2.0                                                                         │
+  │ Browser:        Electron 146 (headless) (deprecated)                                           │
+  │ Node Version:   v22.23.2 (/usr/local/bin/node)                                                 │
+  │ Specs:          1 found (ts-01-autentikasi.cy.js)                                              │
+  │ Searched:       cypress/e2e/markettrust/ts-01-autentikasi.cy.js                                │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Warning: The Electron browser is deprecated as a test browser and will be removed in a future version of Cypress.
+
+Switch to Chrome or another installed browser to avoid a breaking change when you upgrade.
+
+Read more about supported browsers: https://on.cypress.io/launching-browsers
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  ts-01-autentikasi.cy.js                                                         (1 of 1)
+
+  (Results)
+
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        6                                                                                │
+  │ Passing:      6                                                                                │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     34 seconds                                                                       │
+  │ Spec Ran:     ts-01-autentikasi.cy.js                                                          │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+
+  (Run Finished)
+
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  ts-01-autentikasi.cy.js                  00:34        6        6        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✔  All specs passed!                        00:34        6        6        -        -        -  
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="40.936" tests="4" failures="2">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:32:51" tests="0" file="cypress/e2e/markettrust/ts-08-agreement.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-08 — Kesepakatan Forum (Agreement)" timestamp="2026-11-12T23:32:51" tests="4" time="40.921" failures="2">
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-01 — Pembuatan Usulan Kesepakatan (Agreement Draft) dari DM" time="0.000" classname="TC-06-01 — Pembuatan Usulan Kesepakatan (Agreement Draft) dari DM">
+      <failure message="Timed out retrying after 10000ms: Expected to find content: &apos;Lembar Kesepakatan Transaksi&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find content: 'Lembar Kesepakatan Transaksi' but never did.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-08-agreement.cy.js:123:48)]]></failure>
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-02 — Revisi Usulan Kesepakatan Menaikkan Nomor Revisi" time="0.000" classname="TC-06-02 — Revisi Usulan Kesepakatan Menaikkan Nomor Revisi">
+      <failure message="Timed out retrying after 10000ms: Expected to find content: &apos;Lembar Kesepakatan Transaksi&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find content: 'Lembar Kesepakatan Transaksi' but never did.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/ts-08-agreement.cy.js:139:48)]]></failure>
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-03 — Penolakan Usulan Kesepakatan (Reject Agreement)" time="4.276" classname="TC-06-03 — Penolakan Usulan Kesepakatan (Reject Agreement)">
+    </testcase>
+    <testcase name="TS-08 — Kesepakatan Forum (Agreement) TC-06-04 — Persetujuan Kesepakatan Menghasilkan Transaksi WAITING_PAYMENT" time="3.314" classname="TC-06-04 — Persetujuan Kesepakatan Menghasilkan Transaksi WAITING_PAYMENT">
+    </testcase>
+  </testsuite>
+</testsuites>

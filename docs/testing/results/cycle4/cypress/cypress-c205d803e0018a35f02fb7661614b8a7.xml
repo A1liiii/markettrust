@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="14.695" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:32:16" tests="0" file="cypress/e2e/markettrust/ts-06-forum.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-06 — Forum Diskusi" timestamp="2026-11-12T23:32:16" tests="3" time="14.694" failures="0">
+    <testcase name="TS-06 — Forum Diskusi TC-05-01 — Pembuatan Postingan Forum Jual/Beli" time="6.156" classname="TC-05-01 — Pembuatan Postingan Forum Jual/Beli">
+    </testcase>
+    <testcase name="TS-06 — Forum Diskusi TC-05-02 — Interaksi Komentar dan Like pada Postingan Forum" time="4.200" classname="TC-05-02 — Interaksi Komentar dan Like pada Postingan Forum">
+    </testcase>
+    <testcase name="TS-06 — Forum Diskusi TC-05-03 — Tombol Negosiasi / Ajukan Penawaran dari Forum Mengarah ke DM" time="4.173" classname="TC-05-03 — Tombol Negosiasi / Ajukan Penawaran dari Forum Mengarah ke DM">
+    </testcase>
+  </testsuite>
+</testsuites>

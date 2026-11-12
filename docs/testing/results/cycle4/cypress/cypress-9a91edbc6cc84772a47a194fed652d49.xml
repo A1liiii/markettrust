@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="13.022" tests="4" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:33:35" tests="0" file="cypress/e2e/markettrust/ts-09-checkout.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-09 — Checkout Marketplace" timestamp="2026-11-12T23:33:35" tests="4" time="13.018" failures="0">
+    <testcase name="TS-09 — Checkout Marketplace TC-07-01 — Halaman Review Checkout Menampilkan Pemisahan Rincian Harga Transparan" time="4.543" classname="TC-07-01 — Halaman Review Checkout Menampilkan Pemisahan Rincian Harga Transparan">
+    </testcase>
+    <testcase name="TS-09 — Checkout Marketplace TC-07-02 — Peringatan Edukatif Saat Penjual Belum Mengatur Rekening Payout" time="2.446" classname="TC-07-02 — Peringatan Edukatif Saat Penjual Belum Mengatur Rekening Payout">
+    </testcase>
+    <testcase name="TS-09 — Checkout Marketplace TC-07-03 — Indikator Siap Saat Penjual Sudah Memiliki Rekening Payout Aktif" time="2.670" classname="TC-07-03 — Indikator Siap Saat Penjual Sudah Memiliki Rekening Payout Aktif">
+    </testcase>
+    <testcase name="TS-09 — Checkout Marketplace TC-07-04 — Konfirmasi Checkout Membuat Transaksi Escrow WAITING_PAYMENT" time="3.045" classname="TC-07-04 — Konfirmasi Checkout Membuat Transaksi Escrow WAITING_PAYMENT">
+    </testcase>
+  </testsuite>
+</testsuites>

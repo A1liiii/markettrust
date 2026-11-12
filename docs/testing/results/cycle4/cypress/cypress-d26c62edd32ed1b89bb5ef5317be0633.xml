@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="12.128" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:34:23" tests="0" file="cypress/e2e/markettrust/ts-12-konfirmasi.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-12: Konfirmasi Penerimaan &amp; Auto-Confirm" timestamp="2026-11-12T23:34:23" tests="3" time="12.126" failures="0">
+    <testcase name="TS-12: Konfirmasi Penerimaan &amp; Auto-Confirm TC-10-01: Konfirmasi Penerimaan Manual oleh Buyer (Penyelesaian Normal)" time="9.156" classname="TC-10-01: Konfirmasi Penerimaan Manual oleh Buyer (Penyelesaian Normal)">
+    </testcase>
+    <testcase name="TS-12: Konfirmasi Penerimaan &amp; Auto-Confirm TC-10-02: Scheduler Memberikan Grace Period 30 Menit pada Pembeli Pasif (UC-15B Tahap 1)" time="1.665" classname="TC-10-02: Scheduler Memberikan Grace Period 30 Menit pada Pembeli Pasif (UC-15B Tahap 1)">
+    </testcase>
+    <testcase name="TS-12: Konfirmasi Penerimaan &amp; Auto-Confirm TC-10-03: Scheduler Melakukan Auto-Confirm Sistem Setelah Grace Period Berakhir (UC-15B Tahap 2)" time="1.155" classname="TC-10-03: Scheduler Melakukan Auto-Confirm Sistem Setelah Grace Period Berakhir (UC-15B Tahap 2)">
+    </testcase>
+  </testsuite>
+</testsuites>

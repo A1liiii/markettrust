@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="28.368" tests="4" failures="2">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:30:17" tests="0" file="cypress/e2e/markettrust/meet1-rio-cycle2.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Meet 1 Follow-Up: Marketplace, Informasi Pasar, Checkout, &amp; Forum (Rio)" timestamp="2026-11-12T23:30:17" tests="4" time="28.367" failures="2">
+    <testcase name="Meet 1 Follow-Up: Marketplace, Informasi Pasar, Checkout, &amp; Forum (Rio) TC-MEET1-01: Marketplace - Badge Baru, Grid 3 Baris (12 items), Filter Produk &amp; Pagination Putih" time="0.000" classname="TC-MEET1-01: Marketplace - Badge Baru, Grid 3 Baris (12 items), Filter Produk &amp; Pagination Putih">
+      <failure message="Timed out retrying after 10000ms: Expected to find element: `nav[aria-label*=&quot;Pagination&quot;]`, but never found it." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find element: `nav[aria-label*="Pagination"]`, but never found it.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/meet1-rio-cycle2.cy.js:127:7)]]></failure>
+    </testcase>
+    <testcase name="Meet 1 Follow-Up: Marketplace, Informasi Pasar, Checkout, &amp; Forum (Rio) TC-MEET1-02: Informasi Pasar - Navbar Menu, Halaman Mandiri, &amp; Detail Item Sejajar" time="0.888" classname="TC-MEET1-02: Informasi Pasar - Navbar Menu, Halaman Mandiri, &amp; Detail Item Sejajar">
+    </testcase>
+    <testcase name="Meet 1 Follow-Up: Marketplace, Informasi Pasar, Checkout, &amp; Forum (Rio) TC-MEET1-03: Checkout Marketplace - Rincian Pembayaran 3 Baris &amp; Tombol Bayar" time="0.007" classname="TC-MEET1-03: Checkout Marketplace - Rincian Pembayaran 3 Baris &amp; Tombol Bayar">
+    </testcase>
+    <testcase name="Meet 1 Follow-Up: Marketplace, Informasi Pasar, Checkout, &amp; Forum (Rio) TC-MEET1-04: Forum Komunitas - Switcher PS5 2 Card di Viewport &amp; Threaded Replies" time="0.000" classname="TC-MEET1-04: Forum Komunitas - Switcher PS5 2 Card di Viewport &amp; Threaded Replies">
+      <failure message="Timed out retrying after 10000ms: Expected to find content: &apos;PS5 Switcher&apos; but never did." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 10000ms: Expected to find content: 'PS5 Switcher' but never did.
+    at Context.eval (webpack:///./cypress/e2e/markettrust/meet1-rio-cycle2.cy.js:178:32)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

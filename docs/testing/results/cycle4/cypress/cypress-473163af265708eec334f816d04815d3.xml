@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="13.701" tests="2" failures="0">
+  <testsuite name="Root Suite" timestamp="2026-11-12T23:32:33" tests="0" file="cypress/e2e/markettrust/ts-07-direct-message.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="TS-07 — Direct Message &amp; Lampiran" timestamp="2026-11-12T23:32:33" tests="2" time="13.611" failures="0">
+    <testcase name="TS-07 — Direct Message &amp; Lampiran TC-05-04: Kirim Pesan Teks dan Polling Sinkronisasi DM (Pesan lawan muncul otomatis tanpa reload halaman)" time="8.463" classname="TC-05-04: Kirim Pesan Teks dan Polling Sinkronisasi DM (Pesan lawan muncul otomatis tanpa reload halaman)">
+    </testcase>
+    <testcase name="TS-07 — Direct Message &amp; Lampiran TC-05-05: Validasi Ketat Lampiran Berkas DM (Format terlarang, ukuran &gt; 5 MB ditolak, dan gambar valid berhasil diunggah)" time="4.977" classname="TC-05-05: Validasi Ketat Lampiran Berkas DM (Format terlarang, ukuran &gt; 5 MB ditolak, dan gambar valid berhasil diunggah)">
+    </testcase>
+  </testsuite>
+</testsuites>
